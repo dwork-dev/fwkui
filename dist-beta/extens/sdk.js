@@ -14,6 +14,7 @@ Element.prototype.els=function(id){
 ((dk)=>{
   var _user;
   var _domain=location.host.split(".").slice(-2).join(".");
+  var _process_post = {};
   window.dk=new SDK();
   function SDK(url,method,$token){
     var $dk=this;
@@ -113,7 +114,7 @@ Element.prototype.els=function(id){
         return value||v;
       }
     }
-    function post (url,params,callback,callbackerror,sync){
+    async function post (url,params,callback,callbackerror,sync){
       params=params||{};
       if(typeof params=="string"){
         eval(`params=${params};`);
@@ -122,7 +123,27 @@ Element.prototype.els=function(id){
         params.deleted=$dk.cookie("deleted")||0;
       }
       typeof params!="string"&&(params=JSON.stringify(params));
-      return new Promise(async (resolve)=>{
+      var p=await dk.sha256([url,params]);
+      _process_post[p]=_process_post[p]||{expired:0,fncs:[]};
+      if(_process_post[p].fncs.length){
+        if(_process_post[p].expired>Date.now()){
+          return new Promise(rls=>{
+            _process_post[p].fncs.push((rs)=>{
+              rls(rs);
+              typeof callback=="function" && callback(rs);
+            });
+          });
+        }else{
+          _process_post[p].fncs=[];
+          _process_post[p].expired=0;
+        }
+      }
+      _process_post[p].expired = Date.now()+1000*10;
+      return new Promise(async (rls)=>{
+        _process_post[p].fncs.push((rs)=>{
+          rls(rs);
+          typeof callback=="function" && callback(rs);
+        });
         var req = new XMLHttpRequest();
         req.open(_method, url, sync);
         req.setRequestHeader("Content-Type", "application/json");
@@ -147,8 +168,13 @@ Element.prototype.els=function(id){
               $dk.token("",0);
             }
           }
-          typeof callback=="function" && callback(rs);
-          resolve(rs);
+          //typeof callback=="function" && callback(rs);
+          //resolve(rs);
+          if(_process_post[p]){
+            _process_post[p].fncs.map(m=>m(rs));
+            _process_post[p].fncs=[];
+            _process_post[p].expired=0;
+          }
         }
         req.send(params);
       })
@@ -178,7 +204,7 @@ Element.prototype.els=function(id){
           content=content[0];
         }
         if(typeof content=="string"){
-          if(content.match(/data:[a-z]+\/[a-z]+;base64,.+/g)){
+          if(content.match(/^data:[a-z]+\/[a-z]+;base64,.+/g)){
             content = dataURItoBlob(content);
           }else{
             var type = "text/plain";
@@ -969,6 +995,7 @@ Element.prototype.els=function(id){
 function dataURItoBlob(dataURI) {
   // convert base64 to raw binary data held in a string
   // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+  console.log(1111,dataURI)
   var byteString = atob(dataURI.split(',')[1]);
 
   // separate out the mime component
@@ -1239,7 +1266,7 @@ function initResize(el,options){
       </div>
       `;
     el.addEventListener("mouseover",e=>{
-      el.style.background = "#ccc";
+      //el.style.background = "#ccc";
     });
     el.addEventListener("mouseleave",e=>{
       //el.style.background = "";
@@ -1249,7 +1276,8 @@ function initResize(el,options){
     }
     el.elmove.onmouseleave=()=>{
       el.elmove.style.display = "none";
-      el.style.border = "";
+      //el.style.border = "";
+      //el.style.background = "";
     }
     initDragDrop(el.elmove,{
       onStart: ()=>{
