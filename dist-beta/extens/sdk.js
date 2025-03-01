@@ -1148,7 +1148,7 @@ function clone(obj){
   }
   return obj;
 }
-function initDrag(element,options) {
+function initDragDrop(element,options) {
   options=options||{};
   var zone=options.zone||element;
   var area=options.area||document.body;
@@ -1179,7 +1179,7 @@ function initDrag(element,options) {
     document.onmousemove = onmousemove;
     document.scrollDown = scrollDown;
     document.scrollDown();
-    typeof options.onStart == "function" && options.onStart();
+    typeof options.start == "function" && options.start();
   }
   function scrollDown(){
     var speed=Math.abs(element.down||0)||1;
@@ -1232,7 +1232,7 @@ function initDrag(element,options) {
     element.style.top = newTop + "px";
     element.style.left = newLeft + "px";
     //console.log("down",element.down)
-    typeof options.onDrag == "function" && options.onDrag();
+    typeof options.drag == "function" && options.drag();
   }
 
   function onmouseup(e) {
@@ -1242,7 +1242,7 @@ function initDrag(element,options) {
     document.onmouseup = null;
     document.onmousemove = null;
     document.scrollDown = null;
-    typeof options.onDrop == "function" && options.onDrop();
+    typeof options.drop == "function" && options.drop();
   }
   function getData() {
     return {
@@ -1309,6 +1309,22 @@ function initResize(el,options){
     el.elmove.style.display = "none";
   });
 }
+/***
+   {
+      start: ()=>{
+        console.log("start",event.x,event.y)
+      },
+      drop: (files)=>{
+        console.log("drop",files)
+      },
+      drag: ()=>{
+        console.log("drag",event.x,event.y)
+      },
+      leave: ()=>{
+        console.log("leave",event.x,event.y)
+      }
+   }
+***/
 function initDrag(element,options) {
   options=options||{};
   var zone=options.zone||element;
@@ -1336,11 +1352,15 @@ function initDrag(element,options) {
     element.style.top=(newTop)+"px";
     element.style.left=(newLeft)+"px";
     element.style.position = "fixed";
+    element.onmouseleave = onmouseleave;
     document.onmouseup = onmouseup;
     document.onmousemove = onmousemove;
     document.scrollDown = scrollDown;
     document.scrollDown();
-    typeof options.onStart == "function" && options.onStart();
+    typeof options.start == "function" && options.start();
+  }
+  function onmouseleave(e) {
+    typeof options.leave == "function" && options.leave();
   }
   function scrollDown(){
     var speed=Math.abs(element.down||0)||1;
@@ -1356,6 +1376,9 @@ function initDrag(element,options) {
         document.scrollDown();
       }
     }, 50)
+  }
+  function onmouseleave(e) {
+    typeof options.leave == "function" && options.leave();
   }
   function onmousemove(e) {
     e = e || window.event;
@@ -1393,7 +1416,7 @@ function initDrag(element,options) {
     element.style.top = newTop + "px";
     element.style.left = newLeft + "px";
     //console.log("down",element.down)
-    typeof options.onDrag == "function" && options.onDrag();
+    typeof options.drag == "function" && options.drag();
   }
 
   function onmouseup(e) {
@@ -1403,7 +1426,8 @@ function initDrag(element,options) {
     document.onmouseup = null;
     document.onmousemove = null;
     document.scrollDown = null;
-    typeof options.onDrop == "function" && options.onDrop();
+    element.onmouseleave = null;
+    typeof options.drop == "function" && options.drop();
   }
   function getData() {
     return {
