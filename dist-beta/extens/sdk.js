@@ -123,7 +123,7 @@ Element.prototype.els=function(id){
         params.deleted=$dk.cookie("deleted")||0;
       }
       typeof params!="string"&&(params=JSON.stringify(params));
-      var p=await dk.sha256([url,params]);
+      var p=await $dk.sha256([url,params]);
       _process_post[p]=_process_post[p]||{expired:0,fncs:[]};
       if(_process_post[p].fncs.length){
         if(_process_post[p].expired>Date.now()){
