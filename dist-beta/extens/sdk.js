@@ -1153,7 +1153,7 @@ function initDragDrop(element,options) {
   var zone=options.zone||element;
   var area=options.area||document.body;
   var mouseTop,mouseLeft,posTop,posLeft,newTop,newLeft,widthMove,heightMove;
-  var position = element.style.position||"fixed";
+  var position = getComputedStyle(element).position||"absolute";
   var timeout=2000;
   zone.onmousedown = onmousedown;
   element.style.width=element.offsetWidth+"px";
@@ -1330,7 +1330,7 @@ function initDrag(element,options) {
   var zone=options.zone||element;
   var area=options.area||document.body;
   var mouseTop,mouseLeft,posTop,posLeft,newTop,newLeft,widthMove,heightMove;
-  var position = element.style.position||"fixed";
+  var position = getComputedStyle(element).position||"absolute";
   var timeout=2000;
   zone.onmousedown = onmousedown;
   element.style.width=element.offsetWidth+"px";
