@@ -1265,11 +1265,17 @@ function initResize(el,options){
       	<div style="position:absolute; border-right:3px solid #bbb; border-left:1px solid #fff; bottom:5px;right:5px; height:12px; width:0px; cursor:nwse-resize"></div>
       </div>
       `;
+    el.addEventListener("mouseenter",e=>{
+      el.elmove.style.top = (el.getBoundingClientRect().y+el.getBoundingClientRect().height-15)+"px";
+      el.elmove.style.left = (el.getBoundingClientRect().x+el.getBoundingClientRect().width-15)+"px";
+    })
     el.addEventListener("mouseover",e=>{
       //el.style.background = "#ccc";
     });
     el.addEventListener("mouseleave",e=>{
       //el.style.background = "";
+      el.elmove.style.top = (el.getBoundingClientRect().y+el.getBoundingClientRect().height-15)+"px";
+      el.elmove.style.left = (el.getBoundingClientRect().x+el.getBoundingClientRect().width-15)+"px";
     });
     el.elmove.onmouseover=()=>{
       el.elmove.style.display = "";
