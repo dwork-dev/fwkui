@@ -1290,12 +1290,24 @@ function initResize(el,options){
         typeof options.start=="function" && options.start();
       },
       drop: ()=>{
-        typeof options.drop=="function" && options.drop();
+        typeof options.stop=="function" && options.stop();
       },
       drag: ()=>{
-        el.style.width=(el.sizes.w+(el.elmove.getBoundingClientRect().x - el.sizes.x - 10))+"px";
-        el.style.height=(el.sizes.h+(el.elmove.getBoundingClientRect().y - el.sizes.y - 10))+"px";
-        typeof options.drag=="function" && options.drag();
+        var w=(el.sizes.w+(el.elmove.getBoundingClientRect().x - el.sizes.x - 10));
+        var h=(el.sizes.h+(el.elmove.getBoundingClientRect().y - el.sizes.y - 10));
+        if(options.maxWidth && typeof options.maxWidth=="number"){
+          if(w>options.maxWidth){
+            w=options.maxWidth;
+          }
+        }
+        if(options.maxHeight && typeof options.maxHeight=="number"){
+          if(h>options.maxHeight){
+            h=options.maxHeight;
+          }
+        }
+        el.style.width=w+"px";
+        el.style.height=h+"px";
+        typeof options.move=="function" && options.move();
         //console.log("onDrag",event)
       }
     })
