@@ -1258,7 +1258,7 @@ function initResize(el,options){
   if(!el.elmove){
     el.elmove = document.createElement("div");
     document.body.append(el.elmove);
-    el.elmove.setAttribute("style","position:fixed;display:none");
+    el.elmove.setAttribute("style","position:fixed;display:none;z-index: 9999;");
     el.elmove.innerHTML=`
       <div style="position:relative;width:20px;height:20px;">
       	<div style="position:absolute; border-bottom:3px solid #bbb; border-top:1px solid #fff; bottom:5px; right:5px; width:12px; height:0px; cursor:nwse-resize;"></div>
@@ -1279,22 +1279,23 @@ function initResize(el,options){
       //el.style.border = "";
       //el.style.background = "";
     }
-    initDragDrop(el.elmove,{
-      onStart: ()=>{
+    initDrag(el.elmove,{
+      start: ()=>{
         el.sizes = {
           x: el.elmove.getBoundingClientRect().x,
           y: el.elmove.getBoundingClientRect().y,
           w: el.offsetWidth,
           h: el.offsetHeight,
         }
-        console.log("onStart",el.elmove.sizes)
+        typeof options.start=="function" && options.start();
       },
-      onDrop: ()=>{
-
+      drop: ()=>{
+        typeof options.drop=="function" && options.drop();
       },
-      onDrag: ()=>{
+      drag: ()=>{
         el.style.width=(el.sizes.w+(el.elmove.getBoundingClientRect().x - el.sizes.x - 10))+"px";
         el.style.height=(el.sizes.h+(el.elmove.getBoundingClientRect().y - el.sizes.y - 10))+"px";
+        typeof options.drag=="function" && options.drag();
         //console.log("onDrag",event)
       }
     })
