@@ -1459,3 +1459,74 @@ function initDrag(element,options) {
 }
 
 
+async function zipimg(uri,maxWidth,maxHeight){
+  var quality = 0.8;
+  if(window.Compress){
+    return start();
+  }else{
+    return new Promise(rsl=>{
+      var s=document.createElement("script");
+      s.onload=()=>{
+        rsl(start());
+      }
+      s.src = `/rcpanel/js/compressor.js`;
+      document.body.append(s);
+    })
+  }
+  function start(){
+    return new Promise(async resolve=>{
+      if(typeof uri == "object"){
+        var file = new FileReader();
+        file.onload=()=>{
+          render(event.target.result, resolve)
+        }
+        file.readAsDataURL(uri);
+      }else{
+        fileType = file.type;
+        render(uri,resolve);
+      }
+    });
+  }
+  function render(data,resolve){
+    const img = new Image();
+    img.crossOrigin="anonymous";
+    img.onload=(e)=>{
+      const canvas = (window.el_canvas=window.el_canvas) || document.createElement("canvas");
+      canvas.setAttribute("style","position:fixed;opacity:0;z-index:-1");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      canvas.getContext("2d").drawImage(img, 0, 0, img.width, img.height);
+      document.body.append(canvas);
+      maxWidth || (maxWidth = img.width);
+      maxHeight || (maxHeight = img.height);
+
+      return canvas.toBlob((blob) => {
+        if(typeof window.Compressor == "function" && !["gif"].find(f=>blob.type.includes(f))){
+          if(maxWidth<img.width || maxHeight<img.height){
+            canvas.remove();
+            return new window.Compressor(blob, {
+              size: 4,
+              quality,
+              maxWidth, // the max width of the output image, defaults to 1920px
+              maxHeight, // the max height of the output image, defaults to 1920px
+              resize: true, // defaults to true, set false if you do not want to resize the image width and height
+              rotate: false, // See the rotation section below
+              success: results=>{
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.readAsDataURL(results);
+              },
+              error(err) {
+                console.log(err.message);
+              }
+            });
+          }
+        }
+        resolve(canvas.toDataURL());
+        canvas.remove();
+      });
+
+    };
+    img.src=data;
+  }
+}
