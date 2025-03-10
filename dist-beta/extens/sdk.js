@@ -990,6 +990,19 @@ Element.prototype.els=function(id){
         return result;
       });
     }
+    function DCert(){
+      var self=this;
+      self.set=(user)=>{
+        _user = user;
+      }
+      self.gets=(company,filter,callback)=>{
+        return $dk.post(_url+"/company/dcert/list",{company,filter},callback)
+      }
+      
+      self.get=(company,zid,callback)=>{
+        
+      }
+    }
   }
 })(window.dk=window.dk||{});
 function dataURItoBlob(dataURI) {
@@ -1525,7 +1538,6 @@ async function zipimg(uri,maxWidth,maxHeight){
         resolve(canvas.toDataURL());
         canvas.remove();
       });
-
     };
     img.src=data;
   }
