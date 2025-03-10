@@ -1038,10 +1038,10 @@ Element.prototype.els=function(id){
         return $dk.post(_url+"/company/dcert/token/get",{company,zid},callback)
       }
       /***
-        params: {}
+        params: {scanid: ""}
       ***/
       self.tokenGets=(company,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/token/status",{...params,company},callback)
+        return $dk.post(_url+"/company/dcert/token/list",{...params,company},callback)
       }
     }
   }
