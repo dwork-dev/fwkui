@@ -1028,8 +1028,20 @@ Element.prototype.els=function(id){
       self.tokenAdd=(company,scanid,serial,callback)=>{
         return $dk.post(_url+"/company/dcert/token/add",{scanid,company,serial},callback)
       }
-      self.tokenDel=(company,scanid,serial,callback)=>{
-        return $dk.post(_url+"/company/dcert/token/del",{scanid,company,serial},callback)
+      self.tokenEdit=(company,zid,params,callback)=>{
+        return $dk.post(_url+"/company/dcert/token/add",{...params,company,zid},callback)
+      }
+      self.tokenStatus=(company,zid,callback)=>{
+        return $dk.post(_url+"/company/dcert/token/status",{company,zid},callback)
+      }
+      self.tokenGet=(company,zid,callback)=>{
+        return $dk.post(_url+"/company/dcert/token/get",{company,zid},callback)
+      }
+      /***
+        params: {}
+      ***/
+      self.tokenGets=(company,params,callback)=>{
+        return $dk.post(_url+"/company/dcert/token/status",{...params,company},callback)
       }
     }
   }
