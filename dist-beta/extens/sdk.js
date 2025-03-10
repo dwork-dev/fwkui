@@ -996,12 +996,40 @@ Element.prototype.els=function(id){
       self.set=(user)=>{
         _user = user;
       }
-      self.gets=(company,filter,callback)=>{
-        return $dk.post(_url+"/company/dcert/gets",{company,filter},callback)
+      /***
+        params: {
+          filter: {filterRules: [],type: "and"},
+          limit: 50,
+          start: 0
+        }
+      ***/
+      self.gets=(company,params,callback)=>{
+        return $dk.post(_url+"/company/dcert/gets",{company,params},callback)
       }
       
-      self.get=(company,zid,callback)=>{
-        
+      self.get=(company,scanid,callback)=>{
+        return $dk.post(_url+"/company/dcert/get",{company,scanid},callback)
+      }
+      /***
+        params: {
+          name: "string",
+          note: "string"
+        }
+      ***/
+      self.add=(company,params,callback)=>{
+        return $dk.post(_url+"/company/dcert/add",{...params,company},callback)
+      }
+      self.del=(company,scanid,callback)=>{
+        return $dk.post(_url+"/company/dcert/del",{scanid,company},callback)
+      }
+      self.tokenScan=(company,scanid,callback)=>{
+        return $dk.post(_url+"/company/dcert/token/scan",{scanid,company},callback)
+      }
+      self.tokenAdd=(company,scanid,serial,callback)=>{
+        return $dk.post(_url+"/company/dcert/token/add",{scanid,company,serial},callback)
+      }
+      self.tokenDel=(company,scanid,serial,callback)=>{
+        return $dk.post(_url+"/company/dcert/token/del",{scanid,company,serial},callback)
       }
     }
   }
