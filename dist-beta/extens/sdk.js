@@ -997,7 +997,7 @@ Element.prototype.els=function(id){
         _user = user;
       }
       self.gets=(company,filter,callback)=>{
-        return $dk.post(_url+"/company/dcert/list",{company,filter},callback)
+        return $dk.post(_url+"/company/dcert/gets",{company,filter},callback)
       }
       
       self.get=(company,zid,callback)=>{
