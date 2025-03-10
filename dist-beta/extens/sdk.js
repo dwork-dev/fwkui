@@ -1041,7 +1041,7 @@ Element.prototype.els=function(id){
         params: {scanid: ""}
       ***/
       self.tokenGets=(company,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/token/list",{...params,company},callback)
+        return $dk.post(_url+"/company/dcert/token/gets",{...params,company},callback)
       }
     }
   }
