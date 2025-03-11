@@ -1043,6 +1043,51 @@ Element.prototype.els=function(id){
       self.tokenGets=(company,params,callback)=>{
         return $dk.post(_url+"/company/dcert/token/gets",{...params,company},callback)
       }
+      /** token of person **/
+      self.tokenPersonAdd=(company,scanid,serial,callback)=>{
+        return $dk.post(_url+"/company/dcert/person-token/add",{scanid,company,serial},callback)
+      }
+      self.tokenPersonEdit=(company,zid,params,callback)=>{
+        return $dk.post(_url+"/company/dcert/person-token/add",{...params,company,zid},callback)
+      }
+      self.tokenPersonStatus=(company,zid,callback)=>{
+        return $dk.post(_url+"/company/dcert/person-token/status",{company,zid},callback)
+      }
+      self.tokenPersonGet=(company,zid,callback)=>{
+        return $dk.post(_url+"/company/dcert/person-token/get",{company,zid},callback)
+      }
+      /***
+        params: {scanid: ""}
+      ***/
+      self.tokenPersonGets=(company,params,callback)=>{
+        return $dk.post(_url+"/company/dcert/person-token/gets",{...params,company},callback)
+      }
+      /***
+        params: {
+        	limit: 50,
+          start: 0,
+          filter: {
+          	filterRules: [],
+               type: "and"
+          }
+        }
+      ***/
+      self.signHistory=(company,params,callback)=>{
+        return $dk.post(_url+"/company/dcert/sign/history",{...params,company},callback)
+      }
+      /***
+        params: {
+        	limit: 50,
+          start: 0,
+          filter: {
+          	filterRules: [],
+               type: "and"
+          }
+        }
+      ***/
+      self.connectHistory=(company,params,callback)=>{
+        return $dk.post(_url+"/company/dcert/connect/history",{...params,company},callback)
+      }
     }
   }
 })(window.dk=window.dk||{});
