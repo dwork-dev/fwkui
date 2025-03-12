@@ -1045,22 +1045,22 @@ Element.prototype.els=function(id){
       }
       /** token of person **/
       self.tokenPersonAdd=(company,scanid,serial,callback)=>{
-        return $dk.post(_url+"/company/dcert/person-token/add",{scanid,company,serial},callback)
+        return $dk.post(_url+"/company/dcert/person/add",{scanid,company,serial},callback)
       }
       self.tokenPersonEdit=(company,zid,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/person-token/add",{...params,company,zid},callback)
+        return $dk.post(_url+"/company/dcert/person/add",{...params,company,zid},callback)
       }
       self.tokenPersonStatus=(company,zid,callback)=>{
-        return $dk.post(_url+"/company/dcert/person-token/status",{company,zid},callback)
+        return $dk.post(_url+"/company/dcert/person/status",{company,zid},callback)
       }
       self.tokenPersonGet=(company,zid,callback)=>{
-        return $dk.post(_url+"/company/dcert/person-token/get",{company,zid},callback)
+        return $dk.post(_url+"/company/dcert/person/get",{company,zid},callback)
       }
       /***
         params: {scanid: ""}
       ***/
       self.tokenPersonGets=(company,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/person-token/gets",{...params,company},callback)
+        return $dk.post(_url+"/company/dcert/person/gets",{...params,company},callback)
       }
       /***
         params: {
