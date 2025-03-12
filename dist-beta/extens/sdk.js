@@ -1003,11 +1003,11 @@ Element.prototype.els=function(id){
           start: 0
         }
       ***/
-      self.gets=(company,params,callback)=>{
+      self.connectGets=(company,params,callback)=>{
         return $dk.post(_url+"/company/dcert/connect/gets",{company,params},callback)
       }
       
-      self.get=(company,scanid,callback)=>{
+      self.connectGet=(company,scanid,callback)=>{
         return $dk.post(_url+"/company/dcert/connect/get",{company,scanid},callback)
       }
       /***
@@ -1016,10 +1016,10 @@ Element.prototype.els=function(id){
           note: "string"
         }
       ***/
-      self.add=(company,params,callback)=>{
+      self.connectAdd=(company,params,callback)=>{
         return $dk.post(_url+"/company/dcert/connect/add",{...params,company},callback)
       }
-      self.del=(company,scanid,callback)=>{
+      self.connectDel=(company,scanid,callback)=>{
         return $dk.post(_url+"/company/dcert/connect/del",{scanid,company},callback)
       }
       self.tokenScan=(company,scanid,callback)=>{
