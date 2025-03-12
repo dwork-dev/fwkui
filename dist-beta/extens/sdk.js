@@ -1025,8 +1025,8 @@ Element.prototype.els=function(id){
       self.tokenScan=(company,scanid,callback)=>{
         return $dk.post(_url+"/company/dcert/token/scan",{scanid,company},callback)
       }
-      self.tokenAdd=(company,scanid,serial,callback)=>{
-        return $dk.post(_url+"/company/dcert/token/add",{scanid,company,serial},callback)
+      self.tokenAdd=(company,scanid,SerialNumber,callback)=>{
+        return $dk.post(_url+"/company/dcert/token/add",{scanid,company,SerialNumber},callback)
       }
       self.tokenEdit=(company,zid,params,callback)=>{
         return $dk.post(_url+"/company/dcert/token/add",{...params,company,zid},callback)
