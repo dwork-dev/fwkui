@@ -13,14 +13,14 @@ Element.prototype.els=function(id){
 };
 ((dk)=>{
   var _user;
-  var _domain=location.host.split(".").slice(-2).join(".");
+  var _domain=(window.domain || location.host).split(".").slice(-2).join(".");
   var _process_post = {};
   window.dk=new SDK();
-  function SDK(url,method,$token){
+  function SDK(domain,method,$token){
     var $dk=this;
     var _method=method||"POST";
-    var sortdomain="dw.beta.fwkui.com";
-    var _url=url||"https://"+sortdomain;
+    var sortdomain = domain || window.domain || "dw.beta.fwkui.com";
+    var _url="https://"+sortdomain;
     var _token="dk_token",_token_out=2*24*60*60*1000;
     var __token=$token;
     $dk.init=init;
@@ -349,6 +349,9 @@ Element.prototype.els=function(id){
       self.get=(zid,callback)=>{
         return $dk.post(_url+"/company/get",{zid},callback);
       }
+      self.info=(zid,callback)=>{
+        return $dk.post(_url+"/company/info",{zid},callback);
+      }
       /***
       + filter: {field: "string", value: "", op: "="}
       + filter: {
@@ -518,7 +521,15 @@ Element.prototype.els=function(id){
     function App(company){
       var self=this;
       /***
-      zid: "<app_id>"
+      	zid: "[app_id]"
+          zid is null => get by window.domain
+      ***/
+      self.info=(zid,callback)=>{
+        return $dk.post(_url+"/app/get",{zid},callback);
+      }
+      /***
+      zid: "[app_id]"
+      zid is null => get by window.domain
       ***/
       self.get=(zid,callback)=>{
         return $dk.post(_url+"/app/get",{company,zid},callback);
