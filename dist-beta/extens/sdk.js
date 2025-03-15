@@ -20,7 +20,7 @@ Element.prototype.els=function(id){
     var $dk=this;
     var _method=method||"POST";
     var sortdomain = domain || window.domain || "dw.beta.fwkui.com";
-    var _url="https://"+sortdomain;
+    var _url=(sortdomain.split("://").length>1?"":"https://")+sortdomain;
     var _token="dk_token",_token_out=2*24*60*60*1000;
     var __token=$token;
     $dk.init=init;
