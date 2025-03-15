@@ -559,14 +559,17 @@ Element.prototype.els=function(id){
       self.acl=(zid,data,callback)=>{
         return $dk.post(_url+"/app/acl",{company,zid, data},callback);
       }
-      self.addDomain=(app,domain,callback)=>{
+      self.domainAdd=(app,domain,callback)=>{
         return $dk.post(_url+"/domain/add",{company,app,domain},callback);
       }
-      self.delDomain=(domain,callback)=>{
+      self.domainDel=(app,domain,callback)=>{
         return $dk.post(_url+"/domain/del",{company,domain},callback);
       }
-      self.getDomain=(domain,callback)=>{
+      self.domainGet=(domain,callback)=>{
         return $dk.post(_url+"/domain/get",{domain},callback);
+      }
+      self.domainGets=(app,callback)=>{
+        return $dk.post(_url+"/domain/get",{app},callback);
       }
       /***
       path: path of folder
