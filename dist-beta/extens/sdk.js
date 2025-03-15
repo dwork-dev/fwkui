@@ -1039,6 +1039,9 @@ Element.prototype.els=function(id){
       self.connectDel=(company,scanid,callback)=>{
         return $dk.post(_url+"/company/dcert/connect/del",{scanid,company},callback)
       }
+      self.connectStatus=(company,scanid,callback)=>{
+        return $dk.post(_url+"/company/dcert/connect/status",{scanid,company},callback)
+      }
       self.tokenScan=(company,scanid,callback)=>{
         return $dk.post(_url+"/company/dcert/token/scan",{scanid,company},callback)
       }
