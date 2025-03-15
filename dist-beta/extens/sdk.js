@@ -569,7 +569,7 @@ Element.prototype.els=function(id){
         return $dk.post(_url+"/domain/get",{domain},callback);
       }
       self.domainGets=(app,callback)=>{
-        return $dk.post(_url+"/domain/get",{app},callback);
+        return $dk.post(_url+"/domain/gets",{app},callback);
       }
       /***
       path: path of folder
