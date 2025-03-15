@@ -1024,7 +1024,10 @@ Element.prototype.els=function(id){
       /***
         params: {
           name: "string",
-          note: "string"
+          note: "string",
+          os: "string",
+          port: "string",
+          scanid: "string",
         }
       ***/
       self.connectAdd=(company,params,callback)=>{
@@ -1035,6 +1038,9 @@ Element.prototype.els=function(id){
       }
       self.tokenScan=(company,scanid,callback)=>{
         return $dk.post(_url+"/company/dcert/token/scan",{scanid,company},callback)
+      }
+      self.tokenScan=(company,scanid,callback)=>{
+        return $dk.post(_url+"/company/dcert/token/check",{scanid,company},callback)
       }
       self.tokenAdd=(company,scanid,SerialNumber,callback)=>{
         return $dk.post(_url+"/company/dcert/token/add",{scanid,company,SerialNumber},callback)
