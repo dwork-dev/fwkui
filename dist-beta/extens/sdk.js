@@ -1051,11 +1051,25 @@ Element.prototype.els=function(id){
       self.tokenScan=(company,scanid,callback)=>{
         return $dk.post(_url+"/company/dcert/token/check",{scanid,company},callback)
       }
-      self.tokenAdd=(company,scanid,SerialNumber,callback)=>{
-        return $dk.post(_url+"/company/dcert/token/add",{scanid,company,SerialNumber},callback)
+      /***
+        params: {
+          name: "string",
+          note: "string",
+          password: "string"
+        }
+      ***/
+      self.tokenAdd=(company,scanid,SerialNumber,params,callback)=>{
+        return $dk.post(_url+"/company/dcert/token/add",{...params,scanid,company,SerialNumber},callback)
       }
+      /***
+        params: {
+          name: "string",
+          note: "string",
+          password: "string"
+        }
+      ***/
       self.tokenEdit=(company,zid,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/token/add",{...params,company,zid},callback)
+        return $dk.post(_url+"/company/dcert/token/add", {...params,company,zid}, callback);
       }
       self.tokenStatus=(company,zid,callback)=>{
         return $dk.post(_url+"/company/dcert/token/status",{company,zid},callback)
@@ -1064,14 +1078,16 @@ Element.prototype.els=function(id){
         return $dk.post(_url+"/company/dcert/token/get",{company,zid},callback)
       }
       /***
-        params: {scanid: ""}
+        params: {
+        	filter: {filterRules:[]}
+        }
       ***/
       self.tokenGets=(company,params,callback)=>{
         return $dk.post(_url+"/company/dcert/token/gets",{...params,company},callback)
       }
       /** token of person **/
-      self.tokenPersonAdd=(company,scanid,serial,callback)=>{
-        return $dk.post(_url+"/company/dcert/person/add",{scanid,company,serial},callback)
+      self.tokenPersonAdd=(company,scanid,params,callback)=>{
+        return $dk.post(_url+"/company/dcert/person/add",{...params,company,scanid},callback)
       }
       self.tokenPersonEdit=(company,zid,params,callback)=>{
         return $dk.post(_url+"/company/dcert/person/add",{...params,company,zid},callback)
@@ -1083,7 +1099,9 @@ Element.prototype.els=function(id){
         return $dk.post(_url+"/company/dcert/person/get",{company,zid},callback)
       }
       /***
-        params: {scanid: ""}
+        params: {
+        	filter: {filterRules:[]}
+        }
       ***/
       self.tokenPersonGets=(company,params,callback)=>{
         return $dk.post(_url+"/company/dcert/person/gets",{...params,company},callback)
