@@ -1090,7 +1090,7 @@ Element.prototype.els=function(id){
         return $dk.post(_url+"/company/dcert/person/add",{...params,company,scanid},callback)
       }
       self.tokenPersonEdit=(company,zid,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/person/add",{...params,company,zid},callback)
+        return $dk.post(_url+"/company/dcert/person/edit",{...params,company,zid},callback)
       }
       self.tokenPersonStatus=(company,zid,callback)=>{
         return $dk.post(_url+"/company/dcert/person/status",{company,zid},callback)
