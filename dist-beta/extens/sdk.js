@@ -1033,6 +1033,9 @@ Element.prototype.els=function(id){
       self.connectAdd=(company,params,callback)=>{
         return $dk.post(_url+"/company/dcert/connect/add",{...params,company},callback)
       }
+      self.connectCheck=(company,scanid,callback)=>{
+        return $dk.post(_url+"/company/dcert/connect/check",{scanid,company},callback)
+      }
       self.connectDel=(company,scanid,callback)=>{
         return $dk.post(_url+"/company/dcert/connect/del",{scanid,company},callback)
       }
