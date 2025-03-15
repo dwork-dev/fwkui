@@ -566,7 +566,7 @@ Element.prototype.els=function(id){
         return $dk.post(_url+"/domain/del",{company,domain},callback);
       }
       self.domainGet=(domain,callback)=>{
-        return $dk.post(_url+"/domain/get",{domain},callback);
+        return $dk.post(_url+"/domain/get",{domain: domain||location.host},callback);
       }
       self.domainGets=(app,callback)=>{
         return $dk.post(_url+"/domain/gets",{app},callback);
