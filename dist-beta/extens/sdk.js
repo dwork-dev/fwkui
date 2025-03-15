@@ -565,8 +565,8 @@ Element.prototype.els=function(id){
       self.delDomain=(domain,callback)=>{
         return $dk.post(_url+"/domain/del",{company,domain},callback);
       }
-      self.getDomain=(filter,callback)=>{
-        return $dk.post(_url+"/domain/get",{company,filter},callback);
+      self.getDomain=(domain,callback)=>{
+        return $dk.post(_url+"/domain/get",{domain},callback);
       }
       /***
       path: path of folder
