@@ -1055,7 +1055,8 @@ Element.prototype.els=function(id){
         params: {
           name: "string",
           note: "string",
-          password: "string"
+          password: "string",
+          apps: []
         }
       ***/
       self.tokenAdd=(company,scanid,SerialNumber,params,callback)=>{
@@ -1065,7 +1066,8 @@ Element.prototype.els=function(id){
         params: {
           name: "string",
           note: "string",
-          password: "string"
+          password: "string",
+          apps: []
         }
       ***/
       self.tokenEdit=(company,zid,params,callback)=>{
