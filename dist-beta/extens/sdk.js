@@ -1071,7 +1071,7 @@ Element.prototype.els=function(id){
         }
       ***/
       self.tokenEdit=(company,zid,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/token/add", {...params,company,zid}, callback);
+        return $dk.post(_url+"/company/dcert/token/edit", {...params,company,zid}, callback);
       }
       self.tokenStatus=(company,zid,callback)=>{
         return $dk.post(_url+"/company/dcert/token/status",{company,zid},callback)
