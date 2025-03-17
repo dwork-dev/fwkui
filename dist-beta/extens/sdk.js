@@ -23,7 +23,7 @@ document.els = function(id){
   var _user;
   var _domain=(window.domain || location.host).split(".").slice(-2).join(".");
   var _process_post = {};
-  window.dk=new SDK(_domain);
+  window.dk=new SDK(window.domain);
   function SDK(domain,method,$token){
     var $dk=this;
     var _method=method||"POST";
