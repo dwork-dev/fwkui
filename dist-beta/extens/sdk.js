@@ -1092,16 +1092,16 @@ Element.prototype.els=function(id){
       }
       /** token of person **/
       self.tokenPersonAdd=(company,scanid,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/person/add",{...params,company,scanid},callback)
+        return $dk.post(_url+"/company/dcert/token/person/add",{...params,company,scanid},callback)
       }
       self.tokenPersonEdit=(company,zid,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/person/edit",{...params,company,zid},callback)
+        return $dk.post(_url+"/company/dcert/token/person/edit",{...params,company,zid},callback)
       }
       self.tokenPersonStatus=(company,zid,callback)=>{
-        return $dk.post(_url+"/company/dcert/person/status",{company,zid},callback)
+        return $dk.post(_url+"/company/dcert/token/person/status",{company,zid},callback)
       }
       self.tokenPersonGet=(company,zid,callback)=>{
-        return $dk.post(_url+"/company/dcert/person/get",{company,zid},callback)
+        return $dk.post(_url+"/company/dcert/token/person/get",{company,zid},callback)
       }
       /***
         params: {
@@ -1109,7 +1109,7 @@ Element.prototype.els=function(id){
         }
       ***/
       self.tokenPersonGets=(company,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/person/gets",{...params,company},callback)
+        return $dk.post(_url+"/company/dcert/token/person/gets",{...params,company},callback)
       }
       /** sign of person **/
       self.personAdd=(company,staff_id,params,callback)=>{
