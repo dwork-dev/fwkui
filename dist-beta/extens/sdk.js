@@ -1006,7 +1006,7 @@ document.els = function(id){
                       ...rs.data.user
                     };
                     typeof cb=="function" && cb(rs.data);
-                    if(event.target.classList.contains("btn_sendr")){
+                    if(el.classList.contains("btn_sendr")){
                       location.reload();
                     }
                   }
