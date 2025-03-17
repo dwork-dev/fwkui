@@ -27,10 +27,16 @@ document.els = function(id){
   function SDK(domain,method,$token){
     var $dk=this;
     var _method=method||"POST";
-    var sortdomain = domain || window.domain || "dw.beta.fwkui.com";
-    var _url=(sortdomain.split("://").length>1?"":"https://")+sortdomain;
+    var sortdomain = domain|| "";//domain || window.domain || "dw.beta.fwkui.com";
+    var _url=""; //(sortdomain.split("://").length>1?"":"https://")+sortdomain;
     var _token="dk_token",_token_out=2*24*60*60*1000;
     var __token=$token;
+    if(sortdomain){
+      _url = sortdomain;
+      if(sortdomain.split("://").length==1){
+        _url = "https://"+sortdomain;
+      }
+    }
     $dk.init=init;
     $dk.Unit=Unit;
     $dk.User=User;
