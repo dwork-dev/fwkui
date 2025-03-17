@@ -985,9 +985,19 @@ document.els = function(id){
           width: '400',
           onshown: frm=>{
             console.log(frm);
+            frm.els('input').forEach(el=>{
+              el.onkeypress = ()=>{
+                if(event.which==13){
+                  frm.el(".btn_send").click();
+                }
+              }
+            })
             frm.els(".btn_send,.btn_sendr").forEach(el=>{
               el.onclick=()=>{
                 var d=frm.get();
+                if(!d.username || !d.password){
+                  return;
+                }
                 self.login(d.username,d.password,"",rs=>{
                   if(rs.status_code == 200){
                     frm.close();
@@ -996,7 +1006,9 @@ document.els = function(id){
                       ...rs.data.user
                     };
                     typeof cb=="function" && cb(rs.data);
-                    //location.reload();
+                    if(event.target.classList.contains("btn_sendr")){
+                      location.reload();
+                    }
                   }
                   $dlg.error(rs);
                 });
@@ -1018,6 +1030,15 @@ document.els = function(id){
         }
         return result;
       });
+    }
+    function Dsign(){
+      var self=this;
+      self.templateAdd = (company,SerialNumber,apply_to,config,callback)=>{
+        return $dk.post(_url+"/company/dsign/add",{company,SerialNumber,apply_to,config},callback);
+      }
+      self.templateEdit = (company,SerialNumber,params,callback)=>{
+        return $dk.post(_url+"/company/dsign/edit",{company,SerialNumber,params},callback);
+      }
     }
     function DCert(){
       var self=this;
