@@ -1079,6 +1079,9 @@ Element.prototype.els=function(id){
       self.tokenGet=(company,zid,callback)=>{
         return $dk.post(_url+"/company/dcert/token/get",{company,zid},callback)
       }
+      self.tokenCheckPassword=(company,zid,password,callback)=>{
+        return $dk.post(_url+"/company/dcert/token/check-password",{company,zid,password},callback)
+      }
       /***
         params: {
         	filter: {filterRules:[]}
