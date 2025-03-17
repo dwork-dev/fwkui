@@ -1108,6 +1108,27 @@ Element.prototype.els=function(id){
       self.tokenPersonGets=(company,params,callback)=>{
         return $dk.post(_url+"/company/dcert/person/gets",{...params,company},callback)
       }
+      /** sign of person **/
+      self.personAdd=(company,staff_id,params,callback)=>{
+        return $dk.post(_url+"/company/dcert/person/add",{...params,company,staff_id},callback)
+      }
+      self.personEdit=(company,staff_id,params,callback)=>{
+        return $dk.post(_url+"/company/dcert/person/edit",{...params,company,staff_id},callback)
+      }
+      self.personStatus=(company,staff_id,callback)=>{
+        return $dk.post(_url+"/company/dcert/person/status",{company,staff_id},callback)
+      }
+      self.personGet=(company,staff_id,callback)=>{
+        return $dk.post(_url+"/company/dcert/person/get",{company,staff_id},callback)
+      }
+      /***
+        params: {
+        	filter: {filterRules:[]}
+        }
+      ***/
+      self.personGets=(company,params,callback)=>{
+        return $dk.post(_url+"/company/dcert/person/gets",{...params,company},callback);
+      }
       /***
         params: {
         	limit: 50,
