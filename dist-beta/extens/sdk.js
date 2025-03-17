@@ -11,12 +11,14 @@ Element.prototype.el=function(id){
 Element.prototype.els=function(id){
   return this.querySelectorAll(id);
 };
+/*
 document.el = function(id){
   return document.querySelector(id);
 }
 document.els = function(id){
   return document.querySelectorAll(id);
 }
+*/
 ((dk)=>{
   var _user;
   var _domain=(window.domain || location.host).split(".").slice(-2).join(".");
