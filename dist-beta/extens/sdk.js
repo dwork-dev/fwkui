@@ -1033,11 +1033,14 @@ document.els = function(id){
     }
     function Dsign(){
       var self=this;
-      self.templateAdd = (company,SerialNumber,apply_to,config,callback)=>{
+      self.templateTokenAdd = (company,SerialNumber,apply_to,config,callback)=>{
         return $dk.post(_url+"/company/dsign/add",{company,SerialNumber,apply_to,config},callback);
       }
-      self.templateEdit = (company,SerialNumber,params,callback)=>{
+      self.templateTokenEdit = (company,SerialNumber,params,callback)=>{
         return $dk.post(_url+"/company/dsign/edit",{company,SerialNumber,params},callback);
+      }
+      self.templateTokenGet = (company,SerialNumber,callback)=>{
+        return $dk.post(_url+"/company/dsign/get",{company,SerialNumber},callback);
       }
     }
     function DCert(){
@@ -1083,8 +1086,17 @@ document.els = function(id){
       self.tokenScan=(company,scanid,callback)=>{
         return $dk.post(_url+"/company/dcert/token/scan",{scanid,company},callback)
       }
-      self.tokenScan=(company,scanid,callback)=>{
-        return $dk.post(_url+"/company/dcert/token/check",{scanid,company},callback)
+      self.tokenSignTemplateAdd=(company,SerialNumber,apply_to,config,callback)=>{
+        return $dk.post(_url+"/company/dcert/token/sign/template/add",{company,token_id,apply_to,config},callback)
+      }
+      self.tokenSignTemplateEdit=(company,SerialNumber,config,callback)=>{
+        return $dk.post(_url+"/company/dcert/token/sign/template/edit",{company,token_id,config},callback)
+      }
+      self.tokenSignTemplateGet=(company,SerialNumber,callback)=>{
+        return $dk.post(_url+"/company/dcert/token/sign/template/get",{company,token_id},callback)
+      }
+      self.personSignTemplateAdd=(company,config,callback)=>{
+        return $dk.post(_url+"/company/dcert/person/sign/template/get",{company,token_id},callback)
       }
       /***
         params: {
