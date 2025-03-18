@@ -1087,13 +1087,13 @@ document.els = function(id){
         return $dk.post(_url+"/company/dcert/token/scan",{scanid,company},callback)
       }
       self.tokenSignTemplateAdd=(company,SerialNumber,apply_to,config,callback)=>{
-        return $dk.post(_url+"/company/dcert/token/sign/template/add",{company,token_id,apply_to,config},callback)
+        return $dk.post(_url+"/company/dcert/token/sign/template/add",{company,SerialNumber,apply_to,config},callback)
       }
       self.tokenSignTemplateEdit=(company,SerialNumber,config,callback)=>{
-        return $dk.post(_url+"/company/dcert/token/sign/template/edit",{company,token_id,config},callback)
+        return $dk.post(_url+"/company/dcert/token/sign/template/edit",{company,SerialNumber,config},callback)
       }
       self.tokenSignTemplateGet=(company,SerialNumber,callback)=>{
-        return $dk.post(_url+"/company/dcert/token/sign/template/get",{company,token_id},callback)
+        return $dk.post(_url+"/company/dcert/token/sign/template/get",{company,SerialNumber},callback)
       }
       self.personSignTemplateAdd=(company,config,callback)=>{
         return $dk.post(_url+"/company/dcert/person/sign/template/add",{company,config},callback)
