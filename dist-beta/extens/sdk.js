@@ -1095,6 +1095,9 @@ document.els = function(id){
       self.tokenSignTemplateGet=(company,SerialNumber,callback)=>{
         return $dk.post(_url+"/company/dcert/token/sign/template/get",{company,SerialNumber},callback)
       }
+      self.tokenSignTemplateGets=(company,callback)=>{
+        return $dk.post(_url+"/company/dcert/token/sign/template/gets",{company},callback)
+      }
       self.personSignTemplateAdd=(company,config,callback)=>{
         return $dk.post(_url+"/company/dcert/person/sign/template/add",{company,config},callback)
       }
