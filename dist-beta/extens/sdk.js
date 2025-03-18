@@ -1096,7 +1096,13 @@ document.els = function(id){
         return $dk.post(_url+"/company/dcert/token/sign/template/get",{company,token_id},callback)
       }
       self.personSignTemplateAdd=(company,config,callback)=>{
-        return $dk.post(_url+"/company/dcert/person/sign/template/get",{company,token_id},callback)
+        return $dk.post(_url+"/company/dcert/person/sign/template/add",{company,config},callback)
+      }
+      self.personSignTemplateEdit=(company,config,callback)=>{
+        return $dk.post(_url+"/company/dcert/person/sign/template/edit",{company,config},callback)
+      }
+      self.personSignTemplateGet=(company,config,callback)=>{
+        return $dk.post(_url+"/company/dcert/person/sign/template/get",{company},callback)
       }
       /***
         params: {
