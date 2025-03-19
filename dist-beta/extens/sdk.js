@@ -1129,7 +1129,7 @@ document.els = function(id){
       self.personSignTemplateEdit=(company,config,callback)=>{
         return $dk.post(_url+"/company/dcert/person/sign/template/edit",{company,config},callback)
       }
-      self.personSignTemplateGet=(company,config,callback)=>{
+      self.personSignTemplateGet=(company,callback)=>{
         return $dk.post(_url+"/company/dcert/person/sign/template/get",{company},callback)
       }
       /***
