@@ -539,30 +539,41 @@ document.els = function(id){
       	zid: "[app_id]"
           zid is null => get by window.domain
       ***/
-      self.info=(zid,callback)=>{
-        return $dk.post(_url+"/app/get",{zid},callback);
+      self.info=(app_id,callback)=>{
+        return $dk.post(_url+"/app/get",{zid: app_id},callback);
       }
       /***
       zid: "[app_id]"
       zid is null => get by window.domain
       ***/
-      self.get=(zid,callback)=>{
-        return $dk.post(_url+"/app/get",{company,zid},callback);
+      self.get=(app_id,callback)=>{
+        return $dk.post(_url+"/app/get",{zid:app_id},callback);
       }
-      self.gets=(data,callback)=>{
-        return $dk.post(_url+"/app/gets",{company,...data},callback);
+      /***
+        params: {
+            company: <company_id>,
+            filter: {filterRules:[],type:"and"},
+            limit: 20,
+            start: 0
+        }
+      ***/
+      self.gets=(params,callback)=>{
+        return $dk.post(_url+"/app/gets",{company,...params},callback);
+      }
+      /***
+      	params: { 
+          	company: <String>
+          	data: {name: <String>} 
+          }
+      ***/
+      self.add=(params,callback)=>{
+        return $dk.post(_url+"/app/add",{company,...params},callback);
       }
       /***
       data: { name: "" }
       ***/
-      self.add=(data,callback)=>{
-        return $dk.post(_url+"/app/add",{company,data},callback);
-      }
-      /***
-      data: { zid: "app_id", name: "" }
-      ***/
-      self.edit=(data,callback)=>{
-        return $dk.post(_url+"/app/edit",{company,zid:data.zid,data},callback);
+      self.edit=(app_id,data,callback)=>{
+        return $dk.post(_url+"/app/edit",{company, zid: app_id, data},callback);
       }
       /*** ACL
       zid: <app_id>
