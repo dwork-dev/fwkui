@@ -54,6 +54,7 @@ document.els = function(id){
     $dk.download=_download;
     $dk.sha256=sha256;
     $dk.DCert=DCert;
+    $dk.Dsign=Dsign;
     $dk.uid=()=>{
       return Math.random().toString(36).slice(2,8)+Date.now().toString(36);
     }
@@ -1042,6 +1043,19 @@ document.els = function(id){
       self.templateTokenGet = (company,SerialNumber,callback)=>{
         return $dk.post(_url+"/company/dsign/get",{company,SerialNumber},callback);
       }
+      /***
+        params: {
+        	limit: 50,
+          start: 0,
+          filter: {
+          	filterRules: [],
+               type: "and"
+          }
+        }
+      ***/
+      self.signHistory=(company,params,callback)=>{
+        return $dk.post(_url+"/company/dsign/sign/history",{...params,company},callback)
+      }
     }
     function DCert(){
       var self=this;
@@ -1187,19 +1201,6 @@ document.els = function(id){
       ***/
       self.personGets=(company,params,callback)=>{
         return $dk.post(_url+"/company/dcert/person/gets",{...params,company},callback);
-      }
-      /***
-        params: {
-        	limit: 50,
-          start: 0,
-          filter: {
-          	filterRules: [],
-               type: "and"
-          }
-        }
-      ***/
-      self.signHistory=(company,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/sign/history",{...params,company},callback)
       }
       /***
         params: {
