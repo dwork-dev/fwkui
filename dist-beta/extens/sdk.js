@@ -277,7 +277,7 @@ document.els = function(id){
       var __CKE = [];
       if(Array.isArray(window.cke)) __CKE = window.cke;
       if(window.CKEDITOR) __CKE = CKEDITOR.instances;
-      el.querySelectorAll('*[name]').forEach(a=>{
+      el.querySelectorAll('input,select,textarea').forEach(a=>{
         if(!a.name){return}
         if(a.code && typeof a.code.getValue=="function"){
           return p[a.name] = a.code.getValue();
