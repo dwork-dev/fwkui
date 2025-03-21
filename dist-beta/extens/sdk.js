@@ -1067,6 +1067,19 @@ document.els = function(id){
       self.signHistory=(company,params,callback)=>{
         return $dk.post(_url+"/company/dsign/sign/history",{...params,company},callback)
       }
+      /***
+        params: {
+        	limit: 50,
+          start: 0,
+          filter: {
+          	filterRules: [],
+               type: "and"
+          }
+        }
+      ***/
+      self.signHistoryCount=(company,params,callback)=>{
+        return $dk.post(_url+"/company/dsign/sign/history/count",{...params,company},callback)
+      }
     }
     function DCert(){
       var self=this;
@@ -1083,7 +1096,14 @@ document.els = function(id){
       self.connectGets=(company,params,callback)=>{
         return $dk.post(_url+"/company/dcert/connect/gets",{company,params},callback)
       }
-      
+      /***
+        params: {
+          filter: {filterRules: [],type: "and"}
+        }
+      ***/
+      self.connectCount=(company,params,callback)=>{
+        return $dk.post(_url+"/company/dcert/connect/count",{company,params},callback)
+      }
       self.connectGet=(company,scanid,callback)=>{
         return $dk.post(_url+"/company/dcert/connect/get",{company,scanid},callback)
       }
@@ -1171,6 +1191,14 @@ document.els = function(id){
       self.tokenGets=(company,params,callback)=>{
         return $dk.post(_url+"/company/dcert/token/gets",{...params,company},callback)
       }
+      /***
+        params: {
+        	filter: {filterRules:[]}
+        }
+      ***/
+      self.tokenCount=(company,params,callback)=>{
+        return $dk.post(_url+"/company/dcert/token/count",{...params,company},callback)
+      }
       /** token of person **/
       self.tokenPersonAdd=(company,scanid,params,callback)=>{
         return $dk.post(_url+"/company/dcert/token/person/add",{...params,company,scanid},callback)
@@ -1192,6 +1220,14 @@ document.els = function(id){
       self.tokenPersonGets=(company,params,callback)=>{
         return $dk.post(_url+"/company/dcert/token/person/gets",{...params,company},callback)
       }
+      /***
+        params: {
+        	filter: {filterRules:[]}
+        }
+      ***/
+      self.tokenPersonCount=(company,params,callback)=>{
+        return $dk.post(_url+"/company/dcert/token/person/count",{...params,company},callback)
+      }
       /** sign of person **/
       self.personAdd=(company,staff_id,params,callback)=>{
         return $dk.post(_url+"/company/dcert/person/add",{...params,company,staff_id},callback)
@@ -1212,6 +1248,14 @@ document.els = function(id){
       ***/
       self.personGets=(company,params,callback)=>{
         return $dk.post(_url+"/company/dcert/person/gets",{...params,company},callback);
+      }
+      /***
+        params: {
+        	filter: {filterRules:[]}
+        }
+      ***/
+      self.personCount=(company,params,callback)=>{
+        return $dk.post(_url+"/company/dcert/person/count",{...params,company},callback);
       }
       /***
         params: {
