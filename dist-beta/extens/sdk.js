@@ -539,6 +539,12 @@ document.els = function(id){
       }
       /***
       company: <unit_id>
+      ***/
+      self.positionCount=(company,data,callback)=>{
+        return $dk.post(_url+"/position/count",{company,...data},callback);
+      }
+      /***
+      company: <unit_id>
       data: {
       	zid: "",
           name: ""
