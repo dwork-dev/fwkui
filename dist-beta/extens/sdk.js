@@ -380,6 +380,18 @@ document.els = function(id){
         return $dk.post(_url+"/company/gets",{...data},callback);
       }
       /***
+      + filter: {field: "string", value: "", op: "="}
+      + filter: {
+      	filterRules: [
+          	{field: "string", value: "", op: "="}
+          ],
+          type: "and"
+      }
+      ***/
+      self.count=(data,callback)=>{
+        return $dk.post(_url+"/company/count",{...data},callback);
+      }
+      /***
       data: {name:"string",content:"string",...}
       ***/
       self.add=(data,callback)=>{
@@ -407,6 +419,16 @@ document.els = function(id){
       ***/
       self.inviteGets=(company,data,callback)=>{
         return $dk.post(_url+"/company/invite/gets", {company,...data}, callback);
+      }
+      /***
+      data: { 
+      	filter: {filterRules: []},
+          company: "unit_id"
+      }
+      nếu có company thì owner hoặc manager của company có thể nhìn thấy
+      ***/
+      self.inviteCount=(company,data,callback)=>{
+        return $dk.post(_url+"/company/invite/count", {company,...data}, callback);
       }
       /***
       zid: <invite_id>
@@ -561,6 +583,17 @@ document.els = function(id){
         return $dk.post(_url+"/app/gets",{company,...params},callback);
       }
       /***
+        params: {
+            company: <company_id>,
+            filter: {filterRules:[],type:"and"},
+            limit: 20,
+            start: 0
+        }
+      ***/
+      self.count=(params,callback)=>{
+        return $dk.post(_url+"/app/count",{company,...params},callback);
+      }
+      /***
       	params: { 
           	company: <String>
           	data: {name: <String>} 
@@ -618,6 +651,13 @@ document.els = function(id){
       ***/
       self.fileGets=(path,callback)=>{
         return $dk.post(_url+"/public/file/gets",{data:{path}},callback);
+      }
+      
+      /***
+      path: path of folder
+      ***/
+      self.fileCount=(path,callback)=>{
+        return $dk.post(_url+"/public/file/count",{data:{path}},callback);
       }
       /***
       path: full path filename
@@ -692,6 +732,9 @@ document.els = function(id){
       self.gets=(data,callback)=>{
         return $dk.post(_url+"/resource/gets",{app,...data},callback);
       }
+      self.count=(data,callback)=>{
+        return $dk.post(_url+"/resource/count",{app,...data},callback);
+      }
       /***
       data: {
       	name: "", summary: "",
@@ -724,6 +767,9 @@ document.els = function(id){
       self.gets=(data,callback)=>{
         return $dk.post(_url+"/resource-file/gets",{app,...data},callback);
       }
+      self.count=(data,callback)=>{
+        return $dk.post(_url+"/resource-file/count",{app,...data},callback);
+      }
       self.add=(data,callback)=>{
         return $dk.post(_url+"/resource-file/add",{app,data},callback);
       }
@@ -743,6 +789,10 @@ document.els = function(id){
       /**** data = {filter: {filterRules: []}, limit: 20, page: 1} ****/
       self.gets=(data,callback)=>{
         return $dk.post(_url+"/doc/gets",{resource,...data}, callback);
+      }
+      /**** data = {filter: {filterRules: []}, limit: 20, page: 1} ****/
+      self.count=(data,callback)=>{
+        return $dk.post(_url+"/doc/count",{resource,...data}, callback);
       }
       /*** data = {data: {<fields of resource>}} ***/
       self.add=(data,callback)=>{
@@ -836,6 +886,12 @@ document.els = function(id){
       ***/
       self.gets=(path,callback)=>{
         return $dk.post(_url+"/file/gets",{data:{path}},callback);
+      }
+      /***
+      path: path of folder
+      ***/
+      self.count=(path,callback)=>{
+        return $dk.post(_url+"/file/count",{data:{path}},callback);
       }
       /***
       path: path of folder
