@@ -1140,7 +1140,7 @@ document.els = function(id){
         }
       ***/
       self.signHistoryCount=(company,params,callback)=>{
-        return $dk.post(_url+"/company/dsign/sign/history/count",{...params,company},callback)
+        return $dk.post(_url+"/company/dsign/sign/history/count",{company,...params},callback)
       }
     }
     function DCert(){
@@ -1179,7 +1179,7 @@ document.els = function(id){
         }
       ***/
       self.connectAdd=(company,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/connect/add",{...params,company},callback)
+        return $dk.post(_url+"/company/dcert/connect/add",{company,...params},callback)
       }
       self.connectCheck=(company,scanid,callback)=>{
         return $dk.post(_url+"/company/dcert/connect/check",{scanid,company},callback)
@@ -1259,14 +1259,14 @@ document.els = function(id){
         }
       ***/
       self.tokenCount=(company,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/token/count",{...params,company},callback)
+        return $dk.post(_url+"/company/dcert/token/count",{company,...params},callback)
       }
       /** token of person **/
       self.tokenPersonAdd=(company,scanid,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/token/person/add",{...params,company,scanid},callback)
+        return $dk.post(_url+"/company/dcert/token/person/add",{company,scanid,...params},callback)
       }
       self.tokenPersonEdit=(company,zid,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/token/person/edit",{...params,company,zid},callback)
+        return $dk.post(_url+"/company/dcert/token/person/edit",{company,zid,...params},callback)
       }
       self.tokenPersonStatus=(company,zid,callback)=>{
         return $dk.post(_url+"/company/dcert/token/person/status",{company,zid},callback)
@@ -1280,7 +1280,7 @@ document.els = function(id){
         }
       ***/
       self.tokenPersonGets=(company,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/token/person/gets",{...params,company},callback)
+        return $dk.post(_url+"/company/dcert/token/person/gets",{company,...params},callback)
       }
       /***
         params: {
@@ -1288,14 +1288,14 @@ document.els = function(id){
         }
       ***/
       self.tokenPersonCount=(company,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/token/person/count",{...params,company},callback)
+        return $dk.post(_url+"/company/dcert/token/person/count",{company,...params},callback)
       }
       /** sign of person **/
       self.personAdd=(company,staff_id,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/person/add",{...params,company,staff_id},callback)
+        return $dk.post(_url+"/company/dcert/person/add",{company,staff_id,...params},callback)
       }
       self.personEdit=(company,staff_id,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/person/edit",{...params,company,staff_id},callback)
+        return $dk.post(_url+"/company/dcert/person/edit",{company,staff_id,...params},callback)
       }
       self.personStatus=(company,staff_id,callback)=>{
         return $dk.post(_url+"/company/dcert/person/status",{company,staff_id},callback)
@@ -1317,7 +1317,7 @@ document.els = function(id){
         }
       ***/
       self.personCount=(company,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/person/count",{...params,company},callback);
+        return $dk.post(_url+"/company/dcert/person/count",{company,...params},callback);
       }
       /***
         params: {
