@@ -1156,7 +1156,7 @@ document.els = function(id){
         }
       ***/
       self.connectGets=(company,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/connect/gets",{company,params},callback)
+        return $dk.post(_url+"/company/dcert/connect/gets",{company,...params},callback)
       }
       /***
         params: {
@@ -1164,7 +1164,7 @@ document.els = function(id){
         }
       ***/
       self.connectCount=(company,params,callback)=>{
-        return $dk.post(_url+"/company/dcert/connect/count",{company,params},callback)
+        return $dk.post(_url+"/company/dcert/connect/count",{company,...params},callback)
       }
       self.connectGet=(company,scanid,callback)=>{
         return $dk.post(_url+"/company/dcert/connect/get",{company,scanid},callback)
