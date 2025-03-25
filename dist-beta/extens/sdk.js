@@ -172,7 +172,10 @@ document.els = function(id){
         if(params.app){
           req.setRequestHeader("id_app", params.app);
         }
-        req.onload=(event)=>{
+        if(url.includes("os/out") || url.includes("os/login") || url.includes("os/out_all")){
+          params._token = _token;
+        }
+        req.onload=async(event)=>{
           var rs=event.target.response;
           if(url.includes("/file/content")){
             //rs = event.target.response
@@ -181,7 +184,7 @@ document.els = function(id){
             if(url.includes("os/login") && rs.data && rs.status_code==200){
               $dk.token(rs.data[_token]);
             }else if(url.includes("os/out")&&!url.includes("os/out_all")){
-              $dk.token("",0);
+              await $dk.token("",0);
             }
           }
           //typeof callback=="function" && callback(rs);
