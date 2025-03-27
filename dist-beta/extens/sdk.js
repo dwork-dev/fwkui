@@ -672,6 +672,60 @@ document.els = function(id){
       self.acl=(zid,data,callback)=>{
         return $dk.post(_url+"/app/acl",{company,zid, data},callback);
       }
+      /***
+      zid: <project_id>
+      data: {
+      	member_id: "user_id" or "group_id"
+      }
+      ***/
+      self.managerAdd=(zid,data,callback)=>{
+        return $dk.post(_url+"/app/acl/manager/add",{zid,data},callback);
+      }
+      /***
+      zid: <project_id>
+      data: {
+      	member_id: "user_id" or "group_id"
+      }
+      ***/
+      self.managerDel=(zid,data,callback)=>{
+        return $dk.post(_url+"/app/acl/manager/del",{zid,data},callback);
+      }
+      /***
+      zid: <project_id>
+      data: {
+      	member_id: "user_id" or "group_id"
+      }
+      ***/
+      self.designerAdd=(zid,data,callback)=>{
+        return $dk.post(_url+"/app/acl/designer/add",{zid,data},callback);
+      }
+      /***
+      zid: <project_id>
+      data: {
+      	member_id: "user_id" or "group_id"
+      }
+      ***/
+      self.designerDel=(zid,data,callback)=>{
+        return $dk.post(_url+"/app/acl/designer/del",{zid,data},callback);
+      }
+      /***
+      zid: <project_id>
+      data: {
+      	member_id: "user_id" or "group_id"
+      }
+      ***/
+      self.developerAdd=(zid,data,callback)=>{
+        return $dk.post(_url+"/app/acl/developer/add",{zid,data},callback);
+      }
+      /***
+      zid: <project_id>
+      data: {
+      	member_id: "user_id" or "group_id"
+      }
+      ***/
+      self.developerDel=(zid,data,callback)=>{
+        return $dk.post(_url+"/app/acl/developer/del",{zid,data},callback);
+      }
       self.domainAdd=(app,domain,callback)=>{
         return $dk.post(_url+"/domain/add",{company,app,domain},callback);
       }
