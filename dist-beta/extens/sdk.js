@@ -403,12 +403,15 @@ document.els = function(id){
       /***
       - data: {
       	group_id: <zid>, 
-          user_id: <zid>,
-          name:"string",
-          content:"string"
+          position_id: <zid>,
+          user_account: <zid>,
+          user_fullname: <"string">,
+          user_email:"string",
+          user_phone:"string",
+          note:"string"
       };
-      - signers.length==signeds.length: accepted;
-      - revokeds.length>0: revoked;
+      - status: 0|1|2;
+      - user_id. "": account not exist;
       ***/
       self.invite=(data,callback)=>{
         return $dk.post(_url+"/company/invite", {data}, callback);
