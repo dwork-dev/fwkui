@@ -1091,6 +1091,9 @@ document.els = function(id){
       self.get=(callback)=>{
         return $dk.post(_url+"/os/user",{},callback)
       }
+      self.find=(username,callback)=>{
+        return $dk.post(_url+"/os/user",{filter: {filterRules:[{field:"username",value:username,op:"="}]}},callback)
+      }
       self.login=(username,password,captcha,callback)=>{
         return $dk.post(_url+"/os/login",{data: {username,password,captcha},_token},callback)
       }
