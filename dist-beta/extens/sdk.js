@@ -417,6 +417,20 @@ document.els = function(id){
         return $dk.post(_url+"/company/invite", {data}, callback);
       }
       /***
+      - data: {
+      	user_id: <zid>, 
+          company: <zid>,
+          fullname: "string",
+          email: "string",
+          phone: "string"
+          address: "string"
+          datebirth: "string",
+      };
+      ***/
+      self.staffUpdate=(data,callback)=>{
+        return $dk.post(_url+"/company/staff/update", data, callback);
+      }
+      /***
       data: { 
       	filter: {filterRules: []},
           company: "unit_id"
