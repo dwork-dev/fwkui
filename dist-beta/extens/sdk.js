@@ -451,6 +451,16 @@ document.els = function(id){
         return $dk.post(_url+"/company/invite/count", {company,...data}, callback);
       }
       /***
+      data: { 
+      	filter: {filterRules: []},
+          company: "unit_id"
+      }
+      nếu có company thì owner hoặc manager của company có thể nhìn thấy
+      ***/
+      self.staffCount=(company,data,callback)=>{
+        return $dk.post(_url+"/company/staff/count", {company,...data}, callback);
+      }
+      /***
       zid: <invite_id>
       ***/
       self.inviteAccept=(zid,callback)=>{
@@ -459,11 +469,23 @@ document.els = function(id){
       /***
       zid: <invite_id>
       ***/
-      self.inviteRevoke=(zid,callback)=>{
-        return $dk.post(_url+"/company/invite/revoke", {zid}, callback);
+      self.inviteNoAccept=(zid,callback)=>{
+        return $dk.post(_url+"/company/invite/noaccept", {zid}, callback);
       }
       /***
       zid: <invite_id>
+      ***/
+      self.inviteBan=(zid,callback)=>{
+        return $dk.post(_url+"/company/invite/ban", {zid}, callback);
+      }
+      /***
+      zid: <invite_id>
+      ***/
+      self.inviteCancel=(zid,callback)=>{
+        return $dk.post(_url+"/company/invite/cancel", {zid}, callback);
+      }
+      /***
+      zid: <staff_id>
       ***/
       self.staffBan=(zid,callback)=>{
         return $dk.post(_url+"/company/staff/ban", {zid}, callback);
