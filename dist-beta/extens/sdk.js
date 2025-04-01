@@ -428,7 +428,7 @@ document.els = function(id){
       };
       ***/
       self.staffUpdate=(data,callback)=>{
-        return $dk.post(_url+"/company/staff/update", data, callback);
+        return $dk.post(_url+"/staff/update", data, callback);
       }
       /***
       data: { 
@@ -458,7 +458,7 @@ document.els = function(id){
       nếu có company thì owner hoặc manager của company có thể nhìn thấy
       ***/
       self.staffCount=(company,data,callback)=>{
-        return $dk.post(_url+"/company/staff/count", {company,...data}, callback);
+        return $dk.post(_url+"/staff/count", {company,...data}, callback);
       }
       /***
       zid: <invite_id>
@@ -488,7 +488,7 @@ document.els = function(id){
       zid: <staff_id>
       ***/
       self.staffBan=(zid,callback)=>{
-        return $dk.post(_url+"/company/staff/ban", {zid}, callback);
+        return $dk.post(_url+"/staff/ban", {zid}, callback);
       }
       self.edit=(zid,data,callback)=>{
         return $dk.post(_url+"/company/edit",{zid,data},callback);
