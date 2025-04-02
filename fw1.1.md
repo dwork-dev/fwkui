@@ -150,4 +150,26 @@ repeat:rep
 repeat-x:repx   
 repeat-y:repy   
 repeat no-repeat:repn
-# II. frameword css
+### 4. Một số thuộc tính giá trị css theo cụm từ viết tắt của thuộc tính
+```js
+	{
+		pos: {
+	            s: "static",
+	            r: "relative",
+	            a: "absolute",
+	            f: "fixed",
+	        },
+	        fxd: {
+	            c: "column",
+	            cr: "column-reverse",
+	            r: "row",
+	            rr: "row-reverse",
+	        },
+	        fxw: {
+	            n: "nowrap",
+	            w: "wrap",
+	            wr: "wrap-reverse",
+	        }
+	}
+```
+# II. frameword javascript
