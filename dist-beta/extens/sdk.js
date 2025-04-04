@@ -1108,6 +1108,16 @@ document.els = function(id){
         return $dk.post(_url+"/file/signer",{path,data},callback);
       }
       /***
+      data: {
+      	company: "",
+          token_id: "",
+          content: ""
+      }
+      ***/
+      self.signFile=(data,callback)=>{
+        return $dk.post(_url+"/company/dcert/token/sign",{data},callback);
+      }
+      /***
       path: full path filename
       data: {
       	revokers: [<users>,<groups>,<roles>]
