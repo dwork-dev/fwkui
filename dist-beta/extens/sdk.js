@@ -1099,22 +1099,22 @@ document.els = function(id){
         return $dk.post(_url+"/file/acl",{path,data},callback);
       }
       /***
-      path: full path filename
       data: {
-      	signers: [<users>,<groups>,<roles>]
+      	path: "full path filename",
+      	user_id: "zid",
+          type: 0|1
       }
       ***/
-      self.signer=(path,data,callback)=>{
-        return $dk.post(_url+"/file/signer",{path,data},callback);
+      self.signerUpdate=(data,callback)=>{
+        return $dk.post(_url+"/file/signer/update",{data},callback);
       }
       /***
       data: {
-      	company: "",
-          token_id: "",
-          content: ""
+      	path: "full path filename",
+          token_id: ""
       }
       ***/
-      self.signFile=(data,callback)=>{
+      self.tokenSign=(data,callback)=>{
         return $dk.post(_url+"/company/dcert/token/sign",{data},callback);
       }
       /***
