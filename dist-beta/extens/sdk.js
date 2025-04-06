@@ -1182,8 +1182,8 @@ document.els = function(id){
       /***
           zid: "string"
       ***/
-      self.del=(zid,callback)=>{
-        return $dk.post(_url+"/office/place/del", {zid}, callback)
+      self.del=(company,zid,callback)=>{
+        return $dk.post(_url+"/office/place/del", {company,zid}, callback)
       }
       /***
       	data: {
