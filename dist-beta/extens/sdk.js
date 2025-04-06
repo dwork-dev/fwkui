@@ -1145,6 +1145,68 @@ document.els = function(id){
         return $dk.post(_url+`/path/del/${resource}/${zid}`, callback);
       }
     }
+    function $Office(){
+      var self = this;
+      /***
+      	data: {
+          	name: "string",
+               description: "string",
+               tinh_thanh: "string",
+               quan_huyen: "string",
+               phuong_xa: "string",
+               place_id: "string",
+               trang_thai: "string",
+               company: "company.zid",
+          }
+      ***/
+      self.add=(data,callback)=>{
+        return $dk.post(_url+"/office/place/add", {...data}, callback)
+      }
+      /***
+      	data: {
+          	zid: "string",
+          	name: "string",
+               description: "string",
+               tinh_thanh: "string",
+               quan_huyen: "string",
+               phuong_xa: "string",
+               place_id: "string",
+               trang_thai: "string",
+               company: "company.zid",
+          }
+      ***/
+      self.edit=(data,callback)=>{
+        return $dk.post(_url+"/office/place/edit", {...data}, callback)
+      }
+      /***
+          zid: "string"
+      ***/
+      self.del=(zid,callback)=>{
+        return $dk.post(_url+"/office/place/del", {zid}, callback)
+      }
+      /***
+      	data: {
+          	filter: {filterRules:[]},
+          	limit: 50,
+               start: 0,
+               company: "company.zid",
+          }
+      ***/
+      self.gets=(data,callback)=>{
+        return $dk.post(_url+"/office/place/gets", {...data}, callback)
+      }
+      /***
+      	data: {
+          	filter: {filterRules:[]},
+          	limit: 50,
+               start: 0,
+               company: "company.zid",
+          }
+      ***/
+      self.get=(company,zid,callback)=>{
+        return $dk.post(_url+"/office/place/get", {company,zid}, callback)
+      }
+    }
     function User(callback){
       var self=this;
       self.set=(user)=>{
