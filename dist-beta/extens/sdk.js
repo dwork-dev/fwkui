@@ -70,6 +70,7 @@ document.els = function(id){
     $dk.download=_download;
     $dk.sha256=sha256;
     $dk.DCert=DCert;
+    $dk.Office=$Office;
     $dk.Dsign=Dsign;
     $dk.uid=()=>{
       return Math.random().toString(36).slice(2,8)+Date.now().toString(36);
