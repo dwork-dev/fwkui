@@ -437,15 +437,51 @@ document.els = function(id){
       - data: {
       	user_id: <zid>, 
           company: <zid>,
+      	place_id: "string", 
+      	office_id: "string", 
           fullname: "string",
           email: "string",
           phone: "string"
           address: "string"
           datebirth: "string",
+          display_name: "string",
       };
       ***/
       self.staffUpdate=(data,callback)=>{
         return $dk.post(_url+"/staff/update", data, callback);
+      }
+      /***
+      + filter: {field: "string", value: "", op: "="}
+      + filter: {
+      	filterRules: [
+          	{field: "string", value: "", op: "="}
+          ],
+          type: "and" || "or"
+      }
+      limit: 50
+      start: 0
+      ***/
+      self.staffGets=(data,callback)=>{
+        return $dk.post(_url+"/staff/gets", data, callback);
+      }
+      self.staffGet=(company,user_id,callback)=>{
+        return $dk.post(_url+"/staff/get", {company,user_id}, callback);
+      }
+      /***
+      data: { 
+      	filter: {filterRules: []},
+          company: "unit_id"
+      }
+      nếu có company thì owner hoặc manager của company có thể nhìn thấy
+      ***/
+      self.staffCount=(company,data,callback)=>{
+        return $dk.post(_url+"/staff/count", {company,...data}, callback);
+      }
+      /***
+      user_id: <zid>
+      ***/
+      self.staffBan=(company,user_id,callback)=>{
+        return $dk.post(_url+"/staff/ban", {company,user_id}, callback);
       }
       /***
       data: { 
@@ -466,16 +502,6 @@ document.els = function(id){
       ***/
       self.inviteCount=(company,data,callback)=>{
         return $dk.post(_url+"/company/invite/count", {company,...data}, callback);
-      }
-      /***
-      data: { 
-      	filter: {filterRules: []},
-          company: "unit_id"
-      }
-      nếu có company thì owner hoặc manager của company có thể nhìn thấy
-      ***/
-      self.staffCount=(company,data,callback)=>{
-        return $dk.post(_url+"/staff/count", {company,...data}, callback);
       }
       /***
       zid: <invite_id>
@@ -500,12 +526,6 @@ document.els = function(id){
       ***/
       self.inviteCancel=(zid,callback)=>{
         return $dk.post(_url+"/company/invite/cancel", {zid}, callback);
-      }
-      /***
-      user_id: <zid>
-      ***/
-      self.staffBan=(user_id,callback)=>{
-        return $dk.post(_url+"/staff/ban", {user_id}, callback);
       }
       self.edit=(zid,data,callback)=>{
         return $dk.post(_url+"/company/edit",{zid,data},callback);
