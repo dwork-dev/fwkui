@@ -238,6 +238,7 @@ document.els = function(id){
         var $form = new FormData();
         if(Array.isArray(content) || typeof content=="object" && content.toString()=='[object FileList]'){
           content=content[0];
+          filename = filename || content.name;
         }
         if(typeof content=="string"){
           if(content.match(/^data:[a-z]+\/[a-z]+;base64,.+/g)){
@@ -269,11 +270,13 @@ document.els = function(id){
         $form.append("filetype",content.type);
         req.addEventListener("load", async(event)=>{
           var rs=JSON.parse(event.target.response);
+          /*
           if(url.includes("os/login") && rs.data && rs.status_code==200){
             $dk.token(rs.data[_token]);
           }else if(url.includes("os/out")&&!url.includes("os/out_all")){
             $dk.token("",0);
           }
+          */
           typeof callback=="function"&&callback(rs);
           resolve(rs);
         });
