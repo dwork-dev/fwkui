@@ -236,8 +236,10 @@ document.els = function(id){
       const req = new XMLHttpRequest();
       return new Promise(async (resolve)=>{
         var $form = new FormData();
-        if(Array.isArray(content) || typeof content=="object" && content.toString()=='[object FileList]'){
-          content=content[0];
+        if(typeof content=="object" && ['[object FileList]','[object File]'].includes(content.toString())){
+          if(Array.isArray(content) || content.toString()=='[object FileList]'){
+            content=content[0];
+          }
           filename = filename || content.name;
         }
         if(typeof content=="string"){
@@ -263,7 +265,7 @@ document.els = function(id){
 
           }
         }
-        //console.log("content",content)
+        console.log("content",content,filename)
         $form.append("path",path||"");
         $form.append("filename",filename);
         $form.append("files",content,filename);
