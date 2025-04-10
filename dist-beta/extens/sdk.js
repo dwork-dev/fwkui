@@ -516,6 +516,13 @@ document.els = function(id){
       }
       /***
       zid: <invite_id>
+      postion: <position_id>
+      ***/
+      self.inviteApply=(zid,postion,callback)=>{
+        return $dk.post(_url+"/company/invite/apply", {zid,position}, callback);
+      }
+      /***
+      zid: <invite_id>
       ***/
       self.inviteNoAccept=(zid,callback)=>{
         return $dk.post(_url+"/company/invite/noaccept", {zid}, callback);
