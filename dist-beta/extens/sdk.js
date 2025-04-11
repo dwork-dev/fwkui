@@ -518,7 +518,7 @@ document.els = function(id){
       zid: <invite_id>
       postion: <position_id>
       ***/
-      self.inviteApply=(zid,postion,callback)=>{
+      self.inviteApply=(zid,position,callback)=>{
         return $dk.post(_url+"/company/invite/apply", {zid,position}, callback);
       }
       /***
