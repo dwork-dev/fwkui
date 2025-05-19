@@ -34,7 +34,7 @@
 
 
 ## 3 Lưu ý Định nghĩa trong css
-vCss: Giá trị của thuộc tính: Có các cách viết sau   
+vCss: Giá trị của thuộc tính: Có các cách viết sau (tham khảo phần **2 Định nghĩa class của css**)
 - Cách viết 1: Sử dụng dấu {Chèn giá trị thuộc tính vào đây}
   + c{red} , c{#000000}, c{var(--red)}
 ```css
