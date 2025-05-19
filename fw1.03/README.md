@@ -30,6 +30,7 @@
 ```
 
 ## 2 Định nghĩa class của css
+[Tham khảo](class-short.md)
 
 
 ## 3 Lưu ý Định nghĩa trong css
