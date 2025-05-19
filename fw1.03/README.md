@@ -2549,7 +2549,7 @@ c\{var\(--red\)\} {
   color: var(--red);
 }
 ```
-- Cách viết 2: Sử dụng ký tự đặc biệt Số, Ký tự đầu viết hoa, ký tự # (nếu là màu), -- (biến)
+- Cách viết 2: Sử dụng ký tự đặc biệt Số, Ký tự đầu viết hoa, ký tự # (nếu là màu), -- (biến), ! (sự ưu tiên)
   + cRed, c#000000,c--red
 ```css
 cRed {
@@ -2575,6 +2575,88 @@ Ví dụ
   }
 }
 ```
+## 5 Sắp xếp ưu tiên theo thuộc tính !important
+Chèn theo công thức: <Tên thuộc tính>!<Giá trị thuộc tính>   
+Ví dụ:    
++ c!red, c!Red, c!#000000
+```css
+  c\!red {
+      color: red!important;
+  }
+c\!Red {
+  color: red!important;
+}
+```
+## 6 Định nghĩa bố cục theo màn hình
+Chèn theo công thức: Chèn ở vị trí đầu tiên của class có dạng sau: <MQ>:<class định nghĩa thuộc tính>
+-  **MQ: là xs, sm, md, lg, xl, 2xl**
+	  + xs: max-width: 575px
+	  + sm: min-width: 576px
+	  + md: min-width: 768px
+	  + lg: min-width: 992px
+	  + xl: min-width: 1200px
+	  + 2xl: min-width: 1400px
+
+Ví dụ:   
+- xs:cRed   
+```css
+@media screen and (max-width: 575px) {
+  xs\:cRed {
+  color: red;
+}
+}
+```
+
+## 7 Kết hợp các thuộc tính với nhau khi chung selector hoặc Media Queries
+- Có dạng công thức sau: [<MQ:>]<class1>&<class2>&...[@<selector>]
+Ví dụ: xs:cRed&bgcGreen   
+```css
+@media screen and (max-width: 575px) {
+  xs\:cRed\&bgcGreen {
+    color: red;
+    background-color:green;
+  }
+}
+```
+## 8 Sử dụng selector Khi kết hợp dấu @ phía trước
+- Có dạng:  <class>@<selector>
+Ví dụ:  cRed@:hover
+```css
+cRed\@\:hover:hover {
+  color:red;
+}
+```
+## 9 Cấu trúc class theo framework
+```text
+[<MQ>:][layer]<Thuộc tính>[selector]
+```
+- & Liên kết thuộc tính với nhau
+- ; Thay cho dấu cách của các giá trị
+- @ phân cách selector với tên class
+
+### Diễn giải
+-  **MQ:  xs, sm, md, lg, xl, 2xl**
+	  + xs: max-width: 575px
+	  + sm: min-width: 576px
+	  + md: min-width: 768px
+	  + lg: min-width: 992px
+	  + xl: min-width: 1200px
+	  + 2xl: min-width: 1400px
+
+-  [layer:] <số> Trong đó số: 1-19, số càng cao sự ưu càng lớn. VD: 1c#000 => layer = 1
+
+-  <Thuộc tính> Bắt buộc, Được định nghĩa theo cấu trúc:    
+
+```text
+    <Viết tắt tên thuộc tính>[Sự ưu tiên]<Giá trị>
+```
+	+  <Viết tắt tên thuộc tính>: là ký  thường được quy ước 
+	+ [Sự ưu tiên>] !
+	+ <Giá trị>    
+		=> #<mã màu>   
+		=> --<Tên biến>   
+		=> {<Biểu thức>}    
+
   
 
 
