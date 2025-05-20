@@ -30,8 +30,10 @@
 ```
 
 ## 2 Định nghĩa class của css
-[Tham khảo](class-short.md)
+[Tham khảo các class đã được định nghĩa](class-short.md)
 
+**Các quy tắc css động**
+<thuộc tính đầy đủ><giá trị đầy đủ> Ví dụ đều hợp lệ: colorRed; color#123456; color{#123456}; color!#123456;
 
 ## 3 Lưu ý Định nghĩa trong css
 vCss: Giá trị của thuộc tính: Có các cách viết sau (tham khảo phần **2 Định nghĩa class của css**)
