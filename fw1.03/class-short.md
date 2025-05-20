@@ -1,4 +1,11 @@
-# Các class mặc định được đinh nghĩa viết tắt
+# 1. Các class mặc định được đinh nghĩa viết tắt
+## Chú ý
+***Sử dụng vCss*** là giá trị css được định nghĩa theo quy tắc, ; thay thế cho khoảng trắng (dấu cách)
+- Chứa trong {<là hàm, giá trị, biểu thức>} Ví dụ: w{10px}, w{calc(100vh;-;30px)}
+- Bắt đầu là một số, một ký tự đầu viết hoa, dấu chấm than (!): Ví dụ w!100px, w100px; wCalc(100vh;-;30px)
+- Dấu # sau là mã màu: ví dụ: c#123456, #123456 là mã màu
+ 
+# 2. Các class đã được định nghĩa
 **- Thuộc tính: -webkit-line-clamp** viết tắt là: **wlc**
 ```css
 wlc<vCss> {-webkit-line-clamp:<vCss>; } 
