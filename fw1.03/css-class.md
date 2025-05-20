@@ -1,6 +1,6 @@
 # 1. Các class mặc định được đinh nghĩa viết tắt
 ## Chú ý
-***Sử dụng vCss*** là giá trị css được định nghĩa theo quy tắc, ; thay thế cho khoảng trắng (dấu cách)
+***Sử dụng vCSS***
 - Chứa trong {<là hàm, giá trị, biểu thức>} Ví dụ: w{10px}, w{calc(100vh;-;30px)}
 - Bắt đầu là một số, một ký tự đầu viết hoa, dấu chấm than (!): Ví dụ w!100px, w100px; wCalc(100vh;-;30px)
 - Dấu # sau là mã màu: ví dụ: c#123456, #123456 là mã màu
@@ -8,22 +8,22 @@
 # 2. Các class đã được định nghĩa
 **- Thuộc tính: -webkit-line-clamp** viết tắt là: **wlc**
 ```css
-wlc<vCss> {-webkit-line-clamp:<vCss>; } 
+wlc<vCSS> {-webkit-line-clamp:<vCSS>; } 
  ```
             
 **- Thuộc tính: -webkit-text-fill-color** viết tắt là: **wtfc**
 ```css
-wtfc<vCss> {-webkit-text-fill-color:<vCss>; } 
+wtfc<vCSS> {-webkit-text-fill-color:<vCSS>; } 
  ```
             
 **- Thuộc tính: -webkit-text-stroke** viết tắt là: **wts**
 ```css
-wts<vCss> {-webkit-text-stroke:<vCss>; } 
+wts<vCSS> {-webkit-text-stroke:<vCSS>; } 
  ```
             
 **- Thuộc tính: -webkit-text-stroke-color** viết tắt là: **wtsc**
 ```css
-wtsc<vCss> {-webkit-text-stroke-color:<vCss>; } 
+wtsc<vCSS> {-webkit-text-stroke-color:<vCSS>; } 
  ```
             
 **- Thuộc tính: -webkit-text-stroke-width** viết tắt là: **wtsw**
@@ -92,12 +92,12 @@ asUc {align-self:unsafe center;}
             
 **- Thuộc tính: all** viết tắt là: **a**
 ```css
-a<vCss> {all:<vCss>; } 
+a<vCSS> {all:<vCSS>; } 
  ```
             
 **- Thuộc tính: animation** viết tắt là: **ani**
 ```css
-ani<vCss> {animation:<vCss>; } 
+ani<vCSS> {animation:<vCSS>; } 
  ```
             
 **- Thuộc tính: animation-composition** viết tắt là: **anic**
@@ -112,7 +112,7 @@ anicRaac {animation-composition:replace, add, accumulate;}
             
 **- Thuộc tính: animation-delay** viết tắt là: **anide**
 ```css
-anide<vCss> {animation-delay:<vCss>; } 
+anide<vCSS> {animation-delay:<vCSS>; } 
  ```
             
 **- Thuộc tính: animation-direction** viết tắt là: **anidi**
@@ -126,7 +126,7 @@ anidiArn {animation-direction:alternate, reverse, normal;}
             
 **- Thuộc tính: animation-duration** viết tắt là: **anidu**
 ```css
-anidu<vCss> {animation-duration:<vCss>; } 
+anidu<vCSS> {animation-duration:<vCSS>; } 
  ```
             
 **- Thuộc tính: animation-fill-mode** viết tắt là: **anifm**
@@ -140,7 +140,7 @@ anifmFbn {animation-fill-mode:both, forwards, none;}
             
 **- Thuộc tính: animation-iteration-count** viết tắt là: **aniic**
 ```css
-aniic<vCss> {animation-iteration-count:<vCss>; } 
+aniic<vCSS> {animation-iteration-count:<vCSS>; } 
  ```
             
 **- Thuộc tính: animation-name** viết tắt là: **anin**
@@ -183,7 +183,7 @@ arV {aspect-ratio:16 / 9;}
             
 **- Thuộc tính: backdrop-filter** viết tắt là: **bkdf**
 ```css
-bkdf<vCss> {backdrop-filter:<vCss>; } 
+bkdf<vCSS> {backdrop-filter:<vCSS>; } 
  ```
             
 **- Thuộc tính: backface-visibility** viết tắt là: **bkfv**
@@ -193,7 +193,7 @@ bkfvH {backface-visibility:hidden;}
             
 **- Thuộc tính: background** viết tắt là: **bg**
 ```css
-bg<vCss> {background:<vCss>; } 
+bg<vCSS> {background:<vCSS>; } 
  ```
             
 **- Thuộc tính: background-attachment** viết tắt là: **bga**
@@ -302,7 +302,7 @@ bgsC {background-size:contain;}
             
 **- Thuộc tính: block-size** viết tắt là: **blks**
 ```css
-blks<vCss> {block-size:<vCss>; } 
+blks<vCSS> {block-size:<vCSS>; } 
  ```
             
 **- Thuộc tính: border** viết tắt là: **bd**
@@ -320,22 +320,22 @@ bdO {border:outset;}
             
 **- Thuộc tính: border-block** viết tắt là: **bdblk**
 ```css
-bdblk<vCss> {border-block:<vCss>; } 
+bdblk<vCSS> {border-block:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-block-color** viết tắt là: **bdblc**
 ```css
-bdblc<vCss> {border-block-color:<vCss>; } 
+bdblc<vCSS> {border-block-color:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-block-end** viết tắt là: **bdble**
 ```css
-bdble<vCss> {border-block-end:<vCss>; } 
+bdble<vCSS> {border-block-end:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-block-end-color** viết tắt là: **bdblec**
 ```css
-bdblec<vCss> {border-block-end-color:<vCss>; } 
+bdblec<vCSS> {border-block-end-color:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-block-end-style** viết tắt là: **bdbles**
@@ -353,17 +353,17 @@ bdblesO {border-block-end-style:outset;}
             
 **- Thuộc tính: border-block-end-width** viết tắt là: **bdblew**
 ```css
-bdblew<vCss> {border-block-end-width:<vCss>; } 
+bdblew<vCSS> {border-block-end-width:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-block-start** viết tắt là: **bdbls**
 ```css
-bdbls<vCss> {border-block-start:<vCss>; } 
+bdbls<vCSS> {border-block-start:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-block-start-color** viết tắt là: **bdblsc**
 ```css
-bdblsc<vCss> {border-block-start-color:<vCss>; } 
+bdblsc<vCSS> {border-block-start-color:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-block-start-style** viết tắt là: **bdblss**
@@ -381,7 +381,7 @@ bdblssO {border-block-start-style:outset;}
             
 **- Thuộc tính: border-block-start-width** viết tắt là: **bdblsw**
 ```css
-bdblsw<vCss> {border-block-start-width:<vCss>; } 
+bdblsw<vCSS> {border-block-start-width:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-block-style** viết tắt là: **bdblst**
@@ -399,27 +399,27 @@ bdblstO {border-block-style:outset;}
             
 **- Thuộc tính: border-block-width** viết tắt là: **bdblwi**
 ```css
-bdblwi<vCss> {border-block-width:<vCss>; } 
+bdblwi<vCSS> {border-block-width:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-bottom** viết tắt là: **bdb**
 ```css
-bdb<vCss> {border-bottom:<vCss>; } 
+bdb<vCSS> {border-bottom:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-bottom-color** viết tắt là: **bdbc**
 ```css
-bdbc<vCss> {border-bottom-color:<vCss>; } 
+bdbc<vCSS> {border-bottom-color:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-bottom-left-radius** viết tắt là: **bdblr**
 ```css
-bdblr<vCss> {border-bottom-left-radius:<vCss>; } 
+bdblr<vCSS> {border-bottom-left-radius:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-bottom-right-radius** viết tắt là: **bdbrr**
 ```css
-bdbrr<vCss> {border-bottom-right-radius:<vCss>; } 
+bdbrr<vCSS> {border-bottom-right-radius:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-bottom-style** viết tắt là: **bdbst**
@@ -450,27 +450,27 @@ bdclC {border-collapse:collapse;}
             
 **- Thuộc tính: border-color** viết tắt là: **bdc**
 ```css
-bdc<vCss> {border-color:<vCss>; } 
+bdc<vCSS> {border-color:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-end-end-radius** viết tắt là: **bdeer**
 ```css
-bdeer<vCss> {border-end-end-radius:<vCss>; } 
+bdeer<vCSS> {border-end-end-radius:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-end-start-radius** viết tắt là: **bdesr**
 ```css
-bdesr<vCss> {border-end-start-radius:<vCss>; } 
+bdesr<vCSS> {border-end-start-radius:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-image** viết tắt là: **bdimg**
 ```css
-bdimg<vCss> {border-image:<vCss>; } 
+bdimg<vCSS> {border-image:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-image-outset** viết tắt là: **bdio**
 ```css
-bdio<vCss> {border-image-outset:<vCss>; } 
+bdio<vCSS> {border-image-outset:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-image-repeat** viết tắt là: **bdir**
@@ -483,77 +483,77 @@ bdirS {border-image-repeat:space;}
             
 **- Thuộc tính: border-image-slice** viết tắt là: **bdis**
 ```css
-bdis<vCss> {border-image-slice:<vCss>; } 
+bdis<vCSS> {border-image-slice:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-image-source** viết tắt là: **bdisrc**
 ```css
-bdisrc<vCss> {border-image-source:<vCss>; } 
+bdisrc<vCSS> {border-image-source:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-image-width** viết tắt là: **bdiw**
 ```css
-bdiw<vCss> {border-image-width:<vCss>; } 
+bdiw<vCSS> {border-image-width:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-inline** viết tắt là: **bdi**
 ```css
-bdi<vCss> {border-inline:<vCss>; } 
+bdi<vCSS> {border-inline:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-inline-color** viết tắt là: **bdic**
 ```css
-bdic<vCss> {border-inline-color:<vCss>; } 
+bdic<vCSS> {border-inline-color:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-inline-end** viết tắt là: **bdie**
 ```css
-bdie<vCss> {border-inline-end:<vCss>; } 
+bdie<vCSS> {border-inline-end:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-inline-end-color** viết tắt là: **bdiec**
 ```css
-bdiec<vCss> {border-inline-end-color:<vCss>; } 
+bdiec<vCSS> {border-inline-end-color:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-inline-end-style** viết tắt là: **bdies**
 ```css
-bdies<vCss> {border-inline-end-style:<vCss>; } 
+bdies<vCSS> {border-inline-end-style:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-inline-end-width** viết tắt là: **bdiew**
 ```css
-bdiew<vCss> {border-inline-end-width:<vCss>; } 
+bdiew<vCSS> {border-inline-end-width:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-inline-start** viết tắt là: **bdista**
 ```css
-bdista<vCss> {border-inline-start:<vCss>; } 
+bdista<vCSS> {border-inline-start:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-inline-start-color** viết tắt là: **bdisc**
 ```css
-bdisc<vCss> {border-inline-start-color:<vCss>; } 
+bdisc<vCSS> {border-inline-start-color:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-inline-start-style** viết tắt là: **bdiss**
 ```css
-bdiss<vCss> {border-inline-start-style:<vCss>; } 
+bdiss<vCSS> {border-inline-start-style:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-inline-start-width** viết tắt là: **bdisw**
 ```css
-bdisw<vCss> {border-inline-start-width:<vCss>; } 
+bdisw<vCSS> {border-inline-start-width:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-inline-style** viết tắt là: **bdistl**
 ```css
-bdistl<vCss> {border-inline-style:<vCss>; } 
+bdistl<vCSS> {border-inline-style:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-inline-width** viết tắt là: **bdinw**
 ```css
-bdinw<vCss> {border-inline-width:<vCss>; } 
+bdinw<vCSS> {border-inline-width:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-left** viết tắt là: **bdl**
@@ -563,12 +563,12 @@ bdlN {border-left:none;}
             
 **- Thuộc tính: border-left-color** viết tắt là: **bdlc**
 ```css
-bdlc<vCss> {border-left-color:<vCss>; } 
+bdlc<vCSS> {border-left-color:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-left-style** viết tắt là: **bdls**
 ```css
-bdls<vCss> {border-left-style:<vCss>; } 
+bdls<vCSS> {border-left-style:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-left-width** viết tắt là: **bdlw**
@@ -580,7 +580,7 @@ bdlwTh {border-left-width:thick;}
             
 **- Thuộc tính: border-radius** viết tắt là: **bda**
 ```css
-bda<vCss> {border-radius:<vCss>; } 
+bda<vCSS> {border-radius:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-right** viết tắt là: **bdr**
@@ -590,7 +590,7 @@ bdrN {border-right:none;}
             
 **- Thuộc tính: border-right-color** viết tắt là: **bdrc**
 ```css
-bdrc<vCss> {border-right-color:<vCss>; } 
+bdrc<vCSS> {border-right-color:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-right-style** viết tắt là: **bdrs**
@@ -616,17 +616,17 @@ bdrwTh {border-right-width:thick;}
             
 **- Thuộc tính: border-spacing** viết tắt là: **bdsp**
 ```css
-bdsp<vCss> {border-spacing:<vCss>; } 
+bdsp<vCSS> {border-spacing:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-start-end-radius** viết tắt là: **bdser**
 ```css
-bdser<vCss> {border-start-end-radius:<vCss>; } 
+bdser<vCSS> {border-start-end-radius:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-start-start-radius** viết tắt là: **bdssr**
 ```css
-bdssr<vCss> {border-start-start-radius:<vCss>; } 
+bdssr<vCSS> {border-start-start-radius:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-style** viết tắt là: **bds**
@@ -650,17 +650,17 @@ bdtN {border-top:none;}
             
 **- Thuộc tính: border-top-color** viết tắt là: **bdtc**
 ```css
-bdtc<vCss> {border-top-color:<vCss>; } 
+bdtc<vCSS> {border-top-color:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-top-left-radius** viết tắt là: **bdtlr**
 ```css
-bdtlr<vCss> {border-top-left-radius:<vCss>; } 
+bdtlr<vCSS> {border-top-left-radius:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-top-right-radius** viết tắt là: **bdtrr**
 ```css
-bdtrr<vCss> {border-top-right-radius:<vCss>; } 
+bdtrr<vCSS> {border-top-right-radius:<vCSS>; } 
  ```
             
 **- Thuộc tính: border-top-style** viết tắt là: **bdts**
@@ -704,47 +704,47 @@ bdbrS {box-decoration-break:slice;}
             
 **- Thuộc tính: box-shadow** viết tắt là: **bxshd**
 ```css
-bxshd<vCss> {box-shadow:<vCss>; } 
+bxshd<vCSS> {box-shadow:<vCSS>; } 
  ```
             
 **- Thuộc tính: box-sizing** viết tắt là: **bxsz**
 ```css
-bxsz<vCss> {box-sizing:<vCss>; } 
+bxsz<vCSS> {box-sizing:<vCSS>; } 
  ```
             
 **- Thuộc tính: break-after** viết tắt là: **brka**
 ```css
-brka<vCss> {break-after:<vCss>; } 
+brka<vCSS> {break-after:<vCSS>; } 
  ```
             
 **- Thuộc tính: break-before** viết tắt là: **brkb**
 ```css
-brkb<vCss> {break-before:<vCss>; } 
+brkb<vCSS> {break-before:<vCSS>; } 
  ```
             
 **- Thuộc tính: break-inside** viết tắt là: **brki**
 ```css
-brki<vCss> {break-inside:<vCss>; } 
+brki<vCSS> {break-inside:<vCSS>; } 
  ```
             
 **- Thuộc tính: caption-side** viết tắt là: **caps**
 ```css
-caps<vCss> {caption-side:<vCss>; } 
+caps<vCSS> {caption-side:<vCSS>; } 
  ```
             
 **- Thuộc tính: caret-color** viết tắt là: **crtc**
 ```css
-crtc<vCss> {caret-color:<vCss>; } 
+crtc<vCSS> {caret-color:<vCSS>; } 
  ```
             
 **- Thuộc tính: clear** viết tắt là: **clr**
 ```css
-clr<vCss> {clear:<vCss>; } 
+clr<vCSS> {clear:<vCSS>; } 
  ```
             
 **- Thuộc tính: clip-path** viết tắt là: **clpp**
 ```css
-clpp<vCss> {clip-path:<vCss>; } 
+clpp<vCSS> {clip-path:<vCSS>; } 
  ```
             
 **- Thuộc tính: color** viết tắt là: **c**
@@ -755,57 +755,57 @@ cT {color:transparent;}
             
 **- Thuộc tính: color-interpolation** viết tắt là: **cip**
 ```css
-cip<vCss> {color-interpolation:<vCss>; } 
+cip<vCSS> {color-interpolation:<vCSS>; } 
  ```
             
 **- Thuộc tính: color-scheme** viết tắt là: **csch**
 ```css
-csch<vCss> {color-scheme:<vCss>; } 
+csch<vCSS> {color-scheme:<vCSS>; } 
  ```
             
 **- Thuộc tính: column-count** viết tắt là: **colc**
 ```css
-colc<vCss> {column-count:<vCss>; } 
+colc<vCSS> {column-count:<vCSS>; } 
  ```
             
 **- Thuộc tính: column-fill** viết tắt là: **colf**
 ```css
-colf<vCss> {column-fill:<vCss>; } 
+colf<vCSS> {column-fill:<vCSS>; } 
  ```
             
 **- Thuộc tính: column-gap** viết tắt là: **colg**
 ```css
-colg<vCss> {column-gap:<vCss>; } 
+colg<vCSS> {column-gap:<vCSS>; } 
  ```
             
 **- Thuộc tính: column-rule** viết tắt là: **colr**
 ```css
-colr<vCss> {column-rule:<vCss>; } 
+colr<vCSS> {column-rule:<vCSS>; } 
  ```
             
 **- Thuộc tính: column-rule-color** viết tắt là: **colrc**
 ```css
-colrc<vCss> {column-rule-color:<vCss>; } 
+colrc<vCSS> {column-rule-color:<vCSS>; } 
  ```
             
 **- Thuộc tính: column-rule-style** viết tắt là: **colrs**
 ```css
-colrs<vCss> {column-rule-style:<vCss>; } 
+colrs<vCSS> {column-rule-style:<vCSS>; } 
  ```
             
 **- Thuộc tính: column-rule-width** viết tắt là: **colrw**
 ```css
-colrw<vCss> {column-rule-width:<vCss>; } 
+colrw<vCSS> {column-rule-width:<vCSS>; } 
  ```
             
 **- Thuộc tính: column-span** viết tắt là: **cols**
 ```css
-cols<vCss> {column-span:<vCss>; } 
+cols<vCSS> {column-span:<vCSS>; } 
  ```
             
 **- Thuộc tính: column-width** viết tắt là: **colw**
 ```css
-colw<vCss> {column-width:<vCss>; } 
+colw<vCSS> {column-width:<vCSS>; } 
  ```
             
 **- Thuộc tính: columns** viết tắt là: **col**
@@ -815,67 +815,67 @@ colA {columns:auto;}
             
 **- Thuộc tính: contain** viết tắt là: **cnt**
 ```css
-cnt<vCss> {contain:<vCss>; } 
+cnt<vCSS> {contain:<vCSS>; } 
  ```
             
 **- Thuộc tính: contain-intrinsic-block-size** viết tắt là: **cntibs**
 ```css
-cntibs<vCss> {contain-intrinsic-block-size:<vCss>; } 
+cntibs<vCSS> {contain-intrinsic-block-size:<vCSS>; } 
  ```
             
 **- Thuộc tính: contain-intrinsic-height** viết tắt là: **cntih**
 ```css
-cntih<vCss> {contain-intrinsic-height:<vCss>; } 
+cntih<vCSS> {contain-intrinsic-height:<vCSS>; } 
  ```
             
 **- Thuộc tính: contain-intrinsic-inline-size** viết tắt là: **cntiis**
 ```css
-cntiis<vCss> {contain-intrinsic-inline-size:<vCss>; } 
+cntiis<vCSS> {contain-intrinsic-inline-size:<vCSS>; } 
  ```
             
 **- Thuộc tính: contain-intrinsic-size** viết tắt là: **cntis**
 ```css
-cntis<vCss> {contain-intrinsic-size:<vCss>; } 
+cntis<vCSS> {contain-intrinsic-size:<vCSS>; } 
  ```
             
 **- Thuộc tính: contain-intrinsic-width** viết tắt là: **ciw**
 ```css
-ciw<vCss> {contain-intrinsic-width:<vCss>; } 
+ciw<vCSS> {contain-intrinsic-width:<vCSS>; } 
  ```
             
 **- Thuộc tính: container** viết tắt là: **ctr**
 ```css
-ctr<vCss> {container:<vCss>; } 
+ctr<vCSS> {container:<vCSS>; } 
  ```
             
 **- Thuộc tính: container-name** viết tắt là: **ctrn**
 ```css
-ctrn<vCss> {container-name:<vCss>; } 
+ctrn<vCSS> {container-name:<vCSS>; } 
  ```
             
 **- Thuộc tính: container-type** viết tắt là: **ctrt**
 ```css
-ctrt<vCss> {container-type:<vCss>; } 
+ctrt<vCSS> {container-type:<vCSS>; } 
  ```
             
 **- Thuộc tính: content** viết tắt là: **ctt**
 ```css
-ctt<vCss> {content:<vCss>; } 
+ctt<vCSS> {content:<vCSS>; } 
  ```
             
 **- Thuộc tính: counter-increment** viết tắt là: **cntri**
 ```css
-cntri<vCss> {counter-increment:<vCss>; } 
+cntri<vCSS> {counter-increment:<vCSS>; } 
  ```
             
 **- Thuộc tính: counter-reset** viết tắt là: **cntrr**
 ```css
-cntrr<vCss> {counter-reset:<vCss>; } 
+cntrr<vCSS> {counter-reset:<vCSS>; } 
  ```
             
 **- Thuộc tính: counter-set** viết tắt là: **cntrs**
 ```css
-cntrs<vCss> {counter-set:<vCss>; } 
+cntrs<vCSS> {counter-set:<vCSS>; } 
  ```
             
 **- Thuộc tính: cursor** viết tắt là: **cr**
@@ -918,7 +918,7 @@ crZo {cursor:zoom-out;}
             
 **- Thuộc tính: direction** viết tắt là: **dir**
 ```css
-dir<vCss> {direction:<vCss>; } 
+dir<vCSS> {direction:<vCSS>; } 
  ```
             
 **- Thuộc tính: display** viết tắt là: **d**
@@ -948,7 +948,7 @@ dN {display:none;}
             
 **- Thuộc tính: empty-cells** viết tắt là: **empc**
 ```css
-empc<vCss> {empty-cells:<vCss>; } 
+empc<vCSS> {empty-cells:<vCSS>; } 
  ```
             
 **- Thuộc tính: filter** viết tắt là: **flt**
@@ -978,17 +978,17 @@ fxdCr {flex-direction:column-reverse;}
             
 **- Thuộc tính: flex-flow** viết tắt là: **fxf**
 ```css
-fxf<vCss> {flex-flow:<vCss>; } 
+fxf<vCSS> {flex-flow:<vCSS>; } 
  ```
             
 **- Thuộc tính: flex-grow** viết tắt là: **fxg**
 ```css
-fxg<vCss> {flex-grow:<vCss>; } 
+fxg<vCSS> {flex-grow:<vCSS>; } 
  ```
             
 **- Thuộc tính: flex-shrink** viết tắt là: **fxs**
 ```css
-fxs<vCss> {flex-shrink:<vCss>; } 
+fxs<vCSS> {flex-shrink:<vCSS>; } 
  ```
             
 **- Thuộc tính: flex-wrap** viết tắt là: **fxw**
@@ -1009,7 +1009,7 @@ flN {float:none;}
             
 **- Thuộc tính: font** viết tắt là: **fn**
 ```css
-fn<vCss> {font:<vCss>; } 
+fn<vCSS> {font:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-family** viết tắt là: **ff**
@@ -1021,142 +1021,142 @@ ffM {font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberat
             
 **- Thuộc tính: font-feature-settings** viết tắt là: **fnfs**
 ```css
-fnfs<vCss> {font-feature-settings:<vCss>; } 
+fnfs<vCSS> {font-feature-settings:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-kerning** viết tắt là: **fnk**
 ```css
-fnk<vCss> {font-kerning:<vCss>; } 
+fnk<vCSS> {font-kerning:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-language-override** viết tắt là: **fnlo**
 ```css
-fnlo<vCss> {font-language-override:<vCss>; } 
+fnlo<vCSS> {font-language-override:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-optical-sizing** viết tắt là: **fnos**
 ```css
-fnos<vCss> {font-optical-sizing:<vCss>; } 
+fnos<vCSS> {font-optical-sizing:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-palette** viết tắt là: **fnp**
 ```css
-fnp<vCss> {font-palette:<vCss>; } 
+fnp<vCSS> {font-palette:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-size** viết tắt là: **fns**
 ```css
-fns<vCss> {font-size:<vCss>; } 
+fns<vCSS> {font-size:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-size-adjust** viết tắt là: **fnsa**
 ```css
-fnsa<vCss> {font-size-adjust:<vCss>; } 
+fnsa<vCSS> {font-size-adjust:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-stretch** viết tắt là: **fnstr**
 ```css
-fnstr<vCss> {font-stretch:<vCss>; } 
+fnstr<vCSS> {font-stretch:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-style** viết tắt là: **fnsty**
 ```css
-fnsty<vCss> {font-style:<vCss>; } 
+fnsty<vCSS> {font-style:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-synthesis** viết tắt là: **fnsyn**
 ```css
-fnsyn<vCss> {font-synthesis:<vCss>; } 
+fnsyn<vCSS> {font-synthesis:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-synthesis-position** viết tắt là: **fnsp**
 ```css
-fnsp<vCss> {font-synthesis-position:<vCss>; } 
+fnsp<vCSS> {font-synthesis-position:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-synthesis-small-caps** viết tắt là: **fnssc**
 ```css
-fnssc<vCss> {font-synthesis-small-caps:<vCss>; } 
+fnssc<vCSS> {font-synthesis-small-caps:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-synthesis-style** viết tắt là: **fnss**
 ```css
-fnss<vCss> {font-synthesis-style:<vCss>; } 
+fnss<vCSS> {font-synthesis-style:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-synthesis-weight** viết tắt là: **fnsw**
 ```css
-fnsw<vCss> {font-synthesis-weight:<vCss>; } 
+fnsw<vCSS> {font-synthesis-weight:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-variant** viết tắt là: **fnv**
 ```css
-fnv<vCss> {font-variant:<vCss>; } 
+fnv<vCSS> {font-variant:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-variant-alternates** viết tắt là: **fnva**
 ```css
-fnva<vCss> {font-variant-alternates:<vCss>; } 
+fnva<vCSS> {font-variant-alternates:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-variant-caps** viết tắt là: **fnvc**
 ```css
-fnvc<vCss> {font-variant-caps:<vCss>; } 
+fnvc<vCSS> {font-variant-caps:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-variant-east-asian** viết tắt là: **fnvea**
 ```css
-fnvea<vCss> {font-variant-east-asian:<vCss>; } 
+fnvea<vCSS> {font-variant-east-asian:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-variant-emoji** viết tắt là: **fnve**
 ```css
-fnve<vCss> {font-variant-emoji:<vCss>; } 
+fnve<vCSS> {font-variant-emoji:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-variant-ligatures** viết tắt là: **fnvl**
 ```css
-fnvl<vCss> {font-variant-ligatures:<vCss>; } 
+fnvl<vCSS> {font-variant-ligatures:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-variant-numeric** viết tắt là: **fnvn**
 ```css
-fnvn<vCss> {font-variant-numeric:<vCss>; } 
+fnvn<vCSS> {font-variant-numeric:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-variant-position** viết tắt là: **fnvp**
 ```css
-fnvp<vCss> {font-variant-position:<vCss>; } 
+fnvp<vCSS> {font-variant-position:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-variation-settings** viết tắt là: **fnvs**
 ```css
-fnvs<vCss> {font-variation-settings:<vCss>; } 
+fnvs<vCSS> {font-variation-settings:<vCSS>; } 
  ```
             
 **- Thuộc tính: font-weight** viết tắt là: **fw**
 ```css
-fw<vCss> {font-weight:<vCss>; } 
+fw<vCSS> {font-weight:<vCSS>; } 
  ```
             
 **- Thuộc tính: forced-color-adjust** viết tắt là: **fca**
 ```css
-fca<vCss> {forced-color-adjust:<vCss>; } 
+fca<vCSS> {forced-color-adjust:<vCSS>; } 
  ```
             
 **- Thuộc tính: gap** viết tắt là: **gap**
 ```css
-gap<vCss> {gap:<vCss>; } 
+gap<vCSS> {gap:<vCSS>; } 
  ```
             
 **- Thuộc tính: grid** viết tắt là: **g**
 ```css
-g<vCss> {grid:<vCss>; } 
+g<vCSS> {grid:<vCSS>; } 
  ```
             
 **- Thuộc tính: grid-area** viết tắt là: **ga**
 ```css
-ga<vCss> {grid-area:<vCss>; } 
+ga<vCSS> {grid-area:<vCSS>; } 
  ```
             
 **- Thuộc tính: grid-auto-columns** viết tắt là: **gac**
@@ -1218,12 +1218,12 @@ grsA {grid-row-start:auto;}
             
 **- Thuộc tính: grid-template** viết tắt là: **gt**
 ```css
-gt<vCss> {grid-template:<vCss>; } 
+gt<vCSS> {grid-template:<vCSS>; } 
  ```
             
 **- Thuộc tính: grid-template-areas** viết tắt là: **gta**
 ```css
-gta<vCss> {grid-template-areas:<vCss>; } 
+gta<vCSS> {grid-template-areas:<vCSS>; } 
  ```
             
 **- Thuộc tính: grid-template-columns** viết tắt là: **gtc**
@@ -1240,7 +1240,7 @@ gtrS {grid-template-rows:subgrid;}
             
 **- Thuộc tính: hanging-punctuation** viết tắt là: **hp**
 ```css
-hp<vCss> {hanging-punctuation:<vCss>; } 
+hp<vCSS> {hanging-punctuation:<vCSS>; } 
  ```
             
 **- Thuộc tính: height** viết tắt là: **h**
@@ -1253,12 +1253,12 @@ hFc {height:fit-content;}
             
 **- Thuộc tính: hyphenate-character** viết tắt là: **hc**
 ```css
-hc<vCss> {hyphenate-character:<vCss>; } 
+hc<vCSS> {hyphenate-character:<vCSS>; } 
  ```
             
 **- Thuộc tính: hyphenate-limit-chars** viết tắt là: **hlc**
 ```css
-hlc<vCss> {hyphenate-limit-chars:<vCss>; } 
+hlc<vCSS> {hyphenate-limit-chars:<vCSS>; } 
  ```
             
 **- Thuộc tính: hyphens** viết tắt là: **hyp**
@@ -1270,52 +1270,52 @@ hypM {hyphens:manual;}
             
 **- Thuộc tính: image-orientation** viết tắt là: **imgo**
 ```css
-imgo<vCss> {image-orientation:<vCss>; } 
+imgo<vCSS> {image-orientation:<vCSS>; } 
  ```
             
 **- Thuộc tính: image-rendering** viết tắt là: **imgr**
 ```css
-imgr<vCss> {image-rendering:<vCss>; } 
+imgr<vCSS> {image-rendering:<vCSS>; } 
  ```
             
 **- Thuộc tính: inline-size** viết tắt là: **ins**
 ```css
-ins<vCss> {inline-size:<vCss>; } 
+ins<vCSS> {inline-size:<vCSS>; } 
  ```
             
 **- Thuộc tính: inset** viết tắt là: **i**
 ```css
-i<vCss> {inset:<vCss>; } 
+i<vCSS> {inset:<vCSS>; } 
  ```
             
 **- Thuộc tính: inset-block** viết tắt là: **iblk**
 ```css
-iblk<vCss> {inset-block:<vCss>; } 
+iblk<vCSS> {inset-block:<vCSS>; } 
  ```
             
 **- Thuộc tính: inset-block-end** viết tắt là: **ibe**
 ```css
-ibe<vCss> {inset-block-end:<vCss>; } 
+ibe<vCSS> {inset-block-end:<vCSS>; } 
  ```
             
 **- Thuộc tính: inset-block-start** viết tắt là: **ibsta**
 ```css
-ibsta<vCss> {inset-block-start:<vCss>; } 
+ibsta<vCSS> {inset-block-start:<vCSS>; } 
  ```
             
 **- Thuộc tính: inset-inline** viết tắt là: **ii**
 ```css
-ii<vCss> {inset-inline:<vCss>; } 
+ii<vCSS> {inset-inline:<vCSS>; } 
  ```
             
 **- Thuộc tính: inset-inline-end** viết tắt là: **iie**
 ```css
-iie<vCss> {inset-inline-end:<vCss>; } 
+iie<vCSS> {inset-inline-end:<vCSS>; } 
  ```
             
 **- Thuộc tính: inset-inline-start** viết tắt là: **iis**
 ```css
-iis<vCss> {inset-inline-start:<vCss>; } 
+iis<vCSS> {inset-inline-start:<vCSS>; } 
  ```
             
 **- Thuộc tính: isolation** viết tắt là: **is**
@@ -1386,7 +1386,7 @@ jsUc {justify-self:unsafe center;}
             
 **- Thuộc tính: left** viết tắt là: **l**
 ```css
-l<vCss> {left:<vCss>; } 
+l<vCSS> {left:<vCSS>; } 
  ```
             
 **- Thuộc tính: letter-spacing** viết tắt là: **lts**
@@ -1396,12 +1396,12 @@ ltsN {letter-spacing:normal;}
             
 **- Thuộc tính: line-break** viết tắt là: **lbrk**
 ```css
-lbrk<vCss> {line-break:<vCss>; } 
+lbrk<vCSS> {line-break:<vCSS>; } 
  ```
             
 **- Thuộc tính: line-height** viết tắt là: **lh**
 ```css
-lh<vCss> {line-height:<vCss>; } 
+lh<vCSS> {line-height:<vCSS>; } 
  ```
             
 **- Thuộc tính: list-style** viết tắt là: **ls**
@@ -1418,7 +1418,7 @@ lsK {list-style:kannada;}
             
 **- Thuộc tính: list-style-image** viết tắt là: **lsi**
 ```css
-lsi<vCss> {list-style-image:<vCss>; } 
+lsi<vCSS> {list-style-image:<vCSS>; } 
  ```
             
 **- Thuộc tính: list-style-position** viết tắt là: **lisp**
@@ -1440,22 +1440,22 @@ lstK {list-style-type:kannada;}
             
 **- Thuộc tính: margin** viết tắt là: **m**
 ```css
-m<vCss> {margin:<vCss>; } 
+m<vCSS> {margin:<vCSS>; } 
  ```
             
 **- Thuộc tính: margin-block** viết tắt là: **mblk**
 ```css
-mblk<vCss> {margin-block:<vCss>; } 
+mblk<vCSS> {margin-block:<vCSS>; } 
  ```
             
 **- Thuộc tính: margin-block-end** viết tắt là: **mbe**
 ```css
-mbe<vCss> {margin-block-end:<vCss>; } 
+mbe<vCSS> {margin-block-end:<vCSS>; } 
  ```
             
 **- Thuộc tính: margin-block-start** viết tắt là: **mbsta**
 ```css
-mbsta<vCss> {margin-block-start:<vCss>; } 
+mbsta<vCSS> {margin-block-start:<vCSS>; } 
  ```
             
 **- Thuộc tính: margin-bottom** viết tắt là: **mb**
@@ -1465,17 +1465,17 @@ mbA {margin-bottom:auto;}
             
 **- Thuộc tính: margin-inline** viết tắt là: **min**
 ```css
-min<vCss> {margin-inline:<vCss>; } 
+min<vCSS> {margin-inline:<vCSS>; } 
  ```
             
 **- Thuộc tính: margin-inline-end** viết tắt là: **mie**
 ```css
-mie<vCss> {margin-inline-end:<vCss>; } 
+mie<vCSS> {margin-inline-end:<vCSS>; } 
  ```
             
 **- Thuộc tính: margin-inline-start** viết tắt là: **mista**
 ```css
-mista<vCss> {margin-inline-start:<vCss>; } 
+mista<vCSS> {margin-inline-start:<vCSS>; } 
  ```
             
 **- Thuộc tính: margin-left** viết tắt là: **ml**
@@ -1495,122 +1495,122 @@ mtA {margin-top:auto;}
             
 **- Thuộc tính: mask** viết tắt là: **msk**
 ```css
-msk<vCss> {mask:<vCss>; } 
+msk<vCSS> {mask:<vCSS>; } 
  ```
             
 **- Thuộc tính: mask-border** viết tắt là: **mskb**
 ```css
-mskb<vCss> {mask-border:<vCss>; } 
+mskb<vCSS> {mask-border:<vCSS>; } 
  ```
             
 **- Thuộc tính: mask-border-mode** viết tắt là: **mskbm**
 ```css
-mskbm<vCss> {mask-border-mode:<vCss>; } 
+mskbm<vCSS> {mask-border-mode:<vCSS>; } 
  ```
             
 **- Thuộc tính: mask-border-outset** viết tắt là: **mskbo**
 ```css
-mskbo<vCss> {mask-border-outset:<vCss>; } 
+mskbo<vCSS> {mask-border-outset:<vCSS>; } 
  ```
             
 **- Thuộc tính: mask-border-repeat** viết tắt là: **mskbr**
 ```css
-mskbr<vCss> {mask-border-repeat:<vCss>; } 
+mskbr<vCSS> {mask-border-repeat:<vCSS>; } 
  ```
             
 **- Thuộc tính: mask-border-slice** viết tắt là: **mskbs**
 ```css
-mskbs<vCss> {mask-border-slice:<vCss>; } 
+mskbs<vCSS> {mask-border-slice:<vCSS>; } 
  ```
             
 **- Thuộc tính: mask-border-source** viết tắt là: **mskbsrc**
 ```css
-mskbsrc<vCss> {mask-border-source:<vCss>; } 
+mskbsrc<vCSS> {mask-border-source:<vCSS>; } 
  ```
             
 **- Thuộc tính: mask-border-width** viết tắt là: **mskbw**
 ```css
-mskbw<vCss> {mask-border-width:<vCss>; } 
+mskbw<vCSS> {mask-border-width:<vCSS>; } 
  ```
             
 **- Thuộc tính: mask-clip** viết tắt là: **mskc**
 ```css
-mskc<vCss> {mask-clip:<vCss>; } 
+mskc<vCSS> {mask-clip:<vCSS>; } 
  ```
             
 **- Thuộc tính: mask-composite** viết tắt là: **mskcp**
 ```css
-mskcp<vCss> {mask-composite:<vCss>; } 
+mskcp<vCSS> {mask-composite:<vCSS>; } 
  ```
             
 **- Thuộc tính: mask-image** viết tắt là: **mski**
 ```css
-mski<vCss> {mask-image:<vCss>; } 
+mski<vCSS> {mask-image:<vCSS>; } 
  ```
             
 **- Thuộc tính: mask-mode** viết tắt là: **mskm**
 ```css
-mskm<vCss> {mask-mode:<vCss>; } 
+mskm<vCSS> {mask-mode:<vCSS>; } 
  ```
             
 **- Thuộc tính: mask-origin** viết tắt là: **msko**
 ```css
-msko<vCss> {mask-origin:<vCss>; } 
+msko<vCSS> {mask-origin:<vCSS>; } 
  ```
             
 **- Thuộc tính: mask-position** viết tắt là: **mskp**
 ```css
-mskp<vCss> {mask-position:<vCss>; } 
+mskp<vCSS> {mask-position:<vCSS>; } 
  ```
             
 **- Thuộc tính: mask-repeat** viết tắt là: **mskr**
 ```css
-mskr<vCss> {mask-repeat:<vCss>; } 
+mskr<vCSS> {mask-repeat:<vCSS>; } 
  ```
             
 **- Thuộc tính: mask-size** viết tắt là: **msks**
 ```css
-msks<vCss> {mask-size:<vCss>; } 
+msks<vCSS> {mask-size:<vCSS>; } 
  ```
             
 **- Thuộc tính: mask-type** viết tắt là: **mskt**
 ```css
-mskt<vCss> {mask-type:<vCss>; } 
+mskt<vCSS> {mask-type:<vCSS>; } 
  ```
             
 **- Thuộc tính: math-depth** viết tắt là: **mtd**
 ```css
-mtd<vCss> {math-depth:<vCss>; } 
+mtd<vCSS> {math-depth:<vCSS>; } 
  ```
             
 **- Thuộc tính: math-style** viết tắt là: **mts**
 ```css
-mts<vCss> {math-style:<vCss>; } 
+mts<vCSS> {math-style:<vCSS>; } 
  ```
             
 **- Thuộc tính: max-block-size** viết tắt là: **mbs**
 ```css
-mbs<vCss> {max-block-size:<vCss>; } 
+mbs<vCSS> {max-block-size:<vCSS>; } 
  ```
             
 **- Thuộc tính: max-height** viết tắt là: **mh**
 ```css
-mh<vCss> {max-height:<vCss>; } 
+mh<vCSS> {max-height:<vCSS>; } 
  ```
             
 **- Thuộc tính: max-inline-size** viết tắt là: **mis**
 ```css
-mis<vCss> {max-inline-size:<vCss>; } 
+mis<vCSS> {max-inline-size:<vCSS>; } 
  ```
             
 **- Thuộc tính: max-width** viết tắt là: **mw**
 ```css
-mw<vCss> {max-width:<vCss>; } 
+mw<vCSS> {max-width:<vCSS>; } 
  ```
             
 **- Thuộc tính: min-block-size** viết tắt là: **mibs**
 ```css
-mibs<vCss> {min-block-size:<vCss>; } 
+mibs<vCSS> {min-block-size:<vCSS>; } 
  ```
             
 **- Thuộc tính: min-height** viết tắt là: **mih**
@@ -1624,7 +1624,7 @@ mihFc {min-height:fit-content;}
             
 **- Thuộc tính: min-inline-size** viết tắt là: **misz**
 ```css
-misz<vCss> {min-inline-size:<vCss>; } 
+misz<vCSS> {min-inline-size:<vCSS>; } 
  ```
             
 **- Thuộc tính: min-width** viết tắt là: **miw**
@@ -1679,52 +1679,52 @@ opRt {object-position:right top;}
             
 **- Thuộc tính: offset** viết tắt là: **ofs**
 ```css
-ofs<vCss> {offset:<vCss>; } 
+ofs<vCSS> {offset:<vCSS>; } 
  ```
             
 **- Thuộc tính: offset-anchor** viết tắt là: **ofa**
 ```css
-ofa<vCss> {offset-anchor:<vCss>; } 
+ofa<vCSS> {offset-anchor:<vCSS>; } 
  ```
             
 **- Thuộc tính: offset-distance** viết tắt là: **ofd**
 ```css
-ofd<vCss> {offset-distance:<vCss>; } 
+ofd<vCSS> {offset-distance:<vCSS>; } 
  ```
             
 **- Thuộc tính: offset-path** viết tắt là: **ofp**
 ```css
-ofp<vCss> {offset-path:<vCss>; } 
+ofp<vCSS> {offset-path:<vCSS>; } 
  ```
             
 **- Thuộc tính: offset-position** viết tắt là: **ofpo**
 ```css
-ofpo<vCss> {offset-position:<vCss>; } 
+ofpo<vCSS> {offset-position:<vCSS>; } 
  ```
             
 **- Thuộc tính: offset-rotate** viết tắt là: **ofr**
 ```css
-ofr<vCss> {offset-rotate:<vCss>; } 
+ofr<vCSS> {offset-rotate:<vCSS>; } 
  ```
             
 **- Thuộc tính: opacity** viết tắt là: **opc**
 ```css
-opc<vCss> {opacity:<vCss>; } 
+opc<vCSS> {opacity:<vCSS>; } 
  ```
             
 **- Thuộc tính: order** viết tắt là: **ord**
 ```css
-ord<vCss> {order:<vCss>; } 
+ord<vCSS> {order:<vCSS>; } 
  ```
             
 **- Thuộc tính: orphans** viết tắt là: **orp**
 ```css
-orp<vCss> {orphans:<vCss>; } 
+orp<vCSS> {orphans:<vCSS>; } 
  ```
             
 **- Thuộc tính: outline** viết tắt là: **oli**
 ```css
-oli<vCss> {outline:<vCss>; } 
+oli<vCSS> {outline:<vCSS>; } 
  ```
             
 **- Thuộc tính: outline-color** viết tắt là: **olc**
@@ -1736,7 +1736,7 @@ olcT {outline-color:transparent;}
             
 **- Thuộc tính: outline-offset** viết tắt là: **olo**
 ```css
-olo<vCss> {outline-offset:<vCss>; } 
+olo<vCSS> {outline-offset:<vCSS>; } 
  ```
             
 **- Thuộc tính: outline-style** viết tắt là: **ols**
@@ -1762,27 +1762,27 @@ olwTh {outline-width:thick;}
             
 **- Thuộc tính: overflow** viết tắt là: **ofl**
 ```css
-ofl<vCss> {overflow:<vCss>; } 
+ofl<vCSS> {overflow:<vCSS>; } 
  ```
             
 **- Thuộc tính: overflow-anchor** viết tắt là: **ofla**
 ```css
-ofla<vCss> {overflow-anchor:<vCss>; } 
+ofla<vCSS> {overflow-anchor:<vCSS>; } 
  ```
             
 **- Thuộc tính: overflow-block** viết tắt là: **oflb**
 ```css
-oflb<vCss> {overflow-block:<vCss>; } 
+oflb<vCSS> {overflow-block:<vCSS>; } 
  ```
             
 **- Thuộc tính: overflow-clip-margin** viết tắt là: **oflcm**
 ```css
-oflcm<vCss> {overflow-clip-margin:<vCss>; } 
+oflcm<vCSS> {overflow-clip-margin:<vCSS>; } 
  ```
             
 **- Thuộc tính: overflow-inline** viết tắt là: **ofli**
 ```css
-ofli<vCss> {overflow-inline:<vCss>; } 
+ofli<vCSS> {overflow-inline:<vCSS>; } 
  ```
             
 **- Thuộc tính: overflow-wrap** viết tắt là: **oflw**
@@ -1849,22 +1849,22 @@ orsbyN {overscroll-behavior-y:none;}
             
 **- Thuộc tính: padding** viết tắt là: **p**
 ```css
-p<vCss> {padding:<vCss>; } 
+p<vCSS> {padding:<vCSS>; } 
  ```
             
 **- Thuộc tính: padding-block** viết tắt là: **pblk**
 ```css
-pblk<vCss> {padding-block:<vCss>; } 
+pblk<vCSS> {padding-block:<vCSS>; } 
  ```
             
 **- Thuộc tính: padding-block-end** viết tắt là: **pbe**
 ```css
-pbe<vCss> {padding-block-end:<vCss>; } 
+pbe<vCSS> {padding-block-end:<vCSS>; } 
  ```
             
 **- Thuộc tính: padding-block-start** viết tắt là: **pbs**
 ```css
-pbs<vCss> {padding-block-start:<vCss>; } 
+pbs<vCSS> {padding-block-start:<vCSS>; } 
  ```
             
 **- Thuộc tính: padding-bottom** viết tắt là: **pb**
@@ -1883,12 +1883,12 @@ piSt {padding-inline:stretch;}
             
 **- Thuộc tính: padding-inline-end** viết tắt là: **pie**
 ```css
-pie<vCss> {padding-inline-end:<vCss>; } 
+pie<vCSS> {padding-inline-end:<vCSS>; } 
  ```
             
 **- Thuộc tính: padding-inline-start** viết tắt là: **pis**
 ```css
-pis<vCss> {padding-inline-start:<vCss>; } 
+pis<vCSS> {padding-inline-start:<vCSS>; } 
  ```
             
 **- Thuộc tính: padding-left** viết tắt là: **pl**
@@ -1908,52 +1908,52 @@ ptA {padding-top:auto;}
             
 **- Thuộc tính: page** viết tắt là: **pg**
 ```css
-pg<vCss> {page:<vCss>; } 
+pg<vCSS> {page:<vCSS>; } 
  ```
             
 **- Thuộc tính: page-break-after** viết tắt là: **pgba**
 ```css
-pgba<vCss> {page-break-after:<vCss>; } 
+pgba<vCSS> {page-break-after:<vCSS>; } 
  ```
             
 **- Thuộc tính: page-break-before** viết tắt là: **pgbb**
 ```css
-pgbb<vCss> {page-break-before:<vCss>; } 
+pgbb<vCSS> {page-break-before:<vCSS>; } 
  ```
             
 **- Thuộc tính: page-break-inside** viết tắt là: **pgbi**
 ```css
-pgbi<vCss> {page-break-inside:<vCss>; } 
+pgbi<vCSS> {page-break-inside:<vCSS>; } 
  ```
             
 **- Thuộc tính: paint-order** viết tắt là: **pto**
 ```css
-pto<vCss> {paint-order:<vCss>; } 
+pto<vCSS> {paint-order:<vCSS>; } 
  ```
             
 **- Thuộc tính: perspective** viết tắt là: **psp**
 ```css
-psp<vCss> {perspective:<vCss>; } 
+psp<vCSS> {perspective:<vCSS>; } 
  ```
             
 **- Thuộc tính: perspective-origin** viết tắt là: **pso**
 ```css
-pso<vCss> {perspective-origin:<vCss>; } 
+pso<vCSS> {perspective-origin:<vCSS>; } 
  ```
             
 **- Thuộc tính: place-content** viết tắt là: **plc**
 ```css
-plc<vCss> {place-content:<vCss>; } 
+plc<vCSS> {place-content:<vCSS>; } 
  ```
             
 **- Thuộc tính: place-items** viết tắt là: **pli**
 ```css
-pli<vCss> {place-items:<vCss>; } 
+pli<vCSS> {place-items:<vCSS>; } 
  ```
             
 **- Thuộc tính: place-self** viết tắt là: **pls**
 ```css
-pls<vCss> {place-self:<vCss>; } 
+pls<vCSS> {place-self:<vCSS>; } 
  ```
             
 **- Thuộc tính: pointer-events** viết tắt là: **pe**
@@ -1973,12 +1973,12 @@ posSt {position:sticky;}
             
 **- Thuộc tính: print-color-adjust** viết tắt là: **prca**
 ```css
-prca<vCss> {print-color-adjust:<vCss>; } 
+prca<vCSS> {print-color-adjust:<vCSS>; } 
  ```
             
 **- Thuộc tính: quotes** viết tắt là: **qts**
 ```css
-qts<vCss> {quotes:<vCss>; } 
+qts<vCSS> {quotes:<vCSS>; } 
  ```
             
 **- Thuộc tính: resize** viết tắt là: **rsz**
@@ -1991,247 +1991,247 @@ rszV {resize:vertical;}
             
 **- Thuộc tính: right** viết tắt là: **r**
 ```css
-r<vCss> {right:<vCss>; } 
+r<vCSS> {right:<vCSS>; } 
  ```
             
 **- Thuộc tính: rotate** viết tắt là: **rot**
 ```css
-rot<vCss> {rotate:<vCss>; } 
+rot<vCSS> {rotate:<vCSS>; } 
  ```
             
 **- Thuộc tính: row-gap** viết tắt là: **rgap**
 ```css
-rgap<vCss> {row-gap:<vCss>; } 
+rgap<vCSS> {row-gap:<vCSS>; } 
  ```
             
 **- Thuộc tính: ruby-position** viết tắt là: **rbp**
 ```css
-rbp<vCss> {ruby-position:<vCss>; } 
+rbp<vCSS> {ruby-position:<vCSS>; } 
  ```
             
 **- Thuộc tính: scale** viết tắt là: **s**
 ```css
-s<vCss> {scale:<vCss>; } 
+s<vCSS> {scale:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-behavior** viết tắt là: **scrb**
 ```css
-scrb<vCss> {scroll-behavior:<vCss>; } 
+scrb<vCSS> {scroll-behavior:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-margin** viết tắt là: **scrm**
 ```css
-scrm<vCss> {scroll-margin:<vCss>; } 
+scrm<vCSS> {scroll-margin:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-margin-block** viết tắt là: **scrmblk**
 ```css
-scrmblk<vCss> {scroll-margin-block:<vCss>; } 
+scrmblk<vCSS> {scroll-margin-block:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-margin-block-end** viết tắt là: **scrmbe**
 ```css
-scrmbe<vCss> {scroll-margin-block-end:<vCss>; } 
+scrmbe<vCSS> {scroll-margin-block-end:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-margin-block-start** viết tắt là: **scrmbs**
 ```css
-scrmbs<vCss> {scroll-margin-block-start:<vCss>; } 
+scrmbs<vCSS> {scroll-margin-block-start:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-margin-bottom** viết tắt là: **scrmb**
 ```css
-scrmb<vCss> {scroll-margin-bottom:<vCss>; } 
+scrmb<vCSS> {scroll-margin-bottom:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-margin-inline** viết tắt là: **scrmi**
 ```css
-scrmi<vCss> {scroll-margin-inline:<vCss>; } 
+scrmi<vCSS> {scroll-margin-inline:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-margin-inline-end** viết tắt là: **scrmie**
 ```css
-scrmie<vCss> {scroll-margin-inline-end:<vCss>; } 
+scrmie<vCSS> {scroll-margin-inline-end:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-margin-inline-start** viết tắt là: **scrmis**
 ```css
-scrmis<vCss> {scroll-margin-inline-start:<vCss>; } 
+scrmis<vCSS> {scroll-margin-inline-start:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-margin-left** viết tắt là: **scrml**
 ```css
-scrml<vCss> {scroll-margin-left:<vCss>; } 
+scrml<vCSS> {scroll-margin-left:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-margin-right** viết tắt là: **scrmr**
 ```css
-scrmr<vCss> {scroll-margin-right:<vCss>; } 
+scrmr<vCSS> {scroll-margin-right:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-margin-top** viết tắt là: **scrmt**
 ```css
-scrmt<vCss> {scroll-margin-top:<vCss>; } 
+scrmt<vCSS> {scroll-margin-top:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-padding** viết tắt là: **scrp**
 ```css
-scrp<vCss> {scroll-padding:<vCss>; } 
+scrp<vCSS> {scroll-padding:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-padding-block** viết tắt là: **scrpblk**
 ```css
-scrpblk<vCss> {scroll-padding-block:<vCss>; } 
+scrpblk<vCSS> {scroll-padding-block:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-padding-block-end** viết tắt là: **srcpbe**
 ```css
-srcpbe<vCss> {scroll-padding-block-end:<vCss>; } 
+srcpbe<vCSS> {scroll-padding-block-end:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-padding-block-start** viết tắt là: **scrpbs**
 ```css
-scrpbs<vCss> {scroll-padding-block-start:<vCss>; } 
+scrpbs<vCSS> {scroll-padding-block-start:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-padding-bottom** viết tắt là: **scrpb**
 ```css
-scrpb<vCss> {scroll-padding-bottom:<vCss>; } 
+scrpb<vCSS> {scroll-padding-bottom:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-padding-inline** viết tắt là: **scrpi**
 ```css
-scrpi<vCss> {scroll-padding-inline:<vCss>; } 
+scrpi<vCSS> {scroll-padding-inline:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-padding-inline-end** viết tắt là: **scrpie**
 ```css
-scrpie<vCss> {scroll-padding-inline-end:<vCss>; } 
+scrpie<vCSS> {scroll-padding-inline-end:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-padding-inline-start** viết tắt là: **scrpis**
 ```css
-scrpis<vCss> {scroll-padding-inline-start:<vCss>; } 
+scrpis<vCSS> {scroll-padding-inline-start:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-padding-left** viết tắt là: **scrpl**
 ```css
-scrpl<vCss> {scroll-padding-left:<vCss>; } 
+scrpl<vCSS> {scroll-padding-left:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-padding-right** viết tắt là: **scrpr**
 ```css
-scrpr<vCss> {scroll-padding-right:<vCss>; } 
+scrpr<vCSS> {scroll-padding-right:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-padding-top** viết tắt là: **scrpt**
 ```css
-scrpt<vCss> {scroll-padding-top:<vCss>; } 
+scrpt<vCSS> {scroll-padding-top:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-snap-align** viết tắt là: **scrsa**
 ```css
-scrsa<vCss> {scroll-snap-align:<vCss>; } 
+scrsa<vCSS> {scroll-snap-align:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-snap-stop** viết tắt là: **scrss**
 ```css
-scrss<vCss> {scroll-snap-stop:<vCss>; } 
+scrss<vCSS> {scroll-snap-stop:<vCSS>; } 
  ```
             
 **- Thuộc tính: scroll-snap-type** viết tắt là: **scrst**
 ```css
-scrst<vCss> {scroll-snap-type:<vCss>; } 
+scrst<vCSS> {scroll-snap-type:<vCSS>; } 
  ```
             
 **- Thuộc tính: scrollbar-color** viết tắt là: **sbc**
 ```css
-sbc<vCss> {scrollbar-color:<vCss>; } 
+sbc<vCSS> {scrollbar-color:<vCSS>; } 
  ```
             
 **- Thuộc tính: scrollbar-gutter** viết tắt là: **sbg**
 ```css
-sbg<vCss> {scrollbar-gutter:<vCss>; } 
+sbg<vCSS> {scrollbar-gutter:<vCSS>; } 
  ```
             
 **- Thuộc tính: scrollbar-width** viết tắt là: **sbw**
 ```css
-sbw<vCss> {scrollbar-width:<vCss>; } 
+sbw<vCSS> {scrollbar-width:<vCSS>; } 
  ```
             
 **- Thuộc tính: tab-size** viết tắt là: **tbs**
 ```css
-tbs<vCss> {tab-size:<vCss>; } 
+tbs<vCSS> {tab-size:<vCSS>; } 
  ```
             
 **- Thuộc tính: shape-image-threshold** viết tắt là: **shit**
 ```css
-shit<vCss> {shape-image-threshold:<vCss>; } 
+shit<vCSS> {shape-image-threshold:<vCSS>; } 
  ```
             
 **- Thuộc tính: shape-margin** viết tắt là: **shm**
 ```css
-shm<vCss> {shape-margin:<vCss>; } 
+shm<vCSS> {shape-margin:<vCSS>; } 
  ```
             
 **- Thuộc tính: shape-outside** viết tắt là: **sho**
 ```css
-sho<vCss> {shape-outside:<vCss>; } 
+sho<vCSS> {shape-outside:<vCSS>; } 
  ```
             
 **- Thuộc tính: transform** viết tắt là: **tra**
 ```css
-tra<vCss> {transform:<vCss>; } 
+tra<vCSS> {transform:<vCSS>; } 
  ```
             
 **- Thuộc tính: transform-box** viết tắt là: **trab**
 ```css
-trab<vCss> {transform-box:<vCss>; } 
+trab<vCSS> {transform-box:<vCSS>; } 
  ```
             
 **- Thuộc tính: transform-origin** viết tắt là: **trao**
 ```css
-trao<vCss> {transform-origin:<vCss>; } 
+trao<vCSS> {transform-origin:<vCSS>; } 
  ```
             
 **- Thuộc tính: transform-style** viết tắt là: **tras**
 ```css
-tras<vCss> {transform-style:<vCss>; } 
+tras<vCSS> {transform-style:<vCSS>; } 
  ```
             
 **- Thuộc tính: transition** viết tắt là: **tran**
 ```css
-tran<vCss> {transition:<vCss>; } 
+tran<vCSS> {transition:<vCSS>; } 
  ```
             
 **- Thuộc tính: transition-behavior** viết tắt là: **tranb**
 ```css
-tranb<vCss> {transition-behavior:<vCss>; } 
+tranb<vCSS> {transition-behavior:<vCSS>; } 
  ```
             
 **- Thuộc tính: transition-delay** viết tắt là: **trand**
 ```css
-trand<vCss> {transition-delay:<vCss>; } 
+trand<vCSS> {transition-delay:<vCSS>; } 
  ```
             
 **- Thuộc tính: transition-duration** viết tắt là: **trandur**
 ```css
-trandur<vCss> {transition-duration:<vCss>; } 
+trandur<vCSS> {transition-duration:<vCSS>; } 
  ```
             
 **- Thuộc tính: transition-property** viết tắt là: **tranp**
 ```css
-tranp<vCss> {transition-property:<vCss>; } 
+tranp<vCSS> {transition-property:<vCSS>; } 
  ```
             
 **- Thuộc tính: transition-timing-function** viết tắt là: **trantf**
 ```css
-trantf<vCss> {transition-timing-function:<vCss>; } 
+trantf<vCSS> {transition-timing-function:<vCSS>; } 
  ```
             
 **- Thuộc tính: table-layout** viết tắt là: **tbl**
 ```css
-tbl<vCss> {table-layout:<vCss>; } 
+tbl<vCSS> {table-layout:<vCSS>; } 
  ```
             
 **- Thuộc tính: text-align** viết tắt là: **ta**
@@ -2260,7 +2260,7 @@ talJ {text-align-last:justify;}
             
 **- Thuộc tính: text-combine-upright** viết tắt là: **tcu**
 ```css
-tcu<vCss> {text-combine-upright:<vCss>; } 
+tcu<vCSS> {text-combine-upright:<vCSS>; } 
  ```
             
 **- Thuộc tính: text-decoration** viết tắt là: **td**
@@ -2271,7 +2271,7 @@ tdU {text-decoration:underline;}
             
 **- Thuộc tính: text-decoration-color** viết tắt là: **tdc**
 ```css
-tdc<vCss> {text-decoration-color:<vCss>; } 
+tdc<vCSS> {text-decoration-color:<vCSS>; } 
  ```
             
 **- Thuộc tính: text-decoration-line** viết tắt là: **tdl**
@@ -2284,7 +2284,7 @@ tdlB {text-decoration-line:blink;}
             
 **- Thuộc tính: text-decoration-skip-ink** viết tắt là: **tdsi**
 ```css
-tdsi<vCss> {text-decoration-skip-ink:<vCss>; } 
+tdsi<vCSS> {text-decoration-skip-ink:<vCSS>; } 
  ```
             
 **- Thuộc tính: text-decoration-style** viết tắt là: **tds**
@@ -2302,12 +2302,12 @@ tdtFf {text-decoration-thickness:from-font;}
             
 **- Thuộc tính: text-emphasis** viết tắt là: **teph**
 ```css
-teph<vCss> {text-emphasis:<vCss>; } 
+teph<vCSS> {text-emphasis:<vCSS>; } 
  ```
             
 **- Thuộc tính: text-emphasis-color** viết tắt là: **tec**
 ```css
-tec<vCss> {text-emphasis-color:<vCss>; } 
+tec<vCSS> {text-emphasis-color:<vCSS>; } 
  ```
             
 **- Thuộc tính: text-emphasis-position** viết tắt là: **tep**
@@ -2328,7 +2328,7 @@ tesN {text-emphasis-style:none;}
             
 **- Thuộc tính: text-indent** viết tắt là: **ti**
 ```css
-ti<vCss> {text-indent:<vCss>; } 
+ti<vCSS> {text-indent:<vCSS>; } 
  ```
             
 **- Thuộc tính: text-justify** viết tắt là: **tj**
@@ -2366,7 +2366,7 @@ trdG {text-rendering:geometricPrecision;}
             
 **- Thuộc tính: text-shadow** viết tắt là: **tsh**
 ```css
-tsh<vCss> {text-shadow:<vCss>; } 
+tsh<vCSS> {text-shadow:<vCSS>; } 
  ```
             
 **- Thuộc tính: text-transform** viết tắt là: **ttr**
@@ -2381,7 +2381,7 @@ ttrFsk {text-transform:full-size-kana;}
             
 **- Thuộc tính: text-underline-offset** viết tắt là: **tuo**
 ```css
-tuo<vCss> {text-underline-offset:<vCss>; } 
+tuo<vCSS> {text-underline-offset:<vCSS>; } 
  ```
             
 **- Thuộc tính: text-underline-position** viết tắt là: **tup**
@@ -2404,7 +2404,7 @@ twP {text-wrap:pretty;}
             
 **- Thuộc tính: top** viết tắt là: **t**
 ```css
-t<vCss> {top:<vCss>; } 
+t<vCSS> {top:<vCSS>; } 
  ```
             
 **- Thuộc tính: touch-action** viết tắt là: **toa**
@@ -2419,12 +2419,12 @@ toaPi {touch-action:pinch-zoom;}
             
 **- Thuộc tính: translate** viết tắt là: **trl**
 ```css
-trl<vCss> {translate:<vCss>; } 
+trl<vCSS> {translate:<vCSS>; } 
  ```
             
 **- Thuộc tính: unicode-bidi** viết tắt là: **unib**
 ```css
-unib<vCss> {unicode-bidi:<vCss>; } 
+unib<vCSS> {unicode-bidi:<vCSS>; } 
  ```
             
 **- Thuộc tính: user-select** viết tắt là: **us**
@@ -2456,17 +2456,17 @@ vC {visibility:collapse;}
             
 **- Thuộc tính: white-space** viết tắt là: **ws**
 ```css
-ws<vCss> {white-space:<vCss>; } 
+ws<vCSS> {white-space:<vCSS>; } 
  ```
             
 **- Thuộc tính: white-space-collapse** viết tắt là: **wsc**
 ```css
-wsc<vCss> {white-space-collapse:<vCss>; } 
+wsc<vCSS> {white-space-collapse:<vCSS>; } 
  ```
             
 **- Thuộc tính: widows** viết tắt là: **wd**
 ```css
-wd<vCss> {widows:<vCss>; } 
+wd<vCSS> {widows:<vCSS>; } 
  ```
             
 **- Thuộc tính: width** viết tắt là: **w**
@@ -2487,42 +2487,42 @@ wcT {will-change:transform;}
             
 **- Thuộc tính: word-break** viết tắt là: **wrb**
 ```css
-wrb<vCss> {word-break:<vCss>; } 
+wrb<vCSS> {word-break:<vCSS>; } 
  ```
             
 **- Thuộc tính: word-spacing** viết tắt là: **wrs**
 ```css
-wrs<vCss> {word-spacing:<vCss>; } 
+wrs<vCSS> {word-spacing:<vCSS>; } 
  ```
             
 **- Thuộc tính: writing-mode** viết tắt là: **wrtm**
 ```css
-wrtm<vCss> {writing-mode:<vCss>; } 
+wrtm<vCSS> {writing-mode:<vCSS>; } 
  ```
             
 **- Thuộc tính: z-index** viết tắt là: **z**
 ```css
-z<vCss> {z-index:<vCss>; } 
+z<vCSS> {z-index:<vCSS>; } 
  ```
             
 **- Thuộc tính: zoom** viết tắt là: **zo**
 ```css
-zo<vCss> {zoom:<vCss>; } 
+zo<vCSS> {zoom:<vCSS>; } 
  ```
             
 **- Thuộc tính: margin căn đều theo trái phải** viết tắt là: **mx**
 ```css
-mx<vCss>{margin-left:<vCss>; margin-right:<vCss>;}
+mx<vCSS>{margin-left:<vCSS>; margin-right:<vCSS>;}
  ```
 **- Thuộc tính: margin căn đều theo trên dưới** viết tắt là: **my**
 ```css
-mx<vCss>{margin-top:<vCss>; margin-bottom:<vCss>;}
+mx<vCSS>{margin-top:<vCSS>; margin-bottom:<vCSS>;}
  ```
 **- Thuộc tính: padding căn đều theo trái phải** viết tắt là: **px**
 ```css
-px<vCss>{padding-left:<vCss>; padding-right:<vCss>;}
+px<vCSS>{padding-left:<vCSS>; padding-right:<vCSS>;}
  ```
 **- Thuộc tính: padding căn đều theo trái phải** viết tắt là: **py**
 ```css
-py<vCss>{padding-top:<vCss>; padding-bottom:<vCss>;}
+py<vCSS>{padding-top:<vCSS>; padding-bottom:<vCSS>;}
  ```
