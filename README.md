@@ -198,5 +198,5 @@ cRed\@\:hover:hover {
   + Ví dụ: effect(()=> {console.log(state_a)})
  
 - listObjectDom: Hàm tạo danh sách dom.
-  + Khởi tạo: listObjectDom(container, items, itemFunc) . Trong đó: container là thẻ dom, items: là danh sách stateObject, itemFunc: có cấu trúc (value, keys, delFn). delFn là hàm xoá gọi delFn();
+  + Khởi tạo: listObjectDom(container, items, itemFunc) . Trong đó: container là thẻ dom, items: là danh sách stateObject, itemFunc: có cấu trúc (value, key, delFn). delFn là hàm xoá gọi delFn();
   + Ví dụ: listObjectDom(div, \[1,2,3,5\], (value,key, del) => span(value, span({onclick: del},"xoa")))
