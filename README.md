@@ -21,6 +21,12 @@
 	  + lg: min-width: 992px
 	  + xl: min-width: 1200px
 	  + 2xl: min-width: 1400px
+     	  + xsi: mi -width: 575px
+	  + sma: max-width: 576px
+	  + mda: max-width: 768px
+	  + lga: max-width: 992px
+	  + xla: max-width: 1200px
+	  + 2xla: max-width: 1400px
 
 -  layer:  Số có giá trị từ 1-19, số càng cao sự ưu càng lớn. VD: 1c#000 => layer = 1
 CSS tự động sinh theo thư tự sau
