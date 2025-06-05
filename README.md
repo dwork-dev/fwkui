@@ -63,14 +63,16 @@ Ví dụ: @:hover, @:hover+;.ul>li
   <!-- Thẻ của bạn -->
    <script type="module">
         import $ from "https://unpkg.com/fwkuijs@1.0.6/fw.js";
-        window.$ = $;
         $.start();
         // Code của bạn viết tại đây
     </script>
   </body>
 <!-- .... -->
 ```
-- Tải về máy đặt vào thư mục assets
+- Tải về máy đặt vào thư mục assets sử dụng
+```cli
+npm i fwkuijs
+```
 ```html
   <!-- ... ->
   <body>
