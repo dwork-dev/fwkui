@@ -15,17 +15,17 @@
 ### 2. Diễn giải
 - [] có thể có hoặc không.
 -  **MQ:  xs, sm, md, lg, xl, 2xl**
-	  + xs: max-width: 575px
-	  + sm: min-width: 576px
-	  + md: min-width: 768px
-	  + lg: min-width: 992px
-	  + xl: min-width: 1200px
-	  + 2xl: min-width: 1400px
-     	  + xsi: mi -width: 576px
-	  + sma: max-width: 768px
-	  + mda: max-width: 992px
-	  + lga: max-width: 1200px
-	  + xla: max-width: 1400px
+	+ xs: max-width: 575px
+	+ sm: min-width: 576px
+	+ md: min-width: 768px
+	+ lg: min-width: 992px
+	+ xl: min-width: 1200px
+	+ 2xl: min-width: 1400px
+	+ xsi: mi -width: 576px
+	+ sma: max-width: 768px
+	+ mda: max-width: 992px
+	+ lga: max-width: 1200px
+	+ xla: max-width: 1400px
 	
 
 -  layer:  Số có giá trị từ 1-19, số càng cao sự ưu càng lớn. VD: 1c#000 => layer = 1
