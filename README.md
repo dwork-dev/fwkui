@@ -77,7 +77,6 @@ Ví dụ: @:hover, @:hover+;.ul>li
   <!-- Thẻ của bạn -->
    <script type="module">
         import $ from "/assets/fw.js";
-        window.$ = $;
         $.start();
          // Code của bạn viết tại đây
     </script>
