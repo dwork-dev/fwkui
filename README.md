@@ -21,7 +21,6 @@
 	+ lg: min-width: 992px
 	+ xl: min-width: 1200px
 	+ 2xl: min-width: 1400px
-	+ xsi: mi -width: 576px
 	+ sma: max-width: 768px
 	+ mda: max-width: 992px
 	+ lga: max-width: 1200px
