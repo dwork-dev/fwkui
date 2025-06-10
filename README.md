@@ -55,7 +55,7 @@ Ví dụ: @:hover, @:hover+;.ul>li
 
 ## 2. Cách sử dụng
 ### 1 Chèn vào thẻ cuối thẻ body
-- Sử dụng link :https://unpkg.com/fwkuijs@1.0.6/fw.js
+- Sử dụng link :https://unpkg.com/fwkuijs@1.0.8/fw.js
 ```html
   <!-- ... ->
   <body>
