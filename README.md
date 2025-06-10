@@ -61,7 +61,7 @@ Ví dụ: @:hover, @:hover+;.ul>li
   <body>
   <!-- Thẻ của bạn -->
    <script type="module">
-        import $ from "https://unpkg.com/fwkuijs@1.0.6/fw.js";
+        import $ from "https://unpkg.com/fwkuijs@1.0.8/fw.js";
         $.start();
         // Code của bạn viết tại đây
     </script>
