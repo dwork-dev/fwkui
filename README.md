@@ -189,6 +189,7 @@ cRed\@\:hover:hover {
 ```
 ## II. JAVASCRIPT
 ### 1. Hàm cơ bản
+- append(dom, child) => Thêm child vào dom.
 - stateValue: Tạo trạng thái giá trị.
   + Khởi tạo state var: state = stateValue(initValue);
   + Gán giá trị: state.value = <giá trị>
@@ -210,7 +211,7 @@ cRed\@\:hover:hover {
 - hx: Hàm giống như jsx định dạng html
   Ví dụ:
 ```jsx
-	$.append(document.body, hx`
+	$.append(document.body, $.hx`
 	<div>
 		<span> test thử </span>
 	</div>
