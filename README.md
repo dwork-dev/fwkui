@@ -189,26 +189,29 @@ cRed\@\:hover:hover {
 ```
 ## II. JAVASCRIPT
 ### 1. Hàm cơ bản
-- append(dom, child) => Thêm child vào dom.
-- stateValue: Tạo trạng thái giá trị.
+Thiết đặt $ là thư viện:
+- $.insertNodes("Thuộc tính hàm")(root, ..doms)
+  + Thuộc tính hàm: hàm cập nhật DOM: replaceChild, append, replaceWith,... Tham khảo về hàm Element.
+- $.append(root, ...doms) => Thêm doms vào root.
+- $.stateValue: Tạo trạng thái giá trị.
   + Khởi tạo state var: state = stateValue(initValue);
   + Gán giá trị: state.value = <giá trị>
   + Lấy giá trị. state.value => Giá trị
-- stateValueObject: Tạo giá trị state từng giá trị trong object, hàm gán hay khởi tạo trạng thái stateObject: replaceStateObject.
+- $.stateValueObject: Tạo giá trị state từng giá trị trong object, hàm gán hay khởi tạo trạng thái stateObject: replaceStateObject.
   + Khởi tạo state object: var stateObject = stateValueObject(initObject)
   + Gán một giá trị vào thuộc tính: stateObject.<thuộc tính> = value
   + Lấy giá trị: stateObject.<thuộc tính>
   + Gán toàn bộ giá trị: sử dụng hàm replaceStateObject: replaceStateObject(stateObject, obj). Không thể gán trực tiếp được, nếu gán trực tiếp thì sẽ bị mất trạng thái quản lý object
   + Đối với mảng đều sử dụng được các thuộc tính của mảng
-- effect:   Hàm này dùng để quản lý dẫn xuất tương tác phụ.
+- $.effect:   Hàm này dùng để quản lý dẫn xuất tương tác phụ.
   + khởi tạo: effect(f) => Tạo một trạng thái tương tác dẫn xuất phụ, f là hàm có thể có giá trị trả về.
   + Ví dụ: effect(()=> {console.log(state_a)})
  
-- listObjectDom: Hàm tạo danh sách dom.
+- $.listObjectDom: Hàm tạo danh sách dom.
   + Khởi tạo: listObjectDom(container, items, itemFunc) . Trong đó: container là thẻ dom, items: là danh sách stateObject, itemFunc: có cấu trúc (value, key, delFn). delFn là hàm xoá gọi delFn();
   + Ví dụ: listObjectDom(div, \[1,2,3,5\], (value,key, del) => span(value, span({onclick: del},"xoa")))
  
-- hx: Hàm giống như jsx định dạng html
+- $.hx: Hàm giống như jsx định dạng html
   Ví dụ:
 ```jsx
 	$.append(document.body, $.hx`
@@ -218,4 +221,25 @@ cRed\@\:hover:hover {
 
 `)
 ```
-  
+
+-$.<Tên thẻ> hoặc $.tags.<Tên thẻ> hoặc $\["Tên thẻ"] hoặc $.tags\["tên thẻ"] hàm tạo ra => Dom
+$.<the>({objec thuộc tính}, children);  
+Ví dụ
++ C1:  
+```javascript
+$.div(
+	{class: "cRed"},
+	$.h1("Xin chào")
+)
+=> <div class="cRed"><h1>Xin chào</h1></div>
+
+```
++ C2:
+```javascript
+hx`
+<div class="cRed"><h1>Xin chào</h1></div>
+`
+=> (string): <div class="cRed"><h1>Xin chào</h1></div>
+
+```
+
