@@ -222,7 +222,7 @@ Thiết đặt $ là thư viện:
 `)
 ```
 
--$.<Tên thẻ> hoặc $.tags.<Tên thẻ> hoặc $\["Tên thẻ"] hoặc $.tags\["tên thẻ"] hàm tạo ra => Dom
+-$.\<Tên thẻ\> hoặc $.tags.\<Tên thẻ\> hoặc $\["Tên thẻ"\] hoặc $.tags\["tên thẻ"\] hàm tạo ra => Dom   
 $.<the>({objec thuộc tính}, children);  
 Ví dụ
 + C1:  
