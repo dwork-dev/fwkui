@@ -187,6 +187,30 @@ cRed\@\:hover:hover {
   color:red;
 }
 ```
+### 9 Các giá trị viết tắt đặc biệt
+```text
+n: none
+nm: normal
+a: auto
+i: inherit
+in: initial
+is: inline-start
+ie: inline-end
+tr: transparent
+c: center
+cl: collapse
+l: left
+r: right
+h: hidden
+v: visible
+s: start
+e: end
+t: top
+b: bottom
+bs: block-start
+be: block-end
+```
+
 ## II. JAVASCRIPT
 ### 1. Hàm cơ bản
 Thiết đặt $ là thư viện:
