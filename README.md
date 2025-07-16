@@ -55,13 +55,13 @@ Ví dụ: @:hover, @:hover+;.ul>li
 
 ## 2. Cách sử dụng
 ### 1 Chèn vào thẻ cuối thẻ body
-- Sử dụng link :https://unpkg.com/fwkuijs@1.0.18/fw.js
+- Sử dụng link :https://unpkg.com/fwkuijs@1.0.18/fw/index.js
 ```html
   <!-- ... ->
   <body>
   <!-- Thẻ của bạn -->
    <script type="module">
-        import $ from "https://unpkg.com/fwkuijs@1.0.18/fw.js";
+        import $ from "https://unpkg.com/fwkuijs@1.0.18/fw/index.js";
         $.start();
         // Code của bạn viết tại đây
     </script>
@@ -77,7 +77,7 @@ npm i fwkuijs
   <body>
   <!-- Thẻ của bạn -->
    <script type="module">
-        import $ from "/assets/fw.js";
+        import $ from "/assets/fw/index.js";
         $.start(options?: {css: string});
          // Code của bạn viết tại đây
     </script>
@@ -87,7 +87,7 @@ npm i fwkuijs
 
 
 ### 2 Định nghĩa class của css
-[Tham khảo các class đã được định nghĩa](class-short.md)
+[Tham khảo các class đã được định nghĩa](css-class.md)
 
 **Các quy tắc css động**
 <pCSS>[!]<vCSS> Ví dụ đều hợp lệ: colorRed; color#123456; color{#123456}; color!#123456;
