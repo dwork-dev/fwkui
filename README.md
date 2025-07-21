@@ -55,13 +55,13 @@ Ví dụ: @:hover, @:hover+;.ul>li
 
 ## 2. Cách sử dụng
 ### 1 Chèn vào thẻ cuối thẻ body
-- Sử dụng link :https://unpkg.com/fwkuijs@1.0.18/fw/index.js
+- Sử dụng link :https://unpkg.com/fwkuijs@1.0.19/fw/index.js
 ```html
   <!-- ... ->
   <body>
   <!-- Thẻ của bạn -->
    <script type="module">
-        import $ from "https://unpkg.com/fwkuijs@1.0.18/fw/index.js";
+        import $ from "https://unpkg.com/fwkuijs@1.0.19/fw/index.js";
         $.start();
         // Code của bạn viết tại đây
     </script>
