@@ -62,28 +62,17 @@ Ví dụ: @:hover, @:hover+;.ul>li
   <!-- Thẻ của bạn -->
    <script type="module">
         import $ from "https://unpkg.com/fwkuijs@1.0.19/fw/index.js";
-        $.start();
+        $.start({css:"", exNames:[], gValue: {}, mQuery: {}, valueExt: {}});
         // Code của bạn viết tại đây
+	//css bộ thư viện khởi tạo ban đầu
+	//exNames loại trừ các class, có thể thay thế * cho ký tự không xác định ví dụ: icon-* thì icon-abc, icon-133,.. đều khớp
+	// gValue: Nhóm class
+	// valueExt: Giá trị thuộc tính viết tắt cần bổ sung
     </script>
   </body>
 <!-- .... -->
 ```
-- Tải về máy đặt vào thư mục assets sử dụng
-```cli
-npm i fwkuijs
-```
-```html
-  <!-- ... ->
-  <body>
-  <!-- Thẻ của bạn -->
-   <script type="module">
-        import $ from "/assets/fw/index.js";
-        $.start(options?: {css: string});
-         // Code của bạn viết tại đây
-    </script>
-  </body>
-<!-- .... -->
-```
+
 
 
 ### 2 Định nghĩa class của css
