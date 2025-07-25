@@ -62,7 +62,7 @@ Ví dụ: @:hover, @:hover+;.ul>li
   <!-- Thẻ của bạn -->
    <script type="module">
         import $ from "https://unpkg.com/fwkuijs@1.0.19/fw/index.js";
-        $.start({css:"", exNames:[], gValue: {}, mQuery: {}, valueExt: {}});
+        $.start({css:"", exNames:[], gValue: {},  valueExt: {}});
         // Code của bạn viết tại đây
 	//css bộ thư viện khởi tạo ban đầu
 	//exNames loại trừ các class, có thể thay thế * cho ký tự không xác định ví dụ: icon-* thì icon-abc, icon-133,.. đều khớp
