@@ -1,5 +1,14 @@
 # 1. Các class mặc định được đinh nghĩa viết tắt
-## Quy tắc viết class: 
+## Quy tắc viết class: [<MQ>:][<layer>]<pCSS><vCSS>[<selector>]
+***Sử dụng MQ ***
+- Theo quy tắc
+
+***Sử dụng layer**
+- là một số, từ 1-19.
+***Sử dụng pCSS***
+- Phân biệt: ký tự thường
+- Trùng khớp với bộ viết tắt thuộc tính thì sẽ hiểu là thuộc tính đó.
+- Không trùng khớp, chính từ đó sẽ là thuộc tính.
 ***Sử dụng vCSS***
 - Chứa trong {<là hàm, giá trị, biểu thức>} Ví dụ: w{10px}, w{calc(100vh;-;30px)}
 - Bắt đầu là một số, một ký tự đầu viết hoa, dấu chấm than (!): Ví dụ w!100px, w100px; wCalc(100vh;-;30px)
@@ -7,7 +16,9 @@
 - Chú ý:
    +  Giá trị của css sẽ được phân biệt qua: {}, ký tự viết Hoa, số (có thể có dấu - đại diện số âm), #. Trong thuộc tính xuất hiện ; thì sẽ hiểu là dấu cách (khoảng trống).
    +  Giá trị sẽ so sánh với bộ viết tắt giá trị để hiểu, nếu không tìm thấy cụm viết tắt tức chính bản thân sẽ là giá trị đầy đủ.
- 
+ ***Sử dụng selector***
+   - Dựa vào ký tự @ phía trước, phía sau là selector , theo quy tắc bộ chọn của css, nếu xuất hiện dấu ; chính là dấu cách (khoảng trắng)
+     
 # 2. Các class đã được định nghĩa
 **- Thuộc tính: -webkit-line-clamp** viết tắt là: **wlc**
 ```css
