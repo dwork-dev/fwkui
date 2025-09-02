@@ -1,9 +1,12 @@
 # 1. Các class mặc định được đinh nghĩa viết tắt
-## Chú ý
+## Quy tắc viết class: 
 ***Sử dụng vCSS***
 - Chứa trong {<là hàm, giá trị, biểu thức>} Ví dụ: w{10px}, w{calc(100vh;-;30px)}
 - Bắt đầu là một số, một ký tự đầu viết hoa, dấu chấm than (!): Ví dụ w!100px, w100px; wCalc(100vh;-;30px)
 - Dấu # sau là mã màu: ví dụ: c#123456, #123456 là mã màu
+- Chú ý:
+   +  Giá trị của css sẽ được phân biệt qua: {}, ký tự viết Hoa, số (có thể có dấu - đại diện số âm), #. Trong thuộc tính xuất hiện ; thì sẽ hiểu là dấu cách (khoảng trống).
+   +  Giá trị sẽ so sánh với bộ viết tắt giá trị để hiểu, nếu không tìm thấy cụm viết tắt tức chính bản thân sẽ là giá trị đầy đủ.
  
 # 2. Các class đã được định nghĩa
 **- Thuộc tính: -webkit-line-clamp** viết tắt là: **wlc**
