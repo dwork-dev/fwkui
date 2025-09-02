@@ -1,10 +1,24 @@
 # 1. Các class mặc định được đinh nghĩa viết tắt
 ## Quy tắc viết class: [<MQ>:][<layer>]<pCSS><vCSS>[<selector>]
-***Sử dụng MQ ***
-- Theo quy tắc
 
-***Sử dụng layer**
-- là một số, từ 1-19.
+***Sử dụng MQ(có thể bỏ qua)***
+- là thay đổi kích thước màn hình, một số quy tắc được định nghĩa sẵn dưới đây, theo quy tắc có điều kiện @media:
+```text
+   MQ: xs, sm, md, lg, xl, 2xl
+   xs: max-width: 575px
+   sm: min-width: 576px
+   md: min-width: 768px
+   lg: min-width: 992px
+   xl: min-width: 1200px
+   2xl: min-width: 1400px
+   sma: max-width: 768px
+   mda: max-width: 992px
+   lga: max-width: 1200px
+   xla: max-width: 1400px
+```
+
+***Sử dụng layer (có thể bỏ qua)**
+- là quy tắc sắp xếp tầng, sự ưu tiên theo quy tắc @layer. được đánh số từ 1-19.
 ***Sử dụng pCSS***
 - Phân biệt: ký tự thường
 - Trùng khớp với bộ viết tắt thuộc tính thì sẽ hiểu là thuộc tính đó.
@@ -16,7 +30,7 @@
 - Chú ý:
    +  Giá trị của css sẽ được phân biệt qua: {}, ký tự viết Hoa, số (có thể có dấu - đại diện số âm), #. Trong thuộc tính xuất hiện ; thì sẽ hiểu là dấu cách (khoảng trống).
    +  Giá trị sẽ so sánh với bộ viết tắt giá trị để hiểu, nếu không tìm thấy cụm viết tắt tức chính bản thân sẽ là giá trị đầy đủ.
- ***Sử dụng selector***
+ ***Sử dụng selector (có thể bỏ qua)***
    - Dựa vào ký tự @ phía trước, phía sau là selector , theo quy tắc bộ chọn của css, nếu xuất hiện dấu ; chính là dấu cách (khoảng trắng)
      
 # 2. Các class đã được định nghĩa
