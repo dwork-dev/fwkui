@@ -1,5 +1,5 @@
 # 1. Các class mặc định được đinh nghĩa viết tắt
-## Quy tắc viết class: [<MQ>:][<layer>]<pCSS><vCSS>[<selector>]
+## Quy tắc viết class: [\<MQ>:][\<layer>]\<pCSS>\<vCSS>[\<selector>]
 
 ***Sử dụng MQ(có thể bỏ qua)***
 - là thay đổi kích thước màn hình, một số quy tắc được định nghĩa sẵn dưới đây, theo quy tắc có điều kiện @media:
