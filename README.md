@@ -53,7 +53,7 @@ Bạn có thể tải thư viện hoặc xem mã nguồn tại: [https://github.
 ### Cách 1: Dùng qua CDN (Khuyên dùng cho thử nghiệm nhanh)
 Thêm thẻ script sau vào `index.html`:
 ```html
-<script src="https://unpkg.com/@fwkui/x-css@1.0.8/dist/index.js"></script>
+<script src="https://unpkg.com/@fwkui/x-css@1.0.9/dist/index.js"></script>
 ```
 
 ### Cách 2: Cài đặt qua NPM
