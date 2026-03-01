@@ -1,4 +1,10 @@
 import { mitt } from './events'
+import { parseClassName } from './parser'
+import {
+    SHORT_PROPERTIES as DEFAULT_SHORT_PROPERTIES,
+    COMMON_VALUES as DEFAULT_COMMON_VALUES,
+    SPECIFIC_VALUES as DEFAULT_SPECIFIC_VALUES,
+} from './dictionary'
 
 
 export type XCSSConfig = {
@@ -8,12 +14,62 @@ export type XCSSConfig = {
     breakpoints?: Record<string, string>[]
     theme?: Record<string, string>
     prefix?: string
+    dictionaryImport?: boolean | string
 }
 
 type CssPropertyMap = Record<string, string>
 type CssValueMap = Record<string, Record<string, string>>
+type CssCommonValueMap = Record<string, string>
 
-import { parseClassName } from './parser'
+type XCSSDictionaryData = {
+    SHORT_PROPERTIES: CssPropertyMap
+    COMMON_VALUES: CssCommonValueMap
+    SPECIFIC_VALUES: CssValueMap
+}
+
+type DictionaryModuleShape = Partial<XCSSDictionaryData> & {
+    default?: Partial<XCSSDictionaryData>
+}
+
+const resolveDictionaryData = (mod: unknown): XCSSDictionaryData | null => {
+    if (!mod || typeof mod !== 'object') return null
+
+    const moduleObj = mod as DictionaryModuleShape
+    const source =
+        moduleObj.default && typeof moduleObj.default === 'object'
+            ? moduleObj.default
+            : moduleObj
+
+    const short = source.SHORT_PROPERTIES
+    const common = source.COMMON_VALUES
+    const specific = source.SPECIFIC_VALUES
+
+    if (!short || !common || !specific) return null
+    if (
+        typeof short !== 'object' ||
+        typeof common !== 'object' ||
+        typeof specific !== 'object'
+    ) {
+        return null
+    }
+
+    return {
+        SHORT_PROPERTIES: short,
+        COMMON_VALUES: common,
+        SPECIFIC_VALUES: specific,
+    }
+}
+
+const loadExternalDictionary = async (source: string): Promise<XCSSDictionaryData> => {
+    const mod = await import(/* @vite-ignore */ source)
+    const data = resolveDictionaryData(mod)
+    if (!data) {
+        throw new Error(
+            'XCSS: dictionary module must export SHORT_PROPERTIES, COMMON_VALUES and SPECIFIC_VALUES',
+        )
+    }
+    return data
+}
 
 const setupCssLayers = (docRoot: Document | ShadowRoot | null, id?: string) => {
     if (!docRoot || typeof document === 'undefined') return
@@ -76,7 +132,8 @@ const hashConfig = (config: XCSSConfig): string => {
         breakpoints: config.breakpoints || [],
         theme: config.theme || {},
         prefix: config.prefix || '',
-        exclude: config.exclude || []
+        exclude: config.exclude || [],
+        dictionaryImport: config.dictionaryImport ?? true,
     })
 
     let hash = 0
@@ -90,17 +147,15 @@ const hashConfig = (config: XCSSConfig): string => {
 }
 
 interface XCSSCacheData {
-    configHash: string;
-    cssText: Record<string, string>;
-    rulesSet: Record<string, string[]>;
-    keys: [string, string][];
+    configHash: string
+    cssText: Record<string, string>
+    rulesSet: Record<string, string[]>
+    keys: [string, string][]
 }
 
 /**
  * Hàm factory chính để khởi tạo và cấu hình engine xcss.
  */
-import { SHORT_PROPERTIES, COMMON_VALUES, SPECIFIC_VALUES } from './dictionary'
-
 const CACHE_KEY = 'xcss_cache_v1'
 
 /**
@@ -114,6 +169,7 @@ export const xcss = (
         breakpoints: [],
         theme: {},
         prefix: '',
+        dictionaryImport: true,
     },
 ) => {
     // OLD: LZW parsing Logic removed
@@ -122,10 +178,6 @@ export const xcss = (
     //     CSS_PV = JSON.parse(decompressLZW(cssText))
     // } catch (e) { ... }
 
-    // Use dictionary directly
-    let PropertiesCss: CssPropertyMap = SHORT_PROPERTIES
-    let ValueExts: CssValueMap = SPECIFIC_VALUES
-
     let {
         base: cssDefault = null,
         breakpoints: mediaQuery = [],
@@ -133,6 +185,7 @@ export const xcss = (
         theme: valueExt = {},
         exclude: exNames = [],
         prefix = '',
+        dictionaryImport = true,
     } = modules || {}
 
     if (!Array.isArray(mediaQuery)) mediaQuery = []
@@ -140,15 +193,57 @@ export const xcss = (
     if (!groupValues || typeof groupValues !== 'object') groupValues = {}
     if (!valueExt || typeof valueExt !== 'object') valueExt = {}
 
-    // Combine default extensions with COMMON_VALUES and config valueExt
-    var exts: Record<string, string> = {
-        ...COMMON_VALUES,
-        ...valueExt,
+    let PropertiesCss: CssPropertyMap = {}
+    let ValueExts: CssValueMap = {}
+    let CommonValues: CssCommonValueMap = {}
+    let exts: Record<string, string> = {}
+
+    const rebuildExts = () => {
+        exts = {
+            ...CommonValues,
+            ...valueExt,
+        }
     }
 
-    // Helper to get property specific map if needed
-    const getValueMap = (prop: string) => {
-        return ValueExts[prop] || {}
+    const applyDictionary = (dictionary: XCSSDictionaryData | null) => {
+        if (!dictionary) {
+            PropertiesCss = {}
+            ValueExts = {}
+            CommonValues = {}
+            rebuildExts()
+            return
+        }
+
+        PropertiesCss = dictionary.SHORT_PROPERTIES
+        ValueExts = dictionary.SPECIFIC_VALUES
+        CommonValues = dictionary.COMMON_VALUES
+        rebuildExts()
+    }
+
+    let dictionaryReady = true
+    let dictionaryReadyPromise: Promise<void> = Promise.resolve()
+
+    if (dictionaryImport === false) {
+        applyDictionary(null)
+    } else if (typeof dictionaryImport === 'string') {
+        dictionaryReady = false
+        applyDictionary(null)
+        dictionaryReadyPromise = loadExternalDictionary(dictionaryImport)
+            .then((dictionary) => {
+                applyDictionary(dictionary)
+            })
+            .catch((error) => {
+                console.warn('XCSS: Failed to import dictionary from URL', error)
+            })
+            .finally(() => {
+                dictionaryReady = true
+            })
+    } else {
+        applyDictionary({
+            SHORT_PROPERTIES: DEFAULT_SHORT_PROPERTIES,
+            COMMON_VALUES: DEFAULT_COMMON_VALUES,
+            SPECIFIC_VALUES: DEFAULT_SPECIFIC_VALUES,
+        })
     }
 
 
@@ -425,14 +520,25 @@ export const xcss = (
             }
         }
 
-        emitter.on('observeDom' as any, (items: string[]) => {
-            if (items.length > 0) {
-                items.forEach((cls) => {
-                    let item = classToProp(cls)
-                    item && updateRules(cls, item)
-                })
+        const applyObservedItems = (items: string[]) => {
+            items.forEach((cls) => {
+                let item = classToProp(cls)
+                item && updateRules(cls, item)
+            })
+        }
+
+        const processObservedItems = (items: string[]) => {
+            if (items.length === 0) return
+
+            const run = () => applyObservedItems(items)
+            if (dictionaryReady) {
+                run()
+            } else {
+                dictionaryReadyPromise.then(run)
             }
-        })
+        }
+
+        emitter.on('observeDom' as any, processObservedItems)
 
         const clsx = (...clsArrs: any[]) => {
             let lsCss = clsArrs
@@ -481,12 +587,7 @@ export const xcss = (
         const observe = () => {
             if (!isBrowser || !docRoot) return
             observeDom(docRoot as Document | Element | ShadowRoot, (items) => {
-                if (items.length > 0) {
-                    items.forEach((cls) => {
-                        let item = classToProp(cls)
-                        item && updateRules(cls, item)
-                    })
-                }
+                processObservedItems(items)
             })
         }
 
@@ -794,7 +895,7 @@ export const xcss = (
         return JSON.parse(localStorage.getItem(CACHE_KEY) || 'null')
     }
 
-    return { buildCss, exportCache }
+    return { buildCss, exportCache, ready: dictionaryReadyPromise }
 }
 
 export const cssObserve = (dom: Document | Element | ShadowRoot, options?: XCSSConfig) => {

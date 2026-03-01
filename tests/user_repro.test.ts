@@ -38,4 +38,15 @@ describe('xcss user repro', () => {
         // We expect it might produce invalid CSS 'display:F&fk-fxdC' 
         // OR nothing if validation fails.
     })
+
+    it('should handle css variable value fk-bgc--red', () => {
+        const { clsx, getCssString } = xcss({ prefix: 'fk-' }).buildCss()
+        const res = clsx('fk-bgc--red')
+        console.log('Result 4:', res)
+        expect(res).toMatch(/^D[A-Z0-9]+$/)
+
+        const css = getCssString()
+        console.log('CSS 4:', css)
+        expect(css).toContain('background-color:var(--red)')
+    })
 })

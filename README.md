@@ -13,11 +13,43 @@
 Mỗi class trong @fwkui/x-css được cấu tạo theo công thức:
 `[Media]:[Layer][Property][Value][@Selector]`
 
+**Thứ tự parse chính xác:**
+1. `Media` (tùy chọn) + dấu `:`
+2. `Layer` (tùy chọn, dạng số)
+3. `Property` (bắt buộc)
+4. `Value` (bắt buộc)
+5. `@Selector` (tùy chọn, nằm cuối class)
+
+**Media mặc định và thứ tự áp dụng nội bộ:**
+
+| Key | Query |
+| :--- | :--- |
+| `default` | Không bọc `@media` (áp dụng trực tiếp) |
+| `xs` | `screen and (max-width: 575px)` |
+| `sm` | `screen and (min-width: 576px)` |
+| `md` | `screen and (min-width: 768px)` |
+| `lg` | `screen and (min-width: 992px)` |
+| `xl` | `screen and (min-width: 1200px)` |
+| `2xl` | `screen and (min-width: 1400px)` |
+| `sma` | `screen and (max-width: 768px)` |
+| `mda` | `screen and (max-width: 992px)` |
+| `lga` | `screen and (max-width: 1200px)` |
+| `xla` | `screen and (max-width: 1400px)` |
+
+`breakpoints` custom sẽ được nối vào sau danh sách trên. Nếu trùng key, giá trị khai báo sau cùng sẽ ghi đè key trước đó.
+
+**Layer mặc định và dải số:**
+- Nếu không truyền `Layer`, hệ thống dùng mặc định `0`.
+- Engine tạo sẵn 24 layer: `l0` đến `l23`.
+- Để thứ tự ổn định, nên dùng dải số `0-23`.
+- Số layer lớn hơn sẽ có độ ưu tiên cascade cao hơn trong cùng media.
+
 **Ví dụ:**
 - `m10px` ⮕ `margin: 10px`
 - `cRed` ⮕ `color: red`
 - `sm:p20px` ⮕ `@media (min-width: 576px) { padding: 20px }`
 - `3bgWhite` ⮕ `@layer l3 { background: white }`
+- `sm:3bgWhite` ⮕ `@media (min-width: 576px) { @layer l3 { background: white } }`
 - `cBlue@:hover` ⮕ `.class:hover { color: blue }`
 
 ### 2. Nguyên lý Parser (Scan & Slice) 🧠
@@ -26,11 +58,15 @@ Thư viện quét class từ trái sang phải và tự động cắt Property/V
 | Loại điểm ngắt | Ví dụ Class | Phân tích (Prop \| Value) |
 | :--- | :--- | :--- |
 | **Số (0-9)** | `w100px` | `w` (width) \| `100px` |
-| **Chữ Hoa (A-Z)** | `dFlex` | `d` (display) \| `Flex` |
+| **Chữ Hoa (A-Z)** | `dF` | `d` (display) \| `F` |
 | **Dấu gạch ngang + Số** | `m-10px` | `m` (margin) \| `-10px` |
 
 > [!IMPORTANT]
 > **Lưu ý về CamelCase**: Sử dụng `mt10px` hoặc `margin-top-10px`, tránh `marginTop10px` để đảm bảo parser hoạt động chính xác.
+>
+> **Lưu ý quan trọng về Value viết tắt bằng chữ cái**:
+> - Value dạng chữ cái phải viết hoa ký tự đầu (ví dụ: `bdN`, `dF`, `posA`).
+> - Tránh viết thường toàn bộ như `bdn`, `df`, `posa`.
 
 ---
 
@@ -42,7 +78,7 @@ Danh sách đầy đủ các từ viết tắt được cập nhật liên tục
 - **Flexbox**: `fx` (flex), `ai` (align-items), `jc` (justify-content).
 - **Spacing**: `m` (margin), `p` (padding), `w` (width), `h` (height).
 - **Styling**: `c` (color), `bg` (background), `bd` (border), `op` (opacity).
-- **Typography**: `fz` (font-size), `fw` (font-weight), `ta` (text-align).
+- **Typography**: `fns` (font-size), `fw` (font-weight), `ta` (text-align).
 
 ---
 
@@ -50,11 +86,30 @@ Bạn có thể tải thư viện hoặc xem mã nguồn tại: [https://github.
 
 ## 📦 Cài đặt
 
-### Cách 1: Dùng qua CDN (Khuyên dùng cho thử nghiệm nhanh)
-Thêm thẻ script sau vào `index.html`:
+### Cách 1: Dùng trực tiếp module qua URL (không cần bundler)
+
+> [!IMPORTANT]
+> Bản `dist/index.js` là CommonJS cho môi trường Node.  
+> Khi chạy trực tiếp trên trình duyệt, hãy dùng `dist/index.mjs` hoặc `dist/index-auto.mjs`.
+
+**Option A - Tự khởi tạo (khuyên dùng):**
 ```html
-<script src="https://unpkg.com/@fwkui/x-css@1.0.9/dist/index.js"></script>
+<script type="module">
+  import xcss from 'https://unpkg.com/@fwkui/x-css@1.0.11/dist/index.mjs';
+
+  xcss.cssObserve(document, {
+    dictionaryImport: true
+  });
+</script>
 ```
+
+**Option B - Auto observe ngay khi import:**
+```html
+<script type="module" src="https://unpkg.com/@fwkui/x-css@1.0.11/dist/index-auto.mjs"></script>
+```
+
+Bạn cũng có thể thay `unpkg` bằng `jsDelivr`:
+`https://cdn.jsdelivr.net/npm/@fwkui/x-css@1.0.11/dist/index.mjs`
 
 ### Cách 2: Cài đặt qua NPM
 ```bash
@@ -78,7 +133,16 @@ xcss.cssObserve(document);
 
 Sử dụng trong HTML:
 ```html
-<div class="dFlex cRed m20px">Hello World</div>
+<div class="dF cRed m20px">Hello World</div>
+```
+
+Nếu bạn không dùng bundler, có thể import thẳng qua URL:
+
+```html
+<script type="module">
+  import xcss from 'https://unpkg.com/@fwkui/x-css@1.0.11/dist/index.mjs';
+  xcss.cssObserve(document);
+</script>
 ```
 
 ### 2. React / Components (`clsx`)
@@ -93,11 +157,11 @@ function Button({ primary, children }) {
     <button 
       className={clsx(
         'p10px;20px',    // padding: 10px 20px
-        'bdn bdra4px',   // border: none, border-radius: 4px
-        'tr0.2s',        // transition: 0.2s
+        'bdN bdra4px',   // border: none, border-radius: 4px
+        'tran0.2s',      // transition: 0.2s
         'cWhite',        // color: white
         primary ? 'bgBlue' : 'bgGray',
-        'op0.8@:hover'   // Opacity 0.8 on hover
+        'opc0.8@:hover'  // opacity: 0.8 when hover
       )}
     >
       {children}
@@ -127,12 +191,27 @@ xcss.cssObserve(document, {
   base: 'body { margin: 0; font-family: sans-serif; }',
 
   // [New] Thêm tiền tố (Prefix) để tránh xung đột
-  prefix: 'fk-' // Chỉ xử lý các class bắt đầu bằng 'fk-'
+  prefix: 'fk-', // Chỉ xử lý các class bắt đầu bằng 'fk-'
+
+  // [New] Điều khiển import dictionary viết tắt
+  // true (mặc định): dùng dictionary.ts của thư viện
+  // false: tắt dictionary mặc định
+  // string URL/path: import dictionary external
+  dictionaryImport: true
 });
 ```
 
-Sau đó sử dụng: `fk-cBrand`, `fk-tablet:dBlock`.
+Sau đó sử dụng: `fk-cBrand`, `fk-tablet:dB`.
 Các class không có tiền tố (ví dụ `m10px`) sẽ bị **bỏ qua**.
+
+Nếu dùng `dictionaryImport` là URL/path ngoài, bạn có thể đợi nạp xong trước khi render:
+
+```javascript
+const cssEngine = xcss.css({ dictionaryImport: 'https://cdn.example.com/xcss-dict.mjs' });
+await cssEngine.ready;
+const { clsx, observe } = cssEngine.buildCss(document);
+observe();
+```
 
 ### 4. Server-Side Rendering (SSR)
 
@@ -166,7 +245,7 @@ const { clsx, getCssString } = xcss({
 }).buildCss();
 
 // Gọi clsx với các class bạn sử dụng trong project
-clsx('m10px p20px cBrand dFlex');
+clsx('m10px p20px cBrand dF');
 
 // 2. Lấy nội dung CSS đã sinh
 const cssContent = getCssString();
@@ -214,10 +293,10 @@ You are using @fwkui/x-css. Follow these rules:
 1. Syntax: `[Media]:[Layer][Property][Value][@Selector]`
 2. Layer prefix: `3bgWhite` (NOT `3:bgWhite`).
 3. Selector suffix: `cRed@:hover` (NOT `hover:cRed`).
-4. Value capitalization: `dFlex`, `posAbs`.
+4. Value capitalization: `bdN`, `dF`, `posA` (NOT `bdn`, `df`, `posa`).
 5. Use aliases from DICTIONARY.md (e.g., `m` for margin, `d` for display).
 ```
 
 ---
 
-*Verified & Updated at 2026-01-27*
+*Verified & Updated at 2026-03-02*

@@ -141,6 +141,10 @@ export function parseClassName(className: string): ParsedClass | null {
             // Check next char
             if (propEnd + 1 < end) {
                 const nextCode = className.charCodeAt(propEnd + 1)
+                // `--` indicates a CSS variable value start (e.g. bgc--red)
+                if (code === 45 && nextCode === 45 && propEnd > start) {
+                    break
+                }
                 // If next valid char is digit (0-9: 48-57), break as it is value start
                 if (nextCode >= 48 && nextCode <= 57) {
                     break

@@ -246,8 +246,8 @@ These abbreviations work with almost all properties (where applicable).
 | `ins` | **inline-size** | _(raw values)_ | `ins10px`<br/>*(inline-size: 10px)* |
 | `is` | **isolation** | `i`: isolate | `isI`<br/>*(isolation: isolate)* |
 | `jc` | **justify-content** | `c`: center<br/> `s`: start<br/> `e`: end<br/> `fs`: flex-start<br/> `fe`: flex-end<br/> `l`: left<br/> `r`: right<br/> `n`: normal<br/> `sp`: space-between<br/> `sa`: space-around<br/> `se`: space-evenly<br/> `st`: stretch<br/> `sc`: safe center<br/> `uc`: unsafe center | `jcC`<br/>*(justify-content: center)* |
-| `ji` | **justify-items** | `n`: normal<br/> `st`: stretch<br/> `c`: center<br/> `s`: start<br/> `e`: end<br/> `fs`: flex-start<br/> `fe`: flex-end<br/> `ss`: self-start<br/> `se`: self-end<br/> `l`: left<br/> `r`: right<br/> `b`: baseline<br/> `fb`: first baseline<br/> `lb`: last baseline<br/> `lr`: legacy right<br/> `ll`: legacy left<br/> `lc`: legacy center<br/> `sc`: safe center<br/> `uc`: unsafe center | `jiN`<br/>*(justify-items: normal)* |
-| `js` | **justify-self** | `n`: normal<br/> `st`: stretch<br/> `c`: center<br/> `s`: start<br/> `e`: end<br/> `fs`: flex-start<br/> `fe`: flex-end<br/> `ss`: self-start<br/> `se`: self-end<br/> `l`: left<br/> `r`: right<br/> `b`: baseline<br/> `sc`: safe center<br/> `uc`: unsafe center | `jsN`<br/>*(justify-self: normal)* |
+| `ji` | **justify-items** | `c`: center<br/> `s`: start<br/> `e`: end<br/> `fs`: flex-start<br/> `fe`: flex-end<br/> `l`: left<br/> `r`: right<br/> `n`: normal<br/> `sp`: space-between<br/> `sa`: space-around<br/> `se`: space-evenly<br/> `st`: stretch<br/> `sc`: safe center<br/> `uc`: unsafe center | `jiC`<br/>*(justify-items: center)* |
+| `js` | **justify-self** | `c`: center<br/> `s`: start<br/> `e`: end<br/> `fs`: flex-start<br/> `fe`: flex-end<br/> `l`: left<br/> `r`: right<br/> `n`: normal<br/> `sp`: space-between<br/> `sa`: space-around<br/> `se`: space-evenly<br/> `st`: stretch<br/> `sc`: safe center<br/> `uc`: unsafe center | `jsC`<br/>*(justify-self: center)* |
 | `l` | **left** | _(raw values)_ | `l10px`<br/>*(left: 10px)* |
 | `lbrk` | **line-break** | _(raw values)_ | `lbrkUn`<br/>*(line-break: unset)* |
 | `lh` | **line-height** | _(raw values)_ | `lh10px`<br/>*(line-height: 10px)* |
@@ -335,7 +335,7 @@ These abbreviations work with almost all properties (where applicable).
 | `pgba` | **page-break-after** | _(raw values)_ | `pgbaPage`<br/>*(page-break-after: page)* |
 | `pgbb` | **page-break-before** | _(raw values)_ | `pgbbPage`<br/>*(page-break-before: page)* |
 | `pgbi` | **page-break-inside** | _(raw values)_ | `pgbiPage`<br/>*(page-break-inside: page)* |
-| `pi` | **padding-inline** | `s`: start<br/> `c`: center<br/> `e`: end<br/> `b`: baseline<br/> `st`: stretch | `piS`<br/>*(padding-inline: start)* |
+| `pi` | **padding-inline** | `c`: center<br/> `s`: start<br/> `e`: end<br/> `fs`: flex-start<br/> `fe`: flex-end<br/> `l`: left<br/> `r`: right<br/> `n`: normal<br/> `sp`: space-between<br/> `sa`: space-around<br/> `se`: space-evenly<br/> `st`: stretch<br/> `sc`: safe center<br/> `uc`: unsafe center | `piC`<br/>*(padding-inline: center)* |
 | `pie` | **padding-inline-end** | _(raw values)_ | `pie10px`<br/>*(padding-inline-end: 10px)* |
 | `pis` | **padding-inline-start** | _(raw values)_ | `pis10px`<br/>*(padding-inline-start: 10px)* |
 | `pl` | **padding-left** | _(raw values)_ | `pl10px`<br/>*(padding-left: 10px)* |
