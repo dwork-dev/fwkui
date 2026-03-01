@@ -49,4 +49,26 @@ describe('xcss user repro', () => {
         console.log('CSS 4:', css)
         expect(css).toContain('background-color:var(--red)')
     })
+
+    it('should handle arbitrary value brackets w[calc(100%;-;10px)]', () => {
+        const { clsx, getCssString } = xcss().buildCss()
+        const res = clsx('w[calc(100%;-;10px)]')
+        console.log('Result 5:', res)
+        expect(res).toMatch(/^D[A-Z0-9]+$/)
+
+        const css = getCssString()
+        console.log('CSS 5:', css)
+        expect(css).toContain('width:calc(100% - 10px)')
+    })
+
+    it('should handle important + hex value c!#0a64e8', () => {
+        const { clsx, getCssString } = xcss().buildCss()
+        const res = clsx('c!#0a64e8')
+        console.log('Result 6:', res)
+        expect(res).toMatch(/^D[A-Z0-9]+$/)
+
+        const css = getCssString()
+        console.log('CSS 6:', css)
+        expect(css).toContain('color:#0a64e8 !important')
+    })
 })

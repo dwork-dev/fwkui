@@ -1,101 +1,34 @@
-# @fwkui/x-css 🚀
+# @fwkui/x-css
 
-**@fwkui/x-css** là một thư viện CSS-in-JS siêu nhẹ, hiệu năng cao, kế thừa tinh hoa từ `fwxcss` với cú pháp Emmet-like. Nó giúp bạn viết mã CSS nhanh hơn bằng cách sử dụng các lớp atomic ngắn gọn, hỗ trợ đầy đủ TypeScript, SSR và khả năng mở rộng mạnh mẽ.
+`@fwkui/x-css` là utility CSS engine siêu nhẹ, parse class theo cú pháp ngắn và sinh CSS runtime theo layer + media.
+
+Mục tiêu của README này:
+1. Người dùng có thể tích hợp ngay.
+2. AI có thể suy luận đúng cú pháp để sinh class dùng được ngay.
+3. QA có thể kiểm thử parser theo vector cố định.
 
 ![License](https://img.shields.io/npm/l/@fwkui/x-css)
 ![Version](https://img.shields.io/npm/v/@fwkui/x-css)
 
----
+## Cài Đặt Nhanh
 
-## 📖 Hướng dẫn Cơ bản
+### 1) NPM
 
-### 1. Cú pháp Cốt lõi
-Mỗi class trong @fwkui/x-css được cấu tạo theo công thức:
-`[Media]:[Layer][Property][Value][@Selector]`
+```bash
+npm install @fwkui/x-css
+```
 
-**Thứ tự parse chính xác:**
-1. `Media` (tùy chọn) + dấu `:`
-2. `Layer` (tùy chọn, dạng số)
-3. `Property` (bắt buộc)
-4. `Value` (bắt buộc)
-5. `@Selector` (tùy chọn, nằm cuối class)
+### 2) Dùng trực tiếp qua URL (không cần bundler)
 
-**Media mặc định và thứ tự áp dụng nội bộ:**
+Lưu ý:
+1. `dist/index.js` là CommonJS (Node).
+2. Trình duyệt dùng `dist/index.mjs` hoặc `dist/index-auto.mjs`.
 
-| Key | Query |
-| :--- | :--- |
-| `default` | Không bọc `@media` (áp dụng trực tiếp) |
-| `xs` | `screen and (max-width: 575px)` |
-| `sm` | `screen and (min-width: 576px)` |
-| `md` | `screen and (min-width: 768px)` |
-| `lg` | `screen and (min-width: 992px)` |
-| `xl` | `screen and (min-width: 1200px)` |
-| `2xl` | `screen and (min-width: 1400px)` |
-| `sma` | `screen and (max-width: 768px)` |
-| `mda` | `screen and (max-width: 992px)` |
-| `lga` | `screen and (max-width: 1200px)` |
-| `xla` | `screen and (max-width: 1400px)` |
+Option A: chủ động khởi tạo
 
-`breakpoints` custom sẽ được nối vào sau danh sách trên. Nếu trùng key, giá trị khai báo sau cùng sẽ ghi đè key trước đó.
-
-**Layer mặc định và dải số:**
-- Nếu không truyền `Layer`, hệ thống dùng mặc định `0`.
-- Engine tạo sẵn 24 layer: `l0` đến `l23`.
-- Để thứ tự ổn định, nên dùng dải số `0-23`.
-- Số layer lớn hơn sẽ có độ ưu tiên cascade cao hơn trong cùng media.
-
-**Ví dụ:**
-- `m10px` ⮕ `margin: 10px`
-- `cRed` ⮕ `color: red`
-- `sm:p20px` ⮕ `@media (min-width: 576px) { padding: 20px }`
-- `3bgWhite` ⮕ `@layer l3 { background: white }`
-- `sm:3bgWhite` ⮕ `@media (min-width: 576px) { @layer l3 { background: white } }`
-- `cBlue@:hover` ⮕ `.class:hover { color: blue }`
-
-### 2. Nguyên lý Parser (Scan & Slice) 🧠
-Thư viện quét class từ trái sang phải và tự động cắt Property/Value dựa trên các điểm ngắt (Số, Chữ Hoa, Ký tự đặc biệt...), giúp tốc độ xử lý nhanh hơn ~1.6x so với Regex truyền thống.
-
-| Loại điểm ngắt | Ví dụ Class | Phân tích (Prop \| Value) |
-| :--- | :--- | :--- |
-| **Số (0-9)** | `w100px` | `w` (width) \| `100px` |
-| **Chữ Hoa (A-Z)** | `dF` | `d` (display) \| `F` |
-| **Dấu gạch ngang + Số** | `m-10px` | `m` (margin) \| `-10px` |
-
-> [!IMPORTANT]
-> **Lưu ý về CamelCase**: Sử dụng `mt10px` hoặc `margin-top-10px`, tránh `marginTop10px` để đảm bảo parser hoạt động chính xác.
->
-> **Lưu ý quan trọng về Value viết tắt bằng chữ cái**:
-> - Value dạng chữ cái phải viết hoa ký tự đầu (ví dụ: `bdN`, `dF`, `posA`).
-> - Tránh viết thường toàn bộ như `bdn`, `df`, `posa`.
-
----
-
-## 📚 Bộ Từ điển (Dictionary)
-Danh sách đầy đủ các từ viết tắt được cập nhật liên tục tại [DICTIONARY.md](./DICTIONARY.md).
-
-### Một số Alias phổ biến:
-- **Layout**: `d` (display), `pos` (position), `z` (z-index), `fl` (float).
-- **Flexbox**: `fx` (flex), `ai` (align-items), `jc` (justify-content).
-- **Spacing**: `m` (margin), `p` (padding), `w` (width), `h` (height).
-- **Styling**: `c` (color), `bg` (background), `bd` (border), `op` (opacity).
-- **Typography**: `fns` (font-size), `fw` (font-weight), `ta` (text-align).
-
----
-
-Bạn có thể tải thư viện hoặc xem mã nguồn tại: [https://github.com/dwork-dev/fwkui](https://github.com/dwork-dev/fwkui)
-
-## 📦 Cài đặt
-
-### Cách 1: Dùng trực tiếp module qua URL (không cần bundler)
-
-> [!IMPORTANT]
-> Bản `dist/index.js` là CommonJS cho môi trường Node.  
-> Khi chạy trực tiếp trên trình duyệt, hãy dùng `dist/index.mjs` hoặc `dist/index-auto.mjs`.
-
-**Option A - Tự khởi tạo (khuyên dùng):**
 ```html
 <script type="module">
-  import xcss from 'https://unpkg.com/@fwkui/x-css@1.0.11/dist/index.mjs';
+  import xcss from 'https://unpkg.com/@fwkui/x-css@latest/dist/index.mjs';
 
   xcss.cssObserve(document, {
     dictionaryImport: true
@@ -103,65 +36,195 @@ Bạn có thể tải thư viện hoặc xem mã nguồn tại: [https://github.
 </script>
 ```
 
-**Option B - Auto observe ngay khi import:**
+Option B: auto observe khi import
+
 ```html
-<script type="module" src="https://unpkg.com/@fwkui/x-css@1.0.11/dist/index-auto.mjs"></script>
+<script type="module" src="https://unpkg.com/@fwkui/x-css@latest/dist/index-auto.mjs"></script>
 ```
 
-Bạn cũng có thể thay `unpkg` bằng `jsDelivr`:
-`https://cdn.jsdelivr.net/npm/@fwkui/x-css@1.0.11/dist/index.mjs`
+CDN thay thế:
+`https://cdn.jsdelivr.net/npm/@fwkui/x-css@latest/dist/index.mjs`
 
-### Cách 2: Cài đặt qua NPM
-```bash
-npm install @fwkui/x-css
-```
+## Dùng Trong 60 Giây
 
----
-
-## 🚀 Hướng dẫn Sử dụng
-
-### 1. Vanilla JavaScript (Tự động)
-
-Để tự động scan và apply style cho toàn bộ document:
-
-```javascript
+```js
 import xcss from '@fwkui/x-css';
 
-// Khởi tạo và lắng nghe thay đổi DOM
 xcss.cssObserve(document);
 ```
 
-Sử dụng trong HTML:
 ```html
-<div class="dF cRed m20px">Hello World</div>
+<button class="dF aiC jcC p10px;16px bdN bdra8px bgc#0a64e8 cWhite">
+  Đăng nhập
+</button>
 ```
 
-Nếu bạn không dùng bundler, có thể import thẳng qua URL:
+## Contract Cú Pháp
 
-```html
-<script type="module">
-  import xcss from 'https://unpkg.com/@fwkui/x-css@1.0.11/dist/index.mjs';
-  xcss.cssObserve(document);
-</script>
+Mỗi utility class theo form:
+
+`[Media]:[Layer][Property][Value][@Selector]`
+
+Thứ tự parse bắt buộc:
+1. `selector` (hậu tố `@...`, nằm ngoài `[]`).
+2. `media` (tiền tố trước `:`).
+3. `layer` (chuỗi số liên tiếp ở đầu).
+4. `property`.
+5. `value`.
+
+Ý nghĩa từng phần:
+1. `Media` (tùy chọn): key media như `sm`, `md`, `lg`, hoặc key custom.
+2. `Layer` (tùy chọn): số ưu tiên cascade.
+3. `Property` (bắt buộc): alias thuộc dictionary hoặc CSS property hợp lệ.
+4. `Value` (bắt buộc với utility chuẩn): giá trị CSS, alias value hoặc arbitrary value.
+5. `@Selector` (tùy chọn): ví dụ `@:hover`, `@::before`.
+
+Ngoại lệ parser (special syntax):
+1. `[AliasName]`: class group alias (không dùng value trực tiếp).
+2. `&...`: nhánh selector đặc biệt theo parser hiện tại.
+
+### Media Mặc Định Và Thứ Tự Nội Bộ
+
+Engine nạp media theo thứ tự:
+
+| Thứ tự | Key | Query |
+| :--- | :--- | :--- |
+| 1 | `default` | Không bọc `@media` |
+| 2 | `xs` | `screen and (max-width: 575px)` |
+| 3 | `sm` | `screen and (min-width: 576px)` |
+| 4 | `md` | `screen and (min-width: 768px)` |
+| 5 | `lg` | `screen and (min-width: 992px)` |
+| 6 | `xl` | `screen and (min-width: 1200px)` |
+| 7 | `2xl` | `screen and (min-width: 1400px)` |
+| 8 | `sma` | `screen and (max-width: 768px)` |
+| 9 | `mda` | `screen and (max-width: 992px)` |
+| 10 | `lga` | `screen and (max-width: 1200px)` |
+| 11 | `xla` | `screen and (max-width: 1400px)` |
+
+Quy tắc custom breakpoint:
+1. `breakpoints` được nối vào sau danh sách mặc định.
+2. Nếu trùng key, key khai báo sau cùng ghi đè key trước (`last write wins`).
+
+Ví dụ:
+
+```js
+xcss.cssObserve(document, {
+  breakpoints: [
+    { tablet: 'screen and (min-width: 768px)' }
+  ]
+});
 ```
 
-### 2. React / Components (`clsx`)
+Dùng class: `tablet:dB`.
 
-Sử dụng `clsx` để kết hợp class động và tối ưu việc gom nhóm string (tương tự `classnames` nhưng tích hợp sẵn parser engine):
+### Layer Mặc Định
+
+1. Nếu không khai báo layer, engine dùng `0`.
+2. Engine tạo sẵn 24 layer: `l0 -> l23`.
+3. Nên dùng dải `0-23` để giữ thứ tự ổn định.
+4. Số layer lớn hơn có ưu tiên cascade cao hơn trong cùng media.
+
+## Quy Tắc Điểm Ngắt Đầy Đủ (Theo Parser Hiện Tại)
+
+Mục tiêu là tách class thành tuple:
+`{ media, layer, property, value, selector }`
+
+Thứ tự suy luận bắt buộc:
+1. Tách `selector`: lấy phần sau ký tự `@` cuối cùng, chỉ khi `@` nằm ngoài `[]`.
+2. Tách `media`: nếu còn `:` thì phần trước `:` là `media`.
+3. Tách `layer`: đọc chuỗi số liên tiếp ở đầu phần còn lại.
+4. Tách `property/value`: quét trái -> phải và dừng `property` theo bảng quyết định.
+5. Nếu phần còn lại bắt đầu bằng `&` hoặc `[` thì đi vào nhánh special syntax.
+
+### Bảng Quyết Định Khi Quét `property`
+
+| Ký tự đang xét | Điều kiện | Hành động |
+| :--- | :--- | :--- |
+| `a-z` | luôn đúng | vẫn là `property` |
+| `-` hoặc `.` | ký tự kế tiếp là số | dừng `property`, phần còn lại là `value` |
+| `-` | gặp `--` và đã có ít nhất 1 ký tự property | dừng `property`, bắt đầu `value` (CSS variable) |
+| `-` hoặc `.` | không rơi vào 2 điều kiện trên | vẫn là `property` |
+| ký tự khác (`A-Z`, `0-9`, `#`, `!`, `[`, `(`, `%`, ...) | luôn đúng | dừng `property`, phần còn lại là `value` |
+
+### Chuẩn Hóa `value` Sau Khi Tách
+
+1. Value bắt đầu bằng `!` -> thêm hậu tố `!important`.
+2. Value bắt đầu bằng `--` -> đổi thành `var(--...)`.
+3. Value dạng `[...]` -> bỏ `[` `]`, rồi thay `;` thành khoảng trắng.
+4. Ký tự `#` trong value giữ nguyên (hex color).
+
+Pseudo-flow cho AI:
+
+```text
+class -> selector -> media -> layer -> property -> value
+if value startsWith('!') => important
+if value startsWith('--') => var(value)
+if value is bracketed [..] => strip brackets + replace ';' with ' '
+```
+
+### Test Vector Mini (10 input -> expected tuple)
+
+| # | Input | Expected tuple |
+| :--- | :--- | :--- |
+| 1 | `m10px` | `{ media: '', layer: '', property: 'm', value: '10px', selector: '' }` |
+| 2 | `md:w100%` | `{ media: 'md', layer: '', property: 'w', value: '100%', selector: '' }` |
+| 3 | `sm:3bgWhite` | `{ media: 'sm', layer: '3', property: 'bg', value: 'White', selector: '' }` |
+| 4 | `cBlue@:hover` | `{ media: '', layer: '', property: 'c', value: 'Blue', selector: ':hover' }` |
+| 5 | `m-10px` | `{ media: '', layer: '', property: 'm', value: '-10px', selector: '' }` |
+| 6 | `opc0.8` | `{ media: '', layer: '', property: 'opc', value: '0.8', selector: '' }` |
+| 7 | `bgc--brand` | `{ media: '', layer: '', property: 'bgc', value: '--brand', selector: '' }` |
+| 8 | `c!#0a64e8` | `{ media: '', layer: '', property: 'c', value: '!#0a64e8', selector: '' }` |
+| 9 | `w[calc(100%;-;10px)]` | `{ media: '', layer: '', property: 'w', value: '[calc(100%;-;10px)]', selector: '' }` |
+| 10 | `[btnPrimary]` | `{ media: '', layer: '', property: '[btnPrimary]', value: '', selector: '' }` |
+
+## Bảng Sai -> Đúng (Những Lỗi Gây Vỡ Parse)
+
+| Sai | Đúng | Giải thích |
+| :--- | :--- | :--- |
+| `bdn` | `bdN` | Value viết tắt dạng chữ cái phải viết hoa ký tự đầu (`N` = none). |
+| `df` | `dF` | `F` là value viết tắt của `flex`. |
+| `posa` | `posA` | `A` là value viết tắt của `absolute`. |
+| `tr0.2s` | `tran0.2s` | Property `transition` là `tran`, không phải `tr`. |
+| `op0.8` | `opc0.8` | `op` là `object-position`; `opc` mới là `opacity`. |
+| `3:bgWhite` | `3bgWhite` | Layer là số đứng liền trước property, không có `:` sau layer. |
+| `hover:cRed` | `cRed@:hover` | Selector modifier dùng hậu tố `@Selector`. |
+| `tablet:dB` (chưa khai báo) | `tablet:dB` + `breakpoints` config | Media custom phải được khai báo trước trong config. |
+| `m--10px` | `m-10px` | Số âm dùng `-`; `--` dành cho CSS variable (`bgc--brand`). |
+| `bgcbrand` | `bgcBrand` hoặc `bgc--brand` | Cần điểm ngắt rõ ràng để parser tách đúng value. |
+| `wcalc(100%-10px)` | `w[calc(100%;-;10px)]` | Value phức tạp nên bọc `[]`, dùng `;` để biểu diễn khoảng trắng. |
+| `!cRed` | `c!Red` | `!` phải đứng trong phần value (sau property), không đứng đầu class. |
+
+## Ví Dụ Chính Xác Theo Dictionary
+
+Danh sách đầy đủ alias xem tại [DICTIONARY.md](./DICTIONARY.md).
+
+Một số alias dễ nhầm:
+1. `op` = `object-position`
+2. `opc` = `opacity`
+3. `tran` = `transition`
+4. `tr` = `transparent` (value alias, không phải property transition)
+
+Ví dụ:
+
+```html
+<div class="dF aiC jcSB p12px;16px bdN bgcWhite"></div>
+<div class="tran0.2s opc0.8@:hover"></div>
+<div class="c!#0a64e8"></div>
+<div class="w[calc(100%;-;10px)]"></div>
+```
+
+## Dùng Trong React / Component
 
 ```jsx
 import { clsx } from '@fwkui/x-css';
 
-function Button({ primary, children }) {
+export function Button({ primary, children }) {
   return (
-    <button 
+    <button
       className={clsx(
-        'p10px;20px',    // padding: 10px 20px
-        'bdN bdra4px',   // border: none, border-radius: 4px
-        'tran0.2s',      // transition: 0.2s
-        'cWhite',        // color: white
-        primary ? 'bgBlue' : 'bgGray',
-        'opc0.8@:hover'  // opacity: 0.8 when hover
+        'dF aiC jcC p10px;16px bdN bdra8px tran0.2s',
+        primary ? 'bgc#0a64e8 cWhite' : 'bgc#e5e7eb c#111827',
+        'opc0.9@:hover'
       )}
     >
       {children}
@@ -170,133 +233,180 @@ function Button({ primary, children }) {
 }
 ```
 
-### 3. Cấu hình (Configuration)
+## Cấu Hình
 
-Bạn có thể truyền object config khi khởi tạo:
-
-```javascript
+```js
 import xcss from '@fwkui/x-css';
 
 xcss.cssObserve(document, {
-  // Thêm màu sắc hoặc giá trị custom
   theme: {
-    brand: '#ff5722',
-    dark: '#333333'
+    brand: '#0a64e8',
+    danger: '#ef4444'
   },
-  // Thêm breakpoint tùy chỉnh
   breakpoints: [
     { tablet: 'screen and (min-width: 768px)' }
   ],
-  // Base CSS
-  base: 'body { margin: 0; font-family: sans-serif; }',
-
-  // [New] Thêm tiền tố (Prefix) để tránh xung đột
-  prefix: 'fk-', // Chỉ xử lý các class bắt đầu bằng 'fk-'
-
-  // [New] Điều khiển import dictionary viết tắt
-  // true (mặc định): dùng dictionary.ts của thư viện
-  // false: tắt dictionary mặc định
-  // string URL/path: import dictionary external
+  base: 'body{margin:0;font-family:system-ui,sans-serif;}',
+  prefix: 'fk-',
   dictionaryImport: true
 });
 ```
 
-Sau đó sử dụng: `fk-cBrand`, `fk-tablet:dB`.
-Các class không có tiền tố (ví dụ `m10px`) sẽ bị **bỏ qua**.
+Sau đó dùng class: `fk-cBrand fk-tablet:dB`.
 
-Nếu dùng `dictionaryImport` là URL/path ngoài, bạn có thể đợi nạp xong trước khi render:
+`dictionaryImport`:
+1. `true` (mặc định): dùng dictionary tích hợp.
+2. `false`: tắt dictionary mặc định.
+3. `string` URL/path: import dictionary ngoài.
 
-```javascript
-const cssEngine = xcss.css({ dictionaryImport: 'https://cdn.example.com/xcss-dict.mjs' });
-await cssEngine.ready;
-const { clsx, observe } = cssEngine.buildCss(document);
+Nếu import dictionary ngoài:
+
+```js
+const engine = xcss.css({ dictionaryImport: 'https://cdn.example.com/xcss-dict.mjs' });
+await engine.ready;
+const { clsx, observe } = engine.buildCss(document);
 observe();
 ```
 
-### 4. Server-Side Rendering (SSR)
+Mẫu file để thay thế trực tiếp URL `https://cdn.example.com/xcss-dict.mjs`:
 
-Để hỗ trợ SSR (Next.js, Remix...), bạn cần inject CSS sinh ra từ server vào thẻ `<head>`:
+```js
+// xcss-dict.mjs
+// Có thể public lên CDN của bạn rồi truyền URL vào dictionaryImport
 
-```javascript
+export const SHORT_PROPERTIES = {
+  d: 'display',
+  c: 'color',
+  bgc: 'background-color',
+  bd: 'border',
+  w: 'width',
+  h: 'height',
+  p: 'padding',
+  m: 'margin',
+  tran: 'transition',
+  opc: 'opacity'
+};
+
+export const COMMON_VALUES = {
+  n: 'none',
+  b: 'block',
+  f: 'flex',
+  t: 'transparent',
+  i: 'inherit'
+};
+
+export const SPECIFIC_VALUES = {
+  d: {
+    f: 'flex',
+    b: 'block',
+    ib: 'inline-block'
+  },
+  bd: {
+    n: 'none'
+  },
+  c: {
+    pri: '#0a64e8',
+    danger: '#ef4444'
+  },
+  bgc: {
+    pri: '#0a64e8',
+    soft: '#e8f1ff'
+  }
+};
+
+export default {
+  SHORT_PROPERTIES,
+  COMMON_VALUES,
+  SPECIFIC_VALUES
+};
+```
+
+Quy trình thay link:
+1. Tạo file `xcss-dict.mjs` theo mẫu trên.
+2. Upload lên CDN/public URL của bạn.
+3. Thay `dictionaryImport` bằng URL thật.
+4. Chờ `await engine.ready` trước khi render class.
+
+## SSR Và Static Extraction
+
+SSR:
+
+```js
 import { getCss } from '@fwkui/x-css';
 
-// Trong file layout/server entry
 const styles = getCss();
-
-// Inject HTML
-// Inject HTML
 // <style dangerouslySetInnerHTML={{ __html: styles }} />
 ```
 
-### 5. Xuất File CSS (Static Extraction)
+Static extraction:
 
-Nếu bạn muốn tạo file `.css` tĩnh (dành cho Static Site Generation hoặc Cache build), bạn có thể dùng script sau:
+```js
+import xcss from '@fwkui/x-css';
+import fs from 'node:fs';
 
-```javascript
-// build-css.js
-const fs = require('fs');
-const xcss = require('@fwkui/x-css');
-
-// 1. Giả lập quá trình Render để thu thập class
-// (Bạn có thể import App và renderToString nếu dùng React/Vue)
-// Ở đây ví dụ gọi thủ công:
-const { clsx, getCssString } = xcss({
-    theme: { brand: '#ff0000' } // Cấu hình (nếu có)
+const { clsx, getCssString } = xcss.css({
+  theme: { brand: '#0a64e8' }
 }).buildCss();
 
-// Gọi clsx với các class bạn sử dụng trong project
 clsx('m10px p20px cBrand dF');
 
-// 2. Lấy nội dung CSS đã sinh
-const cssContent = getCssString();
-
-// 3. Ghi ra file
-fs.writeFileSync('./public/styles.css', cssContent);
-console.log('✅ CSS file generated!');
+fs.writeFileSync('./public/styles.css', getCssString());
 ```
 
-> [!NOTE]
-> **Custom Config SSR**: Nếu dự án dùng config tùy chỉnh (Theme, Prefix...), hãy đảm bảo khởi tạo `xcss(config)` và truyền instance đó xuống các component (qua Context/Props) thay vì dùng `import { clsx }` mặc định. Điều này đảm bảo Server và Client đồng bộ hash.
+## Prompt Mẫu Cho AI (Dùng Thẳng)
 
-### 5. Zero-FOUC (Hybrid Cache) ⚡
-
-Để tăng tốc độ hiển thị và ngăn chặn FOUC (Flash of Unstyled Content) hoàn toàn, bạn hãy thêm đoạn script Bootloader này vào thẻ `<head>` của `index.html` (đặt **trước** tất cả các thẻ style/script khác):
-
-```html
-<script>
-  // @fwkui/x-css Bootloader
-  (function(){try{if(typeof window==='undefined')return;var d=localStorage.getItem('xcss_cache_v1');if(!d)return;var j=JSON.parse(d);if(!j||!j.cssText)return;var s=document.getElementById('fwkui');if(!s){s=document.createElement('style');s.id='fwkui';document.head.appendChild(s)}var c='';if(j.cssText.root)c+=j.cssText.root+'\n';for(var k in j.cssText){if(k!=='root')c+=j.cssText[k]+'\n'}s.textContent=c}catch(e){}})()
-</script>
-```
-
-**Cơ chế hoạt động:**
-1. **Lần đầu truy cập**: Thư viện load bình thường, sinh CSS và tự động lưu vào `localStorage`.
-2. **Lần sau (F5/Revisit)**: Script trên sẽ chạy ngay lập tức (10-50ms), đọc CSS từ cache và inject vào trang trước khi bất kỳ nội dung nào được render.
-3. **Tự động Invalidate**: Nếu bạn thay đổi config (Theme/Breakpoints), cache cũ sẽ tự động bị xóa để tránh lỗi giao diện.
-
-> [!TIP]
-> **Lưu ý về Theme Custom**: 
-> Parser dựa vào ký tự viết hoa để tách Property và Value.
-> - `theme: { brandColor: '...' }` ⮕ Class: `cBrandColor` (Khuyên dùng).
-> - `theme: { 'brand-color': '...' }` ⮕ Class: `cBrand-color` (Vẫn hỗ trợ, chữ `B` làm điểm ngắt).
-> 
-> Tuyệt đối tránh viết thường toàn bộ (ví dụ `cbrandcolor`) vì thư viện sẽ không thể phân tách đúng.
-
----
-
-## ⚙️ Hỗ trợ AI Coding
-
-Để AI (Cursor, Copilot) code chính xác với cú pháp của @fwkui/x-css, hãy thêm rule sau vào `.cursorrules` hoặc prompt:
+Bạn có thể đưa block này vào prompt system/project rules:
 
 ```markdown
-You are using @fwkui/x-css. Follow these rules:
-1. Syntax: `[Media]:[Layer][Property][Value][@Selector]`
-2. Layer prefix: `3bgWhite` (NOT `3:bgWhite`).
-3. Selector suffix: `cRed@:hover` (NOT `hover:cRed`).
-4. Value capitalization: `bdN`, `dF`, `posA` (NOT `bdn`, `df`, `posa`).
-5. Use aliases from DICTIONARY.md (e.g., `m` for margin, `d` for display).
+You are using @fwkui/x-css.
+Generate class names strictly with syntax: [Media]:[Layer][Property][Value][@Selector].
+
+Rules:
+1. Value is required for normal utility classes.
+2. Layer must be numeric and placed directly before Property (e.g. 3bgWhite).
+3. Selector must be suffix @Selector (e.g. cBlue@:hover).
+4. Use dictionary aliases from DICTIONARY.md.
+5. Keep abbreviation values capitalized when needed (bdN, dF, posA).
+6. For complex CSS values, use bracket notation, and use ';' as space placeholder:
+   w[calc(100%;-;10px)].
+7. Use opc for opacity, tran for transition, op for object-position.
+
+Before final answer:
+- Validate each class can be parsed into {media, layer, property, value, selector}.
+- Avoid invalid forms like bdn, tr0.2s, op0.8, 3:bgWhite, hover:cRed.
 ```
 
----
+Template giao việc cho AI thiết kế UI:
 
-*Verified & Updated at 2026-03-02*
+```markdown
+Thiết kế giao diện [màn hình] bằng @fwkui/x-css.
+Yêu cầu:
+1. Trả về HTML/JSX hoàn chỉnh.
+2. Chỉ dùng class theo cú pháp [Media]:[Layer][Property][Value][@Selector].
+3. Với value phức tạp, dùng [] và ';' thay cho khoảng trắng.
+4. Không dùng class sai quy tắc (bdn, tr0.2s, op0.8, hover:cRed...).
+5. Cuối câu trả lời thêm bảng kiểm:
+   - class
+   - parsed tuple {media, layer, property, value, selector}
+   - css dự kiến
+```
+
+## Checklist QA Trước Khi Build
+
+1. Không còn class sai viết hoa value (`bdn`, `df`, `posa`).
+2. Không dùng nhầm alias (`op`/`opc`, `tr`/`tran`).
+3. Các value phức tạp đều bọc `[]`.
+4. Media custom đã khai báo trong `breakpoints`.
+5. Không có dạng sai layer/selector (`3:bg`, `hover:cRed`).
+6. Test parser với ít nhất bộ 10 test vector ở trên.
+
+## Tài Liệu Liên Quan
+
+1. Dictionary đầy đủ: [DICTIONARY.md](./DICTIONARY.md)
+2. Source code: [https://github.com/dwork-dev/fwkui](https://github.com/dwork-dev/fwkui)
+
+## License
+
+Licensed under MIT. See [LICENSE](./LICENSE).
+
+Updated: 2026-03-02
