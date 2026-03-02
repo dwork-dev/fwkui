@@ -71,4 +71,21 @@ describe('xcss user repro', () => {
         console.log('CSS 6:', css)
         expect(css).toContain('color:#0a64e8 !important')
     })
+
+    it('should keep invalid token as raw class (bs-a) and still parse valid token', () => {
+        const { clsx, getCssString } = xcss().buildCss()
+        const res = clsx('bs-a', 'abcde', 'm10px')
+        console.log('Result 7:', res)
+
+        const parts = res.split(' ')
+        expect(parts).toContain('bs-a')
+        expect(parts).toContain('abcde')
+        expect(parts.some((p) => /^D[A-Z0-9]+$/.test(p))).toBe(true)
+
+        const css = getCssString()
+        console.log('CSS 7:', css)
+        expect(css).toContain('margin:10px')
+        expect(css).not.toContain('bs-a')
+        expect(css).not.toContain('abcde')
+    })
 })

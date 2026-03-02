@@ -10,7 +10,10 @@ import {
 export type XCSSConfig = {
     base?: string
     aliases?: Record<string, string[]>
+    excludes?: string[]
+    /** @deprecated Use `excludes` instead. */
     exclude?: string[]
+    excludePrefixes?: string[]
     breakpoints?: Record<string, string>[]
     theme?: Record<string, string>
     prefix?: string
@@ -126,13 +129,20 @@ const setupCssLayers = (docRoot: Document | ShadowRoot | null, id?: string) => {
 
 // Helper to hash config
 const hashConfig = (config: XCSSConfig): string => {
+    const excludes = Array.isArray(config.excludes)
+        ? config.excludes
+        : Array.isArray(config.exclude)
+            ? config.exclude
+            : []
+
     const str = JSON.stringify({
         base: config.base || '',
         aliases: config.aliases || {},
         breakpoints: config.breakpoints || [],
         theme: config.theme || {},
         prefix: config.prefix || '',
-        exclude: config.exclude || [],
+        excludes,
+        excludePrefixes: config.excludePrefixes || [],
         dictionaryImport: config.dictionaryImport ?? true,
     })
 
@@ -165,7 +175,8 @@ export const xcss = (
     modules: XCSSConfig = {
         base: '',
         aliases: {},
-        exclude: [],
+        excludes: [],
+        excludePrefixes: [],
         breakpoints: [],
         theme: {},
         prefix: '',
@@ -183,15 +194,56 @@ export const xcss = (
         breakpoints: mediaQuery = [],
         aliases: groupValues = {},
         theme: valueExt = {},
-        exclude: exNames = [],
+        excludes: excludeNames = [],
+        exclude: excludeLegacy = [],
+        excludePrefixes = [],
         prefix = '',
         dictionaryImport = true,
     } = modules || {}
 
     if (!Array.isArray(mediaQuery)) mediaQuery = []
-    if (!Array.isArray(exNames)) exNames = []
+    if (!Array.isArray(excludeNames)) excludeNames = []
+    if (!Array.isArray(excludeLegacy)) excludeLegacy = []
+    if (!Array.isArray(excludePrefixes)) excludePrefixes = []
     if (!groupValues || typeof groupValues !== 'object') groupValues = {}
     if (!valueExt || typeof valueExt !== 'object') valueExt = {}
+
+    const mergedExcludes = [...excludeNames, ...excludeLegacy]
+
+    const normalizedExcludePrefixes = excludePrefixes
+        .filter((x): x is string => typeof x === 'string')
+        .map((x) => x.trim())
+        .filter((x) => x.length > 0)
+
+    const globToRegex = (pattern: string): RegExp => {
+        const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&')
+        return new RegExp('^' + escaped.replace(/\*/g, '.*') + '$')
+    }
+
+    const excludeRules = mergedExcludes
+        .filter((x): x is string => typeof x === 'string')
+        .map((x) => x.trim())
+        .filter((x) => x.length > 0)
+        .map((pattern) => {
+            if (pattern.includes('*')) {
+                const regex = globToRegex(pattern)
+                return (cls: string) => regex.test(cls)
+            }
+            return (cls: string) => cls === pattern
+        })
+
+    const isExcludedClass = (txtClass: string): boolean => {
+        if (normalizedExcludePrefixes.some((prefixText) => txtClass.startsWith(prefixText))) {
+            return true
+        }
+        return excludeRules.some((rule) => rule(txtClass))
+    }
+
+    const shouldProcessClass = (txtClass: string): boolean => {
+        if (prefix && !txtClass.startsWith(prefix)) return false
+        if (isExcludedClass(txtClass)) return false
+        return true
+    }
 
     let PropertiesCss: CssPropertyMap = {}
     let ValueExts: CssValueMap = {}
@@ -556,10 +608,11 @@ export const xcss = (
                 if (CSS_KEYS.has(l)) {
                     item = CSS_KEYS.get(l)!
                 } else {
-                    const isMatch = !prefix || l.startsWith(prefix)
-                    const parseTarget = isMatch && prefix ? l.slice(prefix.length) : l
+                    const canProcess = shouldProcessClass(l)
 
-                    if (isMatch && parseClassName(parseTarget)) {
+                    // Only hash class names that can actually generate valid CSS.
+                    // Invalid/unsupported tokens (e.g. "bs-a") must stay raw.
+                    if (canProcess && classToProp(l)) {
 
                         let key = 'D' + CSS_KEYS.size.toString(32).toUpperCase()
                         CSS_KEYS.set(l, key)
@@ -734,16 +787,7 @@ export const xcss = (
     }
 
     function classToProp(txtClass: string) {
-        if (prefix && !txtClass.startsWith(prefix)) return null
-
-        let checkEx =
-            exNames.length > 0 &&
-            exNames.every((e) =>
-                e.includes('*')
-                    ? new RegExp('^' + e.replace(/\*/g, '.+') + '$').test(txtClass)
-                    : e == txtClass,
-            )
-        if (checkEx) return null
+        if (!shouldProcessClass(txtClass)) return null
 
         const parseTarget = prefix ? txtClass.slice(prefix.length) : txtClass
         const parsed = parseClassName(parseTarget)

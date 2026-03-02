@@ -248,11 +248,48 @@ xcss.cssObserve(document, {
   ],
   base: 'body{margin:0;font-family:system-ui,sans-serif;}',
   prefix: 'fk-',
+  excludePrefixes: ['bs-', 'rs-'],
+  excludes: ['legacy-*'],
   dictionaryImport: true
 });
 ```
 
 Sau đó dùng class: `fk-cBrand fk-tablet:dB`.
+
+Gợi ý tối ưu bỏ qua parse:
+1. Dùng `prefix` nếu bạn kiểm soát được class framework (nhanh và sạch nhất).
+2. Dùng `excludePrefixes` để bỏ qua nhanh theo tiền tố, ví dụ `bs-`, `rs-`.
+3. Dùng `excludes` khi cần rule chính xác hoặc wildcard (`*`), ví dụ `legacy-*`, `tmp-debug`.
+
+Ví dụ đầu vào cho `excludes`:
+
+| Cấu hình | Input class | Kết quả mong đợi |
+| :--- | :--- | :--- |
+| `excludes: ['container']` | `container m10px` | `container` giữ nguyên; chỉ `m10px` được parse thành CSS |
+| `excludes: ['bs-*']` | `bs-btn m10px` | `bs-btn` bị bỏ qua parse; `m10px` vẫn parse |
+| `excludes: ['*-debug']` | `card-debug p8px` | `card-debug` bị bỏ qua parse; `p8px` vẫn parse |
+| `excludes: ['tmp-*', 'legacy-*']` | `tmp-a legacy-card dF` | `tmp-a`, `legacy-card` bị bỏ qua; `dF` vẫn parse |
+| `excludePrefixes: ['bs-', 'rs-']` | `bs-modal rs-open h100%` | `bs-modal`, `rs-open` bị bỏ qua nhanh; `h100%` vẫn parse |
+
+Ví dụ output thực tế của `clsx`:
+
+| Config | Gọi `clsx(...)` | Output | Ghi chú |
+| :--- | :--- | :--- | :--- |
+| `excludePrefixes: ['bs-'], excludes: ['abc*']` | `clsx('bs-a', 'abcde')` | `bs-a abcde` | Cả hai bị bỏ qua, giữ nguyên class gốc. |
+| `excludePrefixes: ['bs-'], excludes: ['abc*']` | `clsx('bs-a', 'abcde', 'm10px')` | `bs-a abcde D0` | Chỉ `m10px` parse thành class hash. |
+| `excludes: ['bs-', 'abc*']` | `clsx('bs-a', 'abcde', 'm10px')` | `bs-a abcde D0` | `bs-` là exact match nên không bắt `bs-a`; `bs-a` vẫn giữ nguyên vì token không sinh CSS hợp lệ. |
+| `excludes: ['abc*def']` | `clsx('abcXYZdef', 'm10px')` | `abcXYZdef D0` | Wildcard giữa chuỗi hoạt động bình thường. |
+| `excludes: ['*-abc']` | `clsx('foo-abc', 'm10px')` | `foo-abc D0` | Wildcard cuối chuỗi hoạt động bình thường. |
+
+Lưu ý format output:
+1. `clsx` trả chuỗi class phân tách bằng khoảng trắng, không dùng dấu phẩy.
+2. Token không parse được hoặc bị exclude sẽ giữ nguyên ở output.
+
+Lưu ý khi dùng cùng `prefix`:
+1. Engine kiểm tra `prefix` trước, rồi mới kiểm tra `excludes`/`excludePrefixes`.
+2. Nếu có `prefix: 'fk-'`, class không bắt đầu bằng `fk-` đã bị bỏ qua từ đầu.
+3. Vì vậy pattern excludes nên viết theo class thực tế sau khi thêm prefix, ví dụ `excludes: ['fk-bs-*']`, `excludePrefixes: ['fk-rs-']`.
+4. `exclude` vẫn được hỗ trợ để tương thích ngược, nhưng key khuyến nghị là `excludes`.
 
 `dictionaryImport`:
 1. `true` (mặc định): dùng dictionary tích hợp.
