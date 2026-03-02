@@ -292,9 +292,13 @@ Lưu ý khi dùng cùng `prefix`:
 4. `exclude` vẫn được hỗ trợ để tương thích ngược, nhưng key khuyến nghị là `excludes`.
 
 `dictionaryImport`:
-1. `true` (mặc định): dùng dictionary tích hợp.
-2. `false`: tắt dictionary mặc định.
+1. `true` (mặc định): tự động tải dictionary built-in từ module `dist/dictionary.*` (giúp file core nhẹ hơn).
+2. `false`: tắt dictionary.
 3. `string` URL/path: import dictionary ngoài.
+
+Lưu ý:
+1. Với `dictionaryImport: true` hoặc `string`, engine có thể tải dictionary bất đồng bộ tùy môi trường runtime.
+2. Nếu cần chắc chắn dictionary đã sẵn sàng trước khi render quan trọng, dùng `await engine.ready`.
 
 Nếu import dictionary ngoài:
 

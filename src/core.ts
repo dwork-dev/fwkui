@@ -1,10 +1,5 @@
 import { mitt } from './events'
 import { parseClassName } from './parser'
-import {
-    SHORT_PROPERTIES as DEFAULT_SHORT_PROPERTIES,
-    COMMON_VALUES as DEFAULT_COMMON_VALUES,
-    SPECIFIC_VALUES as DEFAULT_SPECIFIC_VALUES,
-} from './dictionary'
 
 
 export type XCSSConfig = {
@@ -67,11 +62,50 @@ const loadExternalDictionary = async (source: string): Promise<XCSSDictionaryDat
     const mod = await import(/* @vite-ignore */ source)
     const data = resolveDictionaryData(mod)
     if (!data) {
-        throw new Error(
-            'XCSS: dictionary module must export SHORT_PROPERTIES, COMMON_VALUES and SPECIFIC_VALUES',
-        )
+        throw new Error(DICTIONARY_MODULE_ERROR)
     }
     return data
+}
+
+const DICTIONARY_MODULE_ERROR =
+    'XCSS: dictionary module must export SHORT_PROPERTIES, COMMON_VALUES and SPECIFIC_VALUES'
+
+const loadBuiltinDictionarySync = (): XCSSDictionaryData | null => {
+    // Keep Node compatibility for synchronous flows (SSR/tests in CJS).
+    const req = typeof require === 'function' ? require : null
+    if (!req) return null
+
+    for (const source of ['./dictionary.js', './dictionary']) {
+        try {
+            const mod = req(source)
+            const data = resolveDictionaryData(mod)
+            if (data) return data
+        } catch (_error) {
+            // try next candidate
+        }
+    }
+    return null
+}
+
+const loadBuiltinDictionary = async (): Promise<XCSSDictionaryData> => {
+    const syncData = loadBuiltinDictionarySync()
+    if (syncData) return syncData
+
+    const candidates = ['./dictionary.mjs', './dictionary.js', './dictionary']
+    let lastError: unknown = null
+
+    for (const source of candidates) {
+        try {
+            const mod = await import(/* @vite-ignore */ source)
+            const data = resolveDictionaryData(mod)
+            if (data) return data
+        } catch (error) {
+            lastError = error
+        }
+    }
+
+    if (lastError) throw lastError
+    throw new Error(DICTIONARY_MODULE_ERROR)
 }
 
 const setupCssLayers = (docRoot: Document | ShadowRoot | null, id?: string) => {
@@ -291,11 +325,23 @@ export const xcss = (
                 dictionaryReady = true
             })
     } else {
-        applyDictionary({
-            SHORT_PROPERTIES: DEFAULT_SHORT_PROPERTIES,
-            COMMON_VALUES: DEFAULT_COMMON_VALUES,
-            SPECIFIC_VALUES: DEFAULT_SPECIFIC_VALUES,
-        })
+        const syncBuiltinDictionary = loadBuiltinDictionarySync()
+        if (syncBuiltinDictionary) {
+            applyDictionary(syncBuiltinDictionary)
+        } else {
+            dictionaryReady = false
+            applyDictionary(null)
+            dictionaryReadyPromise = loadBuiltinDictionary()
+                .then((dictionary) => {
+                    applyDictionary(dictionary)
+                })
+                .catch((error) => {
+                    console.warn('XCSS: Failed to load built-in dictionary module', error)
+                })
+                .finally(() => {
+                    dictionaryReady = true
+                })
+        }
     }
 
 
@@ -603,16 +649,30 @@ export const xcss = (
 
             lsCss = [...new Set(lsCss)]
 
+            const shouldHashClass = (txtClass: string): boolean => {
+                if (!shouldProcessClass(txtClass)) return false
+
+                if (dictionaryReady) {
+                    return !!classToProp(txtClass)
+                }
+
+                const parseTarget = prefix ? txtClass.slice(prefix.length) : txtClass
+                const parsed = parseClassName(parseTarget)
+                if (!parsed) return false
+
+                if (parsed.prop.startsWith('[')) return true
+                if (parsed.prop === '&') return parsed.val.length > 0
+                return parsed.val.length > 0
+            }
+
             let lsClassNew = lsCss.map((l: string) => {
                 let item = l
                 if (CSS_KEYS.has(l)) {
                     item = CSS_KEYS.get(l)!
                 } else {
-                    const canProcess = shouldProcessClass(l)
-
                     // Only hash class names that can actually generate valid CSS.
                     // Invalid/unsupported tokens (e.g. "bs-a") must stay raw.
-                    if (canProcess && classToProp(l)) {
+                    if (shouldHashClass(l)) {
 
                         let key = 'D' + CSS_KEYS.size.toString(32).toUpperCase()
                         CSS_KEYS.set(l, key)
