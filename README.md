@@ -213,6 +213,23 @@ Ví dụ:
 <div class="w[calc(100%;-;10px)]"></div>
 ```
 
+Chuỗi thuộc tính bằng `&` (đúng):
+1. `fk-dF&fxdC@;li`
+2. `fk-md:dF&fxdC`
+3. `md:[row]&[col]@;li` (với `aliases.row`, `aliases.col`)
+
+Quy ước `aliases` khuyến nghị (đầy đủ declaration):
+```js
+aliases: {
+  row: ['display:flex', 'padding:5px'],
+  col: ['flex-direction: column', 'margin:5px']
+}
+```
+
+Sai -> Đúng:
+1. `aliases: { row:['dF'], col:['fxdC'] }` -> sai (không còn hỗ trợ).
+2. `aliases: { row:['display:flex'], col:['flex-direction: column'] }` -> đúng.
+
 ## Dùng Trong React / Component
 
 ```jsx
@@ -250,7 +267,13 @@ xcss.cssObserve(document, {
   prefix: 'fk-',
   excludePrefixes: ['bs-', 'rs-'],
   excludes: ['legacy-*'],
-  dictionaryImport: true
+  dictionaryImport: true,
+  cache: {
+    styleId: 'fwkui',
+    version: 'v1',
+    compression: true,
+    debounceMs: 1000
+  }
 });
 ```
 
@@ -299,6 +322,23 @@ Lưu ý khi dùng cùng `prefix`:
 Lưu ý:
 1. Với `dictionaryImport: true` hoặc `string`, engine có thể tải dictionary bất đồng bộ tùy môi trường runtime.
 2. Nếu cần chắc chắn dictionary đã sẵn sàng trước khi render quan trọng, dùng `await engine.ready`.
+
+`cache`:
+1. `styleId` (mặc định `fwkui`): id thẻ `<style>` runtime.
+2. `version` (mặc định `v1`): tham gia vào cache key để chủ động invalidate.
+3. `compression` (mặc định `true`): nén cache trước khi lưu `localStorage`.
+4. `debounceMs` (mặc định `1000`): debounce chu kỳ nén + lưu cache.
+
+Khi `compression: true`:
+1. Ưu tiên `CompressionStream` (deflate-raw + base64) nếu runtime hỗ trợ.
+2. Tự động fallback về LZW để tương thích ngược.
+3. Đọc cache vẫn hỗ trợ key cũ `xcss_cache_v1` để migrate dần.
+
+Quy tắc cache key:
+`cacheKey = styleId + "_cache_" + version`
+
+Ví dụ mặc định:
+`fwkui_cache_v1`
 
 Nếu import dictionary ngoài:
 
@@ -367,6 +407,88 @@ Quy trình thay link:
 2. Upload lên CDN/public URL của bạn.
 3. Thay `dictionaryImport` bằng URL thật.
 4. Chờ `await engine.ready` trước khi render class.
+
+## Bootloader Từ Cache (Khuyến nghị)
+
+Khuyến nghị dùng helper `getBootloaderScript` để chèn script vào `<head>` trước bundle/module, giúp giảm FOUC khi đã có cache CSS.
+
+### Dùng helper `getBootloaderScript`
+
+```js
+import { getBootloaderScript } from '@fwkui/x-css';
+
+const styleId = 'fwkui';
+const version = 'v1';
+
+const bootloaderScript = getBootloaderScript(styleId, version);
+const bootloaderScriptCompact = getBootloaderScript(styleId, version, { compact: true });
+```
+
+### Cấu trúc chèn vào `<head>` (khuyến nghị)
+
+```html
+<head>
+  <!-- 1) Bootloader từ cache: chạy sớm nhất để giảm FOUC -->
+  <script>
+    /* nội dung từ getBootloaderScript(styleId, version) */
+  </script>
+
+  <!-- 2) Bundle/module của app -->
+  <script type="module" src="/assets/main.js"></script>
+</head>
+```
+
+### Đoạn dán thủ công vào `<head>` (copy/paste)
+
+Thay 2 biến ngay đầu script nếu cần:
+1. `sid = 'fwkui'` -> đổi theo `cache.styleId`.
+2. `ver = 'v1'` -> đổi theo `cache.version`.
+
+```html
+<script>
+  (async()=>{const sid='fwkui',ver='v1',k=sid+'_cache_'+ver,l='xcss_cache_v1';const L=s=>{if(!s)return'';const d={};let z=256;for(let i=0;i<256;i++)d[i]=String.fromCharCode(i);const c=[...s].map(ch=>ch.charCodeAt(0));let p=c[0],ph=d[p]||'',r=ph;for(let i=1;i<c.length;i++){const x=c[i];let e=d[x];if(!e)e=x===z?ph+ph[0]:'';r+=e;d[z++]=ph+e[0];ph=e;}return r};const S=()=>typeof DecompressionStream!=='undefined'&&typeof Blob!=='undefined'&&typeof Response!=='undefined';const B=b=>{if(typeof atob==='function'){const s=atob(b),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u;}if(typeof Buffer!=='undefined')return new Uint8Array(Buffer.from(b,'base64'));throw new Error('base64');};const D=async p=>{if(!S())return null;try{return await new Response(new Blob([B(p)]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();}catch{return null;}};const P=async raw=>{if(!raw)return null;try{let j=JSON.parse(raw);if(j&&j.__xcss_cache_v===3&&j.compressed===true&&j.algorithm==='deflate-raw'&&j.encoding==='base64'&&typeof j.payload==='string'){const ex=await D(j.payload);if(!ex)return null;j=JSON.parse(ex);}else if(j&&j.__xcss_cache_v===2&&j.compressed===true&&typeof j.payload==='string'){const ex=L(j.payload);if(!ex)return null;j=JSON.parse(ex);}return j&&j.cssText?j:null;}catch{return null;}};try{if(typeof window==='undefined'||!window.localStorage)return;let p=null;for(const kk of (k===l?[k]:[k,l])){p=await P(localStorage.getItem(kk));if(p)break;}if(!p)return;let st=document.getElementById(sid);if(!st){st=document.createElement('style');st.id=sid;document.head.appendChild(st);}let css=p.cssText.root?p.cssText.root+'\\n':'';for(const n in p.cssText)if(n!=='root')css+=(p.cssText[n]||'')+'\\n';st.textContent=css;}catch{}})();
+</script>
+```
+
+Ví dụ render HTML từ server:
+
+```js
+import { getBootloaderScript } from '@fwkui/x-css';
+
+const styleId = 'fwkui';
+const version = 'v1';
+const bootloaderScript = getBootloaderScript(styleId, version, { compact: true });
+
+const html = `
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <script>${bootloaderScript}</script>
+    <script type="module" src="/assets/main.js"></script>
+  </head>
+  <body><div id="app"></div></body>
+</html>`;
+```
+
+Lưu ý:
+1. Đồng bộ `styleId` + `version` giữa bootloader và cấu hình `xcss.css(...)`.
+2. Script tạo từ `getBootloaderScript` ưu tiên `DecompressionStream` (cache deflate-raw) và fallback LZW/legacy.
+3. Sau bootloader vẫn cần gọi `xcss.cssObserve(...)` như bình thường.
+4. Tương thích ngược: tham số thứ 2 vẫn chấp nhận `cacheKey` cũ nếu bạn đang dùng API trước đó.
+5. Dùng `{ compact: true }` khi muốn script trả về ở dạng nén gọn để nhúng HTML.
+6. Nếu dữ liệu cache dưới key hiện tại bị lỗi/không decode được, engine sẽ tự xóa key đó để lần chạy sau lưu lại dữ liệu mới.
+
+### Khi nào nên dùng `getBootloaderScript`
+
+1. SSR/MPA hoặc trang tĩnh cần giảm FOUC ngay từ first paint.
+2. Ứng dụng có cache CSS trong `localStorage` và muốn render gần như tức thì trước khi bundle chạy.
+3. Khi bạn chủ động kiểm soát thứ tự script trong `<head>`.
+
+Không bắt buộc dùng khi:
+1. Trang không cần tối ưu first paint.
+2. Không dùng cache runtime.
+3. CSP không cho inline script (trừ khi đã cấu hình nonce/hash phù hợp).
 
 ## SSR Và Static Extraction
 

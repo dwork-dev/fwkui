@@ -7,6 +7,82 @@ export type ParsedClass = {
 }
 
 /**
+ * Finds the first ":" outside bracketed arbitrary values.
+ * Example: "w[calc(var(--x:y))]" -> no media colon found.
+ */
+function findFirstColonOutsideBrackets(input: string, start: number, end: number): number {
+    let bracketDepth = 0
+
+    for (let i = start; i < end; i++) {
+        const code = input.charCodeAt(i)
+
+        if (code === 91) { // [
+            bracketDepth++
+            continue
+        }
+
+        if (code === 93) { // ]
+            if (bracketDepth > 0) bracketDepth--
+            continue
+        }
+
+        if (code === 58 && bracketDepth === 0) { // :
+            return i
+        }
+    }
+
+    return -1
+}
+
+/**
+ * Finds the last "@" outside bracketed arbitrary values.
+ * Example: "cRed@[data-x=\"a:b\"]" -> selector starts at that "@".
+ */
+function findLastAtOutsideBrackets(input: string, start: number, end: number): number {
+    let bracketDepth = 0
+
+    for (let i = end - 1; i >= start; i--) {
+        const code = input.charCodeAt(i)
+
+        if (code === 93) { // ]
+            bracketDepth++
+            continue
+        }
+
+        if (code === 91) { // [
+            if (bracketDepth > 0) bracketDepth--
+            continue
+        }
+
+        if (code === 64 && bracketDepth === 0) { // @
+            return i
+        }
+    }
+
+    return -1
+}
+
+/**
+ * Validates square brackets are balanced in a range.
+ * Rejects both missing closing bracket and stray closing bracket.
+ */
+function hasBalancedSquareBrackets(input: string, start: number, end: number): boolean {
+    let bracketDepth = 0
+    for (let i = start; i < end; i++) {
+        const code = input.charCodeAt(i)
+        if (code === 91) { // [
+            bracketDepth++
+            continue
+        }
+        if (code === 93) { // ]
+            if (bracketDepth === 0) return false
+            bracketDepth--
+        }
+    }
+    return bracketDepth === 0
+}
+
+/**
  * Fast checking if a char code is a valid property character (a-z).
  * Note: Dash (-) is treated as start of Value (negative or separator).
  */
@@ -27,6 +103,7 @@ function isLowerAlpha(code: number): boolean {
  */
 export function parseClassName(className: string): ParsedClass | null {
     if (!className || className.length < 2) return null
+    if (!hasBalancedSquareBrackets(className, 0, className.length)) return null
 
     let start = 0
     let end = className.length
@@ -37,23 +114,19 @@ export function parseClassName(className: string): ParsedClass | null {
     // The regex used @(?<s>.*)$ so it takes everything after last @? Or first @? 
     // Regex: (@(?<s>.*))?$ -> It matches @ at the end group.
 
-    // Quick scan for @ from right to left, stopping if we hit ] (end of arbitrary value)
+    // Scan for selector "@" outside [] from right to left.
     let selector = ''
-    let atIndex = className.lastIndexOf('@')
-    if (atIndex > 0) {
-        // Ensure @ is not inside []
-        const closeBracket = className.lastIndexOf(']')
-        if (closeBracket === -1 || atIndex > closeBracket) {
-            selector = className.substring(atIndex + 1)
-            end = atIndex
-        }
+    let atIndex = findLastAtOutsideBrackets(className, start, end)
+    if (atIndex > start) {
+        selector = className.substring(atIndex + 1, end)
+        end = atIndex
     }
 
     // 2. Extract Media Query / Layer Prefix
-    // Look for first ':' 
+    // Look for first ':' outside [] only.
     let mq = ''
     let layer = ''
-    const colonIndex = className.indexOf(':', start)
+    const colonIndex = findFirstColonOutsideBrackets(className, start, end)
 
     if (colonIndex > 0 && colonIndex < end) {
         let prefix = className.substring(start, colonIndex)
@@ -96,22 +169,8 @@ export function parseClassName(className: string): ParsedClass | null {
 
     if (start >= end) return null
 
-    // Check for nested selector syntax &...
-    if (className.charCodeAt(start) === 38) { // '&'
-        // This is a direct selector rule like &span or &[attr]
-        // In this case, prop is empty, value is the rest?
-        // Regex groups:
-        // Group 2: & followed by property-like -> &p-10px
-        // Group 3: & followed by [something] -> &[data-x]
-        // Currently treating as special Prop '&'
-        return {
-            mq,
-            layer,
-            prop: '&',
-            val: className.substring(start + 1, end),
-            selector
-        }
-    }
+    // Leading "&..." is invalid by class syntax rules.
+    if (className.charCodeAt(start) === 38) return null
 
     // Check for Alias/Group Syntax: [name]
     // If it starts with [, we capture the whole [...] part as property

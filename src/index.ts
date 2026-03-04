@@ -1,5 +1,7 @@
 import $$ from './core'
 import { XCSSConfig } from './core'
+import { getBootloaderScript } from './bootloader'
+import type { BootloaderScriptOptions } from './bootloader'
 
 const GLOBAL_KEY = '__FWXCSS_SHARED__'
 
@@ -111,5 +113,6 @@ if (!globalScope[GLOBAL_KEY]) {
 export const clsx = shared.clsx
 export const setClsxRoot = shared.setClsxRoot
 export const getCss = shared.getCss
+export { getBootloaderScript }
 export default $$
-export type { XCSSConfig }
+export type { XCSSConfig, BootloaderScriptOptions }

@@ -13,6 +13,12 @@ export type XCSSConfig = {
     theme?: Record<string, string>
     prefix?: string
     dictionaryImport?: boolean | string
+    cache?: {
+        styleId?: string
+        version?: string
+        compression?: boolean
+        debounceMs?: number
+    }
 }
 
 type CssPropertyMap = Record<string, string>
@@ -27,6 +33,211 @@ type XCSSDictionaryData = {
 
 type DictionaryModuleShape = Partial<XCSSDictionaryData> & {
     default?: Partial<XCSSDictionaryData>
+}
+
+type XCSSCacheConfig = {
+    styleId: string
+    version: string
+    compression: boolean
+    debounceMs: number
+}
+
+type XCSSCacheEnvelopeLZW = {
+    __xcss_cache_v: 2
+    compressed: true
+    payload: string
+}
+
+type XCSSCacheEnvelopeStream = {
+    __xcss_cache_v: 3
+    compressed: true
+    algorithm: 'deflate-raw'
+    encoding: 'base64'
+    payload: string
+}
+
+const LEGACY_CACHE_KEY = 'xcss_cache_v1'
+
+const resolveCacheConfig = (config?: XCSSConfig['cache']): XCSSCacheConfig => {
+    const styleId =
+        typeof config?.styleId === 'string' && config.styleId.trim()
+            ? config.styleId.trim()
+            : 'fwkui'
+    const version =
+        typeof config?.version === 'string' && config.version.trim()
+            ? config.version.trim()
+            : 'v1'
+    const compression = config?.compression ?? true
+    const debounceMs =
+        typeof config?.debounceMs === 'number' && config.debounceMs >= 0
+            ? config.debounceMs
+            : 1000
+
+    return { styleId, version, compression, debounceMs }
+}
+
+const createCacheKey = (cache: XCSSCacheConfig): string => `${cache.styleId}_cache_${cache.version}`
+
+const isCacheEnvelopeLZW = (value: unknown): value is XCSSCacheEnvelopeLZW => {
+    if (!value || typeof value !== 'object') return false
+    const obj = value as Partial<XCSSCacheEnvelopeLZW>
+    return obj.__xcss_cache_v === 2 && obj.compressed === true && typeof obj.payload === 'string'
+}
+
+const isCacheEnvelopeStream = (value: unknown): value is XCSSCacheEnvelopeStream => {
+    if (!value || typeof value !== 'object') return false
+    const obj = value as Partial<XCSSCacheEnvelopeStream>
+    return (
+        obj.__xcss_cache_v === 3 &&
+        obj.compressed === true &&
+        obj.algorithm === 'deflate-raw' &&
+        obj.encoding === 'base64' &&
+        typeof obj.payload === 'string'
+    )
+}
+
+const canUseCompressionStream = (): boolean =>
+    typeof CompressionStream !== 'undefined' &&
+    typeof Blob !== 'undefined' &&
+    typeof Response !== 'undefined'
+
+const canUseDecompressionStream = (): boolean =>
+    typeof DecompressionStream !== 'undefined' &&
+    typeof Blob !== 'undefined' &&
+    typeof Response !== 'undefined'
+
+const bytesToBase64 = (bytes: Uint8Array): string => {
+    if (typeof btoa === 'function') {
+        let binary = ''
+        const CHUNK_SIZE = 0x8000
+        for (let i = 0; i < bytes.length; i += CHUNK_SIZE) {
+            const chunk = bytes.subarray(i, i + CHUNK_SIZE)
+            for (let j = 0; j < chunk.length; j++) {
+                binary += String.fromCharCode(chunk[j])
+            }
+        }
+        return btoa(binary)
+    }
+
+    const buff = (globalThis as any).Buffer
+    if (typeof buff !== 'undefined') {
+        return buff.from(bytes).toString('base64')
+    }
+
+    throw new Error('XCSS: base64 encoding is not supported in this runtime')
+}
+
+const base64ToBytes = (base64: string): Uint8Array => {
+    if (typeof atob === 'function') {
+        const binary = atob(base64)
+        const bytes = new Uint8Array(binary.length)
+        for (let i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i)
+        }
+        return bytes
+    }
+
+    const buff = (globalThis as any).Buffer
+    if (typeof buff !== 'undefined') {
+        return new Uint8Array(buff.from(base64, 'base64'))
+    }
+
+    throw new Error('XCSS: base64 decoding is not supported in this runtime')
+}
+
+const compressDeflateRawBase64 = async (input: string): Promise<string> => {
+    if (!canUseCompressionStream()) {
+        throw new Error('XCSS: CompressionStream is not supported')
+    }
+
+    const stream = new Blob([input])
+        .stream()
+        .pipeThrough(new CompressionStream('deflate-raw'))
+
+    const compressed = await new Response(stream).arrayBuffer()
+    return bytesToBase64(new Uint8Array(compressed))
+}
+
+const decompressDeflateRawBase64 = async (payload: string): Promise<string> => {
+    if (!canUseDecompressionStream()) {
+        throw new Error('XCSS: DecompressionStream is not supported')
+    }
+
+    const bytes = base64ToBytes(payload)
+    const normalized = new Uint8Array(bytes.length)
+    normalized.set(bytes)
+    const stream = new Blob([normalized.buffer])
+        .stream()
+        .pipeThrough(new DecompressionStream('deflate-raw'))
+
+    return await new Response(stream).text()
+}
+
+const isStreamCacheEnvelopeRaw = (raw: string): boolean => {
+    try {
+        const parsed = JSON.parse(raw)
+        return isCacheEnvelopeStream(parsed)
+    } catch (_error) {
+        return false
+    }
+}
+
+const compressLZW = (input: string): string => {
+    if (!input) return ''
+
+    const dictionary = new Map<string, number>()
+    const codes: number[] = []
+    let dictSize = 256
+
+    for (let i = 0; i < 256; i++) {
+        dictionary.set(String.fromCharCode(i), i)
+    }
+
+    let phrase = input[0]
+    for (let i = 1; i < input.length; i++) {
+        const currentChar = input[i]
+        const phraseWithChar = phrase + currentChar
+        if (dictionary.has(phraseWithChar)) {
+            phrase = phraseWithChar
+        } else {
+            codes.push(dictionary.get(phrase)!)
+            dictionary.set(phraseWithChar, dictSize++)
+            phrase = currentChar
+        }
+    }
+    codes.push(dictionary.get(phrase)!)
+
+    return codes.map((code) => String.fromCharCode(code)).join('')
+}
+
+const decompressLZW = (compressed: string): string => {
+    if (!compressed) return ''
+
+    const dictionary = new Map<number, string>()
+    let dictSize = 256
+    let result = ''
+
+    for (let i = 0; i < 256; i++) {
+        dictionary.set(i, String.fromCharCode(i))
+    }
+
+    const codes = compressed.split('').map((char) => char.charCodeAt(0))
+    let previous = codes[0]
+    let phrase = dictionary.get(previous) || ''
+    result = phrase
+
+    for (let i = 1; i < codes.length; i++) {
+        const current = codes[i]
+        let entry = dictionary.get(current)
+        if (!entry) {
+            entry = current === dictSize ? phrase + phrase[0] : ''
+        }
+        result += entry
+        dictionary.set(dictSize++, phrase + entry[0])
+        phrase = entry
+    }
+
+    return result
 }
 
 const resolveDictionaryData = (mod: unknown): XCSSDictionaryData | null => {
@@ -168,6 +379,7 @@ const hashConfig = (config: XCSSConfig): string => {
         : Array.isArray(config.exclude)
             ? config.exclude
             : []
+    const cache = resolveCacheConfig(config.cache)
 
     const str = JSON.stringify({
         base: config.base || '',
@@ -178,6 +390,7 @@ const hashConfig = (config: XCSSConfig): string => {
         excludes,
         excludePrefixes: config.excludePrefixes || [],
         dictionaryImport: config.dictionaryImport ?? true,
+        cache,
     })
 
     let hash = 0
@@ -200,7 +413,49 @@ interface XCSSCacheData {
 /**
  * Hàm factory chính để khởi tạo và cấu hình engine xcss.
  */
-const CACHE_KEY = 'xcss_cache_v1'
+const parseCacheDataSync = (raw: string | null): XCSSCacheData | null => {
+    if (!raw) return null
+    try {
+        const parsed = JSON.parse(raw)
+        if (isCacheEnvelopeLZW(parsed)) {
+            const expanded = decompressLZW(parsed.payload)
+            if (!expanded) return null
+            const data = JSON.parse(expanded) as XCSSCacheData
+            return data
+        }
+        if (isCacheEnvelopeStream(parsed)) return null
+        return parsed as XCSSCacheData
+    } catch (_error) {
+        return null
+    }
+}
+
+const parseCacheDataAsync = async (raw: string | null): Promise<XCSSCacheData | null> => {
+    if (!raw) return null
+    try {
+        const parsed = JSON.parse(raw)
+        if (isCacheEnvelopeLZW(parsed)) {
+            const expanded = decompressLZW(parsed.payload)
+            if (!expanded) return null
+            return JSON.parse(expanded) as XCSSCacheData
+        }
+        if (isCacheEnvelopeStream(parsed)) {
+            const expanded = await decompressDeflateRawBase64(parsed.payload)
+            if (!expanded) return null
+            return JSON.parse(expanded) as XCSSCacheData
+        }
+        return parsed as XCSSCacheData
+    } catch (_error) {
+        return null
+    }
+}
+
+const unwrapCachedCssText = (mediaKey: string, text: string): string => {
+    if (mediaKey === 'root') return text
+    const match = /@media[^{]+\{\n?([\s\S]+)\n?\}/.exec(text)
+    if (match && match[1]) return match[1].trim()
+    return text
+}
 
 /**
  * Hàm factory chính để khởi tạo và cấu hình engine xcss.
@@ -215,6 +470,12 @@ export const xcss = (
         theme: {},
         prefix: '',
         dictionaryImport: true,
+        cache: {
+            styleId: 'fwkui',
+            version: 'v1',
+            compression: true,
+            debounceMs: 1000,
+        },
     },
 ) => {
     // OLD: LZW parsing Logic removed
@@ -233,6 +494,7 @@ export const xcss = (
         excludePrefixes = [],
         prefix = '',
         dictionaryImport = true,
+        cache: cacheOptions = {},
     } = modules || {}
 
     if (!Array.isArray(mediaQuery)) mediaQuery = []
@@ -241,6 +503,9 @@ export const xcss = (
     if (!Array.isArray(excludePrefixes)) excludePrefixes = []
     if (!groupValues || typeof groupValues !== 'object') groupValues = {}
     if (!valueExt || typeof valueExt !== 'object') valueExt = {}
+
+    const cacheConfig = resolveCacheConfig(cacheOptions)
+    const cacheKey = createCacheKey(cacheConfig)
 
     const mergedExcludes = [...excludeNames, ...excludeLegacy]
 
@@ -274,9 +539,28 @@ export const xcss = (
     }
 
     const shouldProcessClass = (txtClass: string): boolean => {
-        if (prefix && !txtClass.startsWith(prefix)) return false
+        // Step 1: Exclude rules first.
         if (isExcludedClass(txtClass)) return false
+        // Step 2: Prefix check.
+        if (prefix && !txtClass.startsWith(prefix)) return false
         return true
+    }
+
+    const defaultMediaKeys = ['default', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', 'sma', 'mda', 'lga', 'xla']
+    const customMediaKeys = mediaQuery
+        .filter((m): m is Record<string, string> => !!m && typeof m === 'object' && !Array.isArray(m))
+        .map((m) => Object.keys(m)[0])
+        .filter((k): k is string => typeof k === 'string' && k.length > 0)
+    const mediaKeySet = new Set<string>([...defaultMediaKeys, ...customMediaKeys])
+    const isValidMediaKey = (mq?: string): boolean => !mq || mediaKeySet.has(mq)
+    const shouldEnforceKnownProperties = dictionaryImport !== false
+    const compositePropertyKeys = new Set(['mx', 'my', 'px', 'py', 'bdx', 'bdy'])
+    let knownFullPropertyNames = new Set<string>()
+    const isKnownPropertyKey = (prop: string): boolean => {
+        if (!prop) return false
+        if (!shouldEnforceKnownProperties) return true
+        if (!PropertiesCss || Object.keys(PropertiesCss).length === 0) return true
+        return !!PropertiesCss[prop] || compositePropertyKeys.has(prop) || knownFullPropertyNames.has(prop)
     }
 
     let PropertiesCss: CssPropertyMap = {}
@@ -296,6 +580,7 @@ export const xcss = (
             PropertiesCss = {}
             ValueExts = {}
             CommonValues = {}
+            knownFullPropertyNames = new Set()
             rebuildExts()
             return
         }
@@ -303,6 +588,7 @@ export const xcss = (
         PropertiesCss = dictionary.SHORT_PROPERTIES
         ValueExts = dictionary.SPECIFIC_VALUES
         CommonValues = dictionary.COMMON_VALUES
+        knownFullPropertyNames = new Set(Object.values(PropertiesCss))
         rebuildExts()
     }
 
@@ -340,9 +626,11 @@ export const xcss = (
                 })
                 .finally(() => {
                     dictionaryReady = true
-                })
+            })
         }
     }
+
+    let lastKnownCacheData: XCSSCacheData | null = null
 
 
 
@@ -350,6 +638,7 @@ export const xcss = (
         // If running in non-browser environment without a doc, we can still simulate for extraction
         const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined'
         let docRoot: Document | ShadowRoot | null = null
+        const hasBaseOverride = Array.isArray(cssDefault) ? cssDefault.length > 0 : !!cssDefault
 
         if (doc) {
             docRoot = 'getRootNode' in doc ? (doc.getRootNode() as Document | ShadowRoot) : (doc as any)
@@ -359,7 +648,7 @@ export const xcss = (
 
         // Setup layers if in browser
         if (isBrowser && docRoot) {
-            setupCssLayers(docRoot)
+            setupCssLayers(docRoot, cacheConfig.styleId)
         }
 
         let emitter = mitt()
@@ -398,12 +687,73 @@ export const xcss = (
         // Cache Key & Logic
         let currentConfigHash = hashConfig(modules)
         let debounceTimer: any = null
+        let latestSaveTicket = 0
         let cacheLoaded = false
+        let loadedCacheData: XCSSCacheData | null = null
+        let loadedCacheStorageKey: string | null = null
+        const asyncCacheCandidates: Array<{ key: string, raw: string }> = []
+
+        const writeCache = (value: string) => {
+            try {
+                window.localStorage.setItem(cacheKey, value)
+            } catch (e) {
+                console.warn('XCSS: Failed to save cache', e)
+            }
+        }
+
+        const removeCacheIfUnchanged = (key: string, expectedRaw?: string) => {
+            if (!isBrowser || !window.localStorage) return
+
+            if (typeof expectedRaw === 'string') {
+                const currentRaw = window.localStorage.getItem(key)
+                if (currentRaw !== expectedRaw) return
+            }
+
+            window.localStorage.removeItem(key)
+        }
 
         const saveCache = (data: XCSSCacheData) => {
             if (!isBrowser || !window.localStorage) return
+            lastKnownCacheData = data
+            const ticket = ++latestSaveTicket
             try {
-                localStorage.setItem(CACHE_KEY, JSON.stringify(data))
+                const json = JSON.stringify(data)
+
+                const writeLZWEnvelope = () => {
+                    const envelope: XCSSCacheEnvelopeLZW = {
+                        __xcss_cache_v: 2,
+                        compressed: true,
+                        payload: compressLZW(json),
+                    }
+                    writeCache(JSON.stringify(envelope))
+                }
+
+                if (!cacheConfig.compression) {
+                    writeCache(json)
+                    return
+                }
+
+                if (canUseCompressionStream() && canUseDecompressionStream()) {
+                    void compressDeflateRawBase64(json)
+                        .then((payload) => {
+                            if (ticket !== latestSaveTicket) return
+                            const envelope: XCSSCacheEnvelopeStream = {
+                                __xcss_cache_v: 3,
+                                compressed: true,
+                                algorithm: 'deflate-raw',
+                                encoding: 'base64',
+                                payload,
+                            }
+                            writeCache(JSON.stringify(envelope))
+                        })
+                        .catch(() => {
+                            if (ticket !== latestSaveTicket) return
+                            writeLZWEnvelope()
+                        })
+                    return
+                }
+
+                writeLZWEnvelope()
             } catch (e) {
                 console.warn('XCSS: Failed to save cache', e)
             }
@@ -441,43 +791,56 @@ export const xcss = (
                     keys: Array.from(CSS_KEYS.entries())
                 }
                 saveCache(data)
-            }, 1000)
+            }, cacheConfig.debounceMs)
         }
 
         // Load Cache Logic (Sync)
         if (isBrowser && window.localStorage) {
             try {
-                const raw = localStorage.getItem(CACHE_KEY)
-                if (raw) {
-                    const data = JSON.parse(raw) as XCSSCacheData
-                    if (data && data.configHash === currentConfigHash) {
-                        // Restore Keys
-                        if (data.keys) {
-                            data.keys.forEach(([k, v]) => CSS_KEYS.set(k, v))
-                        }
-                        // Restore Text (Unwrap for internal use)
-                        if (data.cssText) {
-                            for (const k in data.cssText) {
-                                let txt = data.cssText[k]
-                                if (k !== 'root') {
-                                    const match = /@media[^{]+\{\n?([\s\S]+)\n?\}/.exec(txt)
-                                    if (match && match[1]) {
-                                        cssStyleSheetsText[k] = match[1].trim()
-                                    } else {
-                                        cssStyleSheetsText[k] = txt
-                                    }
-                                } else {
-                                    cssStyleSheetsText[k] = txt
-                                }
-                            }
+                const cacheKeysToTry = cacheKey === LEGACY_CACHE_KEY
+                    ? [cacheKey]
+                    : [cacheKey, LEGACY_CACHE_KEY]
+
+                for (const candidateKey of cacheKeysToTry) {
+                    const raw = window.localStorage.getItem(candidateKey)
+                    if (!raw) continue
+
+                    const data = parseCacheDataSync(raw)
+                    if (!data) {
+                        if (isStreamCacheEnvelopeRaw(raw)) {
+                            asyncCacheCandidates.push({ key: candidateKey, raw })
+                            continue
                         }
 
-                        // We do NOT restore rulesSet here because we need to initialize Sets in loop below first.
-                        // We will populate them after generic init.
-                        cacheLoaded = true
-                    } else {
-                        localStorage.removeItem(CACHE_KEY)
+                        window.localStorage.removeItem(candidateKey)
+                        continue
                     }
+
+                    if (data.configHash !== currentConfigHash) {
+                        window.localStorage.removeItem(candidateKey)
+                        continue
+                    }
+
+                    loadedCacheData = data
+                    loadedCacheStorageKey = candidateKey
+                    cacheLoaded = true
+                    break
+                }
+
+                if (loadedCacheData) {
+                    // Restore Keys
+                    if (loadedCacheData.keys) {
+                        loadedCacheData.keys.forEach(([k, v]) => CSS_KEYS.set(k, v))
+                    }
+
+                    // Restore Text (Unwrap for internal use)
+                    if (loadedCacheData.cssText) {
+                        for (const k in loadedCacheData.cssText) {
+                            const txt = loadedCacheData.cssText[k]
+                            cssStyleSheetsText[k] = unwrapCachedCssText(k, txt)
+                        }
+                    }
+                    lastKnownCacheData = loadedCacheData
                 }
             } catch (e) { console.error(e) }
         }
@@ -501,35 +864,53 @@ export const xcss = (
             cssStyleSheetsPendingScheduled[k] = false
         })
 
-        // Post-Init Hydration: Populate Sets
-        if (cacheLoaded && isBrowser && window.localStorage) {
-            // Re-read or just assume consistent if we had rulesSet in memory earlier?
-            // Since we didn't save `data` variable to outer scope, we need to read again or move `data` up.
-            // Optimize: Read once.
-            const raw = localStorage.getItem(CACHE_KEY)
-            if (raw) {
-                const data = JSON.parse(raw) as XCSSCacheData
-                if (data.rulesSet) {
-                    for (const k in data.rulesSet) {
-                        // Ensure set exists (it was created in loop above)
-                        if (cssStyleSheetsSet[k]) {
-                            // Add all rules
-                            data.rulesSet[k].forEach(r => cssStyleSheetsSet[k].add(r))
-                        }
+        const removeBootloaderStyle = () => {
+            if (!docRoot) return
+            const blStyle = docRoot.querySelector(`style[id="${cacheConfig.styleId}"]`)
+            if (blStyle) blStyle.remove()
+        }
+
+        const hydrateCacheAfterInit = (data: XCSSCacheData, sourceKey: string | null) => {
+            if (data.keys) {
+                data.keys.forEach(([k, v]) => CSS_KEYS.set(k, v))
+            }
+
+            if (data.cssText) {
+                for (const k in data.cssText) {
+                    if (k === 'root' && hasBaseOverride) continue
+
+                    const txt = unwrapCachedCssText(k, data.cssText[k])
+                    cssStyleSheetsText[k] = txt
+                    if (isBrowser && cssStyleSheetsDom[k]) {
+                        cssStyleSheetsDom[k].replaceSync(txt)
                     }
                 }
             }
 
-            // Cleanup Bootloader Style if it exists
-            // logic: Bootloader (style#fwkui) + Lib (Adopted Sheets) = Duplicate.
-            // Remove Bootloader style to let Adopted Sheets take over.
-            // NOTE: 'setupCssLayers' not yet called.
-            if (docRoot) {
-                const blStyle = docRoot.querySelector('style[id="fwkui"]')
-                if (blStyle) {
-                    blStyle.remove()
+            if (data.rulesSet) {
+                for (const k in data.rulesSet) {
+                    if (!cssStyleSheetsSet[k]) cssStyleSheetsSet[k] = new Set()
+                    data.rulesSet[k].forEach(r => cssStyleSheetsSet[k].add(r))
                 }
             }
+
+            if (
+                isBrowser &&
+                window.localStorage &&
+                sourceKey === LEGACY_CACHE_KEY &&
+                cacheKey !== LEGACY_CACHE_KEY
+            ) {
+                saveCache(data)
+                window.localStorage.removeItem(LEGACY_CACHE_KEY)
+            }
+
+            lastKnownCacheData = data
+            removeBootloaderStyle()
+        }
+
+        // Post-Init Hydration: Populate from sync cache
+        if (cacheLoaded && loadedCacheData) {
+            hydrateCacheAfterInit(loadedCacheData, loadedCacheStorageKey)
         }
 
         if (cssDefault && Array.isArray(cssDefault)) {
@@ -555,6 +936,32 @@ export const xcss = (
                     }
                 }
             })
+        }
+
+        // Fallback async hydration for stream-compressed cache payloads.
+        if (isBrowser && window.localStorage && asyncCacheCandidates.length > 0) {
+            void (async () => {
+                for (const candidate of asyncCacheCandidates) {
+                    const data = await parseCacheDataAsync(candidate.raw)
+                    if (!data) {
+                        removeCacheIfUnchanged(candidate.key, candidate.raw)
+                        continue
+                    }
+
+                    if (data.configHash !== currentConfigHash) {
+                        removeCacheIfUnchanged(candidate.key, candidate.raw)
+                        continue
+                    }
+
+                    if (!cacheLoaded) {
+                        cacheLoaded = true
+                        loadedCacheData = data
+                        loadedCacheStorageKey = candidate.key
+                        hydrateCacheAfterInit(data, candidate.key)
+                        break
+                    }
+                }
+            })()
         }
 
         const updateRules = (txtCls: string, d: any) => {
@@ -659,8 +1066,15 @@ export const xcss = (
                 const parseTarget = prefix ? txtClass.slice(prefix.length) : txtClass
                 const parsed = parseClassName(parseTarget)
                 if (!parsed) return false
+                if (!isValidMediaKey(parsed.mq)) return false
 
-                if (parsed.prop.startsWith('[')) return true
+                const selectorStr = (parsed.selector || '').replace(/(';|;)/g, (v: string) => (v == "';" ? ';' : ' '))
+                if (selectorStr && !isLikelyValidSelectorFallback(selectorStr)) return false
+
+                if (parsed.prop.startsWith('[')) {
+                    return !!propsValueExt(parsed.prop + parsed.val)
+                }
+                if (!isKnownPropertyKey(parsed.prop)) return false
                 if (parsed.prop === '&') return parsed.val.length > 0
                 return parsed.val.length > 0
             }
@@ -727,30 +1141,45 @@ export const xcss = (
         if (p && groupValues[p] && Array.isArray(groupValues[p])) {
             let cssProp = groupValues[p]
 
-            // Try to resolve as utility classes first
             let resolvedProps: string[] = []
             let isAllValidUtilities = true
+            const normalizeAliasDeclaration = (input: string): string | null => {
+                const text = input.trim()
+                if (!text) return null
 
-            // To avoid infinite recursion, we might need depth control, but simple mutual recursion 
-            // works if there are no cycles.
-            for (const cls of cssProp) {
-                const res = classToProp(cls)
-                if (res && res.property) {
-                    resolvedProps.push(res.property)
-                } else if (typeof CSS !== 'undefined' && CSS.supports(cls)) {
-                    resolvedProps.push(cls)
-                } else {
-                    // If strict check fails, we might still include it if node env?
-                    // Similar to original logic:
-                    if (typeof CSS === 'undefined') {
-                        resolvedProps.push(cls)
-                    } else {
-                        isAllValidUtilities = false
-                    }
-                }
+                const cleaned = text.endsWith(';') ? text.slice(0, -1).trim() : text
+                const colonIndex = cleaned.indexOf(':')
+                if (colonIndex <= 0 || colonIndex >= cleaned.length - 1) return null
+
+                const prop = cleaned.slice(0, colonIndex).trim()
+                const value = cleaned.slice(colonIndex + 1).trim()
+                if (!prop || !value) return null
+                if (!/^(?:--[a-zA-Z0-9-_]+|-?[a-zA-Z][a-zA-Z0-9-]*)$/.test(prop)) return null
+
+                return `${prop}:${value}`
             }
 
-            if (resolvedProps.length > 0 && (typeof CSS === 'undefined' || isAllValidUtilities)) {
+            for (const cls of cssProp) {
+                if (typeof cls !== 'string') {
+                    isAllValidUtilities = false
+                    break
+                }
+
+                const declaration = normalizeAliasDeclaration(cls)
+                if (declaration) {
+                    if (typeof CSS !== 'undefined' && !CSS.supports(declaration)) {
+                        isAllValidUtilities = false
+                        break
+                    }
+                    resolvedProps.push(declaration)
+                    continue
+                }
+
+                isAllValidUtilities = false
+                break
+            }
+
+            if (resolvedProps.length > 0 && isAllValidUtilities) {
                 return resolvedProps.join(';')
             }
         }
@@ -846,59 +1275,180 @@ export const xcss = (
         return null
     }
 
+    const splitSelectorSuffix = (input: string): { body: string, selector: string } => {
+        let bracketDepth = 0
+        for (let i = input.length - 1; i >= 0; i--) {
+            const ch = input[i]
+            if (ch === ']') {
+                bracketDepth++
+                continue
+            }
+            if (ch === '[') {
+                if (bracketDepth > 0) bracketDepth--
+                continue
+            }
+            if (ch === '@' && bracketDepth === 0) {
+                return {
+                    body: input.slice(0, i),
+                    selector: input.slice(i + 1),
+                }
+            }
+        }
+        return { body: input, selector: '' }
+    }
+
+    const splitByAmpersandOutsideBrackets = (input: string): string[] => {
+        const parts: string[] = []
+        let start = 0
+        let bracketDepth = 0
+
+        for (let i = 0; i < input.length; i++) {
+            const ch = input[i]
+            if (ch === '[') {
+                bracketDepth++
+                continue
+            }
+            if (ch === ']') {
+                if (bracketDepth > 0) bracketDepth--
+                continue
+            }
+            if (ch === '&' && bracketDepth === 0) {
+                parts.push(input.slice(start, i))
+                start = i + 1
+            }
+        }
+
+        parts.push(input.slice(start))
+        return parts
+    }
+
+    const isLikelyValidSelectorFallback = (selector: string): boolean => {
+        if (!selector) return true
+        const text = selector.trim()
+        if (!text) return true
+        if (/[{}]/.test(text)) return false
+        if (text === '#' || text === '(' || text === ')' || text === ',' || text === '>' || text === '+' || text === '~') return false
+        if (text.startsWith('(') || text.startsWith(')')) return false
+
+        let roundDepth = 0
+        for (let i = 0; i < text.length; i++) {
+            const ch = text[i]
+            if (ch === '(') {
+                roundDepth++
+                continue
+            }
+            if (ch === ')') {
+                if (roundDepth === 0) return false
+                roundDepth--
+            }
+        }
+
+        return roundDepth === 0
+    }
+
     function classToProp(txtClass: string) {
         if (!shouldProcessClass(txtClass)) return null
 
         const parseTarget = prefix ? txtClass.slice(prefix.length) : txtClass
-        const parsed = parseClassName(parseTarget)
-        if (!parsed) return null
+        const className = typeof CSS !== 'undefined' ? CSS.escape(txtClass) : escapeCssIdentifier(txtClass)
 
-        let { mq: m = 'default', layer: l = '0', prop: p, val: v, selector: s = '' } = parsed
+        // Support chained utilities: "md:dF&fxdC@;li", "dF&fk-fxdC@;li", "md:[grp1]&[grp2]@;li"
+        if (parseTarget.includes('&') && !parseTarget.startsWith('&')) {
+            const { body, selector } = splitSelectorSuffix(parseTarget)
+            const segments = splitByAmpersandOutsideBrackets(body)
+                .map((seg) => seg.trim())
+                .filter((seg) => seg.length > 0)
+                .map((seg) => (prefix && seg.startsWith(prefix) ? seg.slice(prefix.length) : seg))
 
-        // Construct properties string. 
-        // If prop='&', it mimics old behavior where multiple props could be chained with &.
-        // But in new parser, prop is single unless we handle logic differently.
-        // Old regex split p by &. New parser handles single P:V
-        // Wait, does old syntax allow `m10px&p20px`?
-        // Old regex `(& ...)?` group 2 allows chaining? 
-        // Logic `p.split('&')` suggests chaining is supported.
-        // New parser stops at first prop. 
-        // If we want to support chaining `prop1val1&prop2val2`, the parser needs to be loop based or recursive.
-        // However, standard utility usage usually one class one prop.
-        // Chaining `&` in class name is rare and bad practice?
-        // Let's assume P:V is single for now based on Implementation Plan.
+            if (segments.length > 1) {
+                let rootMedia = ''
+                let rootLayer = ''
+                const rootSelector = selector
+                let hasRoot = false
+                const cssPropItems: string[] = []
 
-        // Reconstruct "Property + Value" string for propToValue
-        // let pvString = p + v // Deprecated: No longer need concatenated string
-        let cssPropItems: string[] = []
+                for (const seg of segments) {
+                    const segClass = rootSelector ? `${seg}@${rootSelector}` : seg
+                    const parsedSeg = parseClassName(segClass)
+                    if (!parsedSeg) return null
+                    if (!isValidMediaKey(parsedSeg.mq)) return null
+                    if (!parsedSeg.prop.startsWith('[') && !isKnownPropertyKey(parsedSeg.prop)) return null
 
-        let valStr = propToValue(p, v)
-        if (valStr) cssPropItems.push(valStr)
+                    if (!hasRoot) {
+                        rootMedia = parsedSeg.mq || ''
+                        rootLayer = parsedSeg.layer || ''
+                        hasRoot = true
+                    } else {
+                        if (!parsedSeg.mq && rootMedia) parsedSeg.mq = rootMedia
+                        if (!parsedSeg.layer && rootLayer) parsedSeg.layer = rootLayer
+                    }
 
-        if (cssPropItems.length == 0) return null
+                    const segMedia = parsedSeg.mq || ''
+                    const segLayer = parsedSeg.layer || ''
+                    const segSelector = parsedSeg.selector || ''
+                    if (segMedia !== rootMedia || segLayer !== rootLayer || segSelector !== rootSelector) {
+                        return null
+                    }
 
-        let selectorStr = s.replace(/(';|;)/g, (v: string) => (v == "';" ? ';' : ' '))
-        let className = typeof CSS !== 'undefined' ? CSS.escape(txtClass) : escapeCssIdentifier(txtClass)
+                    const valStr = propToValue(parsedSeg.prop, parsedSeg.val)
+                    if (!valStr) return null
+                    cssPropItems.push(valStr)
+                }
 
-        let checkSupport = `selector(${className}${selectorStr})`
-        if (typeof CSS !== 'undefined' && selectorStr && !CSS.supports(checkSupport)) {
-            return null
+                if (cssPropItems.length === 0) return null
+
+                const selectorStr = rootSelector.replace(/(';|;)/g, (v: string) => (v == "';" ? ';' : ' '))
+                const checkSupport = `selector(${className}${selectorStr})`
+                if (selectorStr) {
+                    if (typeof CSS !== 'undefined') {
+                        if (!CSS.supports(checkSupport)) return null
+                    } else if (!isLikelyValidSelectorFallback(selectorStr)) {
+                        return null
+                    }
+                }
+
+                return {
+                    media: rootMedia || 'default',
+                    layer: rootLayer || '0',
+                    className,
+                    property: cssPropItems.join(';'),
+                    selector: selectorStr,
+                    cssRules: `.${className}${selectorStr}{${cssPropItems.join(';')}}`,
+                }
+            }
         }
 
-        /* 
-        Old logic used `p.split('&')`. If we need chaining support, we should parse the rest?
-        But typical usage is single atomic class.
-        */
+        const parsed = parseClassName(parseTarget)
+        if (!parsed) return null
+        if (!isValidMediaKey(parsed.mq)) return null
+        if (!parsed.prop.startsWith('[') && !isKnownPropertyKey(parsed.prop)) return null
 
-        let objrs = {
-            media: m || 'default', // parser returns empty string if no mq
+        let { mq: m = 'default', layer: l = '0', prop: p, val: v, selector: s = '' } = parsed
+        const cssPropItems: string[] = []
+
+        const valStr = propToValue(p, v)
+        if (valStr) cssPropItems.push(valStr)
+
+        if (cssPropItems.length === 0) return null
+
+        const selectorStr = s.replace(/(';|;)/g, (v: string) => (v == "';" ? ';' : ' '))
+        const checkSupport = `selector(${className}${selectorStr})`
+        if (selectorStr) {
+            if (typeof CSS !== 'undefined') {
+                if (!CSS.supports(checkSupport)) return null
+            } else if (!isLikelyValidSelectorFallback(selectorStr)) {
+                return null
+            }
+        }
+
+        return {
+            media: m || 'default',
             layer: l || '0',
-            className: className,
+            className,
             property: cssPropItems.join(';'),
             selector: selectorStr,
             cssRules: `.${className}${selectorStr}{${cssPropItems.join(';')}}`,
         }
-        return objrs
     }
 
     // polyfill for CSS.escape in node
@@ -995,8 +1545,14 @@ export const xcss = (
 
     // Public API to export cache for manual build
     const exportCache = () => {
-        if (typeof localStorage === 'undefined') return null
-        return JSON.parse(localStorage.getItem(CACHE_KEY) || 'null')
+        if (typeof window === 'undefined' || !window.localStorage) return lastKnownCacheData
+        const primary = parseCacheDataSync(window.localStorage.getItem(cacheKey))
+        if (primary) return primary
+        if (cacheKey !== LEGACY_CACHE_KEY) {
+            const legacy = parseCacheDataSync(window.localStorage.getItem(LEGACY_CACHE_KEY))
+            if (legacy) return legacy
+        }
+        return lastKnownCacheData
     }
 
     return { buildCss, exportCache, ready: dictionaryReadyPromise }
