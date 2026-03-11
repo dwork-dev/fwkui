@@ -250,6 +250,48 @@ export function Button({ primary, children }) {
 }
 ```
 
+## Shared Instance (Khởi Tạo Một Lần)
+
+Nếu bạn muốn tái sử dụng cùng một instance (giữ mapping key ổn định), dùng factory:
+
+```ts
+import { createSharedInstance } from '@fwkui/x-css';
+
+export const fx = createSharedInstance({
+  prefix: 'fk-',
+  cache: {
+    styleId: 'fwkui',
+    version: 'v1',
+    compression: true,
+    debounceMs: 1000
+  }
+});
+
+// Browser: gọi 1 lần khi app khởi động
+fx.observe(document);
+
+// Dùng ở mọi nơi
+const className = fx.clsx('fk-dF fk-aiC fk-jcC fk-p10px;16px');
+
+// Nếu dictionaryImport là true/string và cần chắc chắn CSS đã sẵn sàng:
+await fx.ready();
+
+// SSR / debug
+const cssText = fx.getCss();
+```
+
+Alias tương đương:
+
+```ts
+import { createSharedClsx } from '@fwkui/x-css';
+const fx = createSharedClsx({ prefix: 'fk-' });
+```
+
+Quy tắc dùng ổn định:
+1. Tạo shared instance đúng 1 lần ở bootstrap.
+2. Không khởi tạo lại instance ở mỗi lần render component.
+3. Giữ nguyên `prefix/cache` trong suốt vòng đời app để key hash ổn định.
+
 ## Cấu Hình
 
 ```js
@@ -309,9 +351,9 @@ Lưu ý format output:
 2. Token không parse được hoặc bị exclude sẽ giữ nguyên ở output.
 
 Lưu ý khi dùng cùng `prefix`:
-1. Engine kiểm tra `prefix` trước, rồi mới kiểm tra `excludes`/`excludePrefixes`.
-2. Nếu có `prefix: 'fk-'`, class không bắt đầu bằng `fk-` đã bị bỏ qua từ đầu.
-3. Vì vậy pattern excludes nên viết theo class thực tế sau khi thêm prefix, ví dụ `excludes: ['fk-bs-*']`, `excludePrefixes: ['fk-rs-']`.
+1. Engine kiểm tra `excludes`/`excludePrefixes` trước, sau đó mới kiểm tra `prefix`.
+2. Nếu token match exclude thì giữ nguyên class gốc và không parse tiếp.
+3. Nếu có `prefix: 'fk-'`, token không bắt đầu bằng `fk-` sẽ giữ nguyên class gốc.
 4. `exclude` vẫn được hỗ trợ để tương thích ngược, nhưng key khuyến nghị là `excludes`.
 
 `dictionaryImport`:

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { xcss } from '../src/core'
+import { createSharedClsx, createSharedInstance } from '../src/index'
 
 const isHashedClass = (value: string) => /^D[A-Z0-9]+$/.test(value)
 
@@ -114,6 +115,33 @@ describe('xcss rule matrix', () => {
         expect(css).toContain('margin:10px')
         expect(css).toContain('color:Red')
         expect(css).not.toContain('width:10px')
+    })
+
+    it('should create shared instance with stable key mapping and initial config', async () => {
+        const shared = createSharedInstance({ prefix: 'fk-' })
+
+        const first = shared.clsx('fk-margin10px')
+        const second = shared.clsx('fk-margin10px')
+        const raw = shared.clsx('margin10px')
+
+        await shared.ready()
+        await Promise.resolve()
+
+        expect(isHashedClass(first)).toBe(true)
+        expect(second).toBe(first)
+        expect(raw).toBe('margin10px')
+        expect(shared.getCss()).toContain('margin:10px')
+    })
+
+    it('should expose shared instance alias factory createSharedClsx', async () => {
+        const shared = createSharedClsx()
+
+        const hashed = shared.clsx('margin-top-10px')
+        await shared.ready()
+        await Promise.resolve()
+
+        expect(isHashedClass(hashed)).toBe(true)
+        expect(shared.getCss()).toContain('margin-top:-10px')
     })
 
     it('should exclude classes by wildcard and prefix', async () => {
