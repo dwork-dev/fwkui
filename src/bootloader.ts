@@ -1,30 +1,25 @@
-const LEGACY_CACHE_KEY = 'xcss_cache_v1'
 
 export type BootloaderScriptOptions = {
-    compact?: boolean
+  compact?: boolean
 }
 
 const resolveCacheKey = (styleId: string, versionOrCacheKey: string): string => {
-    const value = String(versionOrCacheKey || '').trim()
-    if (!value) return `${styleId}_cache_v1`
-
-    // Backward compatibility: keep accepting raw cacheKey from old API.
-    if (value === LEGACY_CACHE_KEY || value.includes('_cache_')) return value
-
-    return `${styleId}_cache_${value}`
+  styleId = styleId || "fwkui";
+  versionOrCacheKey = versionOrCacheKey || "v1";
+  return `${styleId}_cache_${versionOrCacheKey}`;
 }
 
 export const getBootloaderScript = (
-    styleIdInput: string = 'fwkui',
-    version: string = 'v1',
-    options?: BootloaderScriptOptions,
+  styleIdInput: string = 'fwkui',
+  version: string = 'v1',
+  options?: BootloaderScriptOptions,
 ) => {
-    const styleIdValue = String(styleIdInput || '').trim() || 'fwkui'
-    const cacheKeyValue = resolveCacheKey(styleIdValue, version)
-    const styleId = JSON.stringify(styleIdValue)
-    const cacheKey = JSON.stringify(cacheKeyValue)
+  const styleIdValue = String(styleIdInput || '').trim() || 'fwkui'
+  const cacheKeyValue = resolveCacheKey(styleIdValue, version)
+  const styleId = JSON.stringify(styleIdValue)
+  const cacheKey = JSON.stringify(cacheKeyValue)
 
-    const script = `
+  const script = `
 (async function () {
   function decompressLZW(compressed) {
     if (!compressed) return '';
@@ -110,23 +105,14 @@ export const getBootloaderScript = (
     if (typeof window === 'undefined' || !window.localStorage) return;
 
     var styleId = ${styleId};
-    var primaryKey = ${cacheKey};
-    var keys = primaryKey === 'xcss_cache_v1' ? [primaryKey] : [primaryKey, 'xcss_cache_v1'];
-    var payload = null;
-
-    for (var i = 0; i < keys.length; i++) {
-      var key = keys[i];
-      var raw = localStorage.getItem(key);
-      if (!raw) continue;
-      payload = await parseCache(raw);
-      if (!payload) {
+    var key = ${cacheKey};
+    var raw = localStorage.getItem(key);
+    if (!raw) return;
+    var payload=await parseCache(raw);
+    if (!payload) {
         localStorage.removeItem(key);
-        continue;
+        return;
       }
-      if (payload) break;
-    }
-
-    if (!payload) return;
 
     var styleEl = document.getElementById(styleId);
     if (!styleEl) {
@@ -145,9 +131,9 @@ export const getBootloaderScript = (
 })();
     `.trim()
 
-    if (options?.compact) {
-        return script.replace(/\s+/g, ' ').trim()
-    }
+  if (options?.compact) {
+    return script.replace(/\s+/g, ' ').trim()
+  }
 
-    return script
+  return script
 }
