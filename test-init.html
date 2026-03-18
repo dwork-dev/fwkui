@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Khởi Tạo XCSS</title>
+    <style>
+        body { font-family: system-ui, sans-serif; padding: 20px; background: #0d1117; color: #e6edf3; }
+        h1 { color: #58a6ff; }
+        .test { background: #161b22; border-radius: 8px; padding: 12px 16px; margin: 8px 0; border-left: 3px solid #333; }
+        .pass { border-left-color: #3fb950; }
+        .fail { border-left-color: #f85149; }
+        .label { font-weight: bold; margin-right: 8px; }
+        .pass .label { color: #3fb950; }
+        .fail .label { color: #f85149; }
+        #summary { font-size: 18px; margin: 16px 0; padding: 12px; border-radius: 8px; }
+        .demo-box { margin: 16px 0; padding: 16px; border-radius: 8px; background: #21262d; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Khởi Tạo XCSS v1.0.18</h1>
+    <div id="summary">Đang chạy test...</div>
+    <div id="results"></div>
+    <div id="demo" class="demo-box" style="display:none">
+        <h3 style="color:#58a6ff; margin-top:0">Demo CSS được tạo:</h3>
+        <div id="demo-elements"></div>
+        <pre id="demo-css" style="background:#0d1117; padding:12px; border-radius:6px; font-size:12px; overflow-x:auto; max-height:300px;"></pre>
+    </div>
+
+    <script type="module">
+        import fwxcss from './dist/index.mjs';
+        
+        const results = document.getElementById('results');
+        const summary = document.getElementById('summary');
+        let passed = 0, failed = 0;
+
+        function test(name, fn) {
+            try {
+                const result = fn();
+                if (result === true || result === undefined) {
+                    passed++;
+                    results.innerHTML += `<div class="test pass"><span class="label">✅ PASS</span>${name}</div>`;
+                } else {
+                    failed++;
+                    results.innerHTML += `<div class="test fail"><span class="label">❌ FAIL</span>${name} — ${result}</div>`;
+                }
+            } catch (e) {
+                failed++;
+                results.innerHTML += `<div class="test fail"><span class="label">❌ FAIL</span>${name} — ${e.message}</div>`;
+            }
+        }
+
+        async function testAsync(name, fn) {
+            try {
+                const result = await fn();
+                if (result === true || result === undefined) {
+                    passed++;
+                    results.innerHTML += `<div class="test pass"><span class="label">✅ PASS</span>${name}</div>`;
+                } else {
+                    failed++;
+                    results.innerHTML += `<div class="test fail"><span class="label">❌ FAIL</span>${name} — ${result}</div>`;
+                }
+            } catch (e) {
+                failed++;
+                results.innerHTML += `<div class="test fail"><span class="label">❌ FAIL</span>${name} — ${e.message}</div>`;
+            }
+        }
+
+        // ===== TEST 1: Import thành công =====
+        test('Import module thành công', () => {
+            if (!fwxcss) return 'fwxcss is null/undefined';
+            if (typeof fwxcss.css !== 'function') return 'fwxcss.css is not a function';
+            if (typeof fwxcss.cssObserve !== 'function') return 'fwxcss.cssObserve is not a function';
+            return true;
+        });
+
+        // ===== TEST 2: xcss() khởi tạo =====
+        const instance = fwxcss.css({
+            cache: { styleId: 'test-init', version: 'v1', compression: false, debounceMs: 50 }
+        });
+
+        test('xcss() trả về instance hợp lệ', () => {
+            if (!instance) return 'instance is null';
+            if (typeof instance.buildCss !== 'function') return 'buildCss not found';
+            if (!instance.ready) return 'ready promise not found';
+            return true;
+        });
+
+        // ===== TEST 3: buildCss() =====
+        const { clsx, getCssString, observe } = instance.buildCss(document);
+
+        test('buildCss() trả về clsx, getCssString, observe', () => {
+            if (typeof clsx !== 'function') return 'clsx not a function';
+            if (typeof getCssString !== 'function') return 'getCssString not a function';
+            if (typeof observe !== 'function') return 'observe not a function';
+            return true;
+        });
+
+        // ===== TEST 4: clsx() tạo class hash =====
+        const cls1 = clsx('m10px');
+        test('clsx("m10px") tạo hash class', () => {
+            if (!cls1) return 'empty result';
+            if (!/^D[A-Z0-9]+$/.test(cls1)) return `unexpected format: "${cls1}"`;
+            return true;
+        });
+
+        // ===== TEST 5: clsx() nhiều class =====
+        const cls2 = clsx('dF aiC jcC p10px bgc#0a64e8 cWhite');
+        test('clsx() nhiều class cùng lúc', () => {
+            const parts = cls2.split(' ');
+            if (parts.length < 2) return `expected multiple classes, got: "${cls2}"`;
+            if (!parts.every(p => /^D[A-Z0-9]+$/.test(p))) return `not all hashed: "${cls2}"`;
+            return true;
+        });
+
+        // ===== TEST 6: clsx() class trùng lặp =====
+        const cls3 = clsx('m10px');
+        test('clsx() class trùng lặp trả về cùng key', () => {
+            if (cls3 !== cls1) return `expected "${cls1}", got "${cls3}"`;
+            return true;
+        });
+
+        // ===== TEST 7: await ready =====
+        await testAsync('await instance.ready thành công', async () => {
+            await instance.ready;
+            return true;
+        });
+
+        // ===== TEST 8: getCssString() =====
+        await Promise.resolve();
+        const css = getCssString();
+        test('getCssString() trả về CSS hợp lệ', () => {
+            if (!css) return 'empty CSS';
+            if (!css.includes('margin:10px')) return 'missing margin:10px';
+            if (!css.includes('display:flex')) return 'missing display:flex';
+            if (!css.includes('color:White')) return 'missing color:White';
+            return true;
+        });
+
+        // ===== TEST 9: sizeLast trong cache data =====
+        await testAsync('sizeLast được lưu trong cache data', async () => {
+            await new Promise(r => setTimeout(r, 200));
+            const cacheKey = 'test-init_cache_v1';
+            const raw = localStorage.getItem(cacheKey);
+            if (!raw) return 'cache chưa có';
+            const data = JSON.parse(raw);
+            if (typeof data.sizeLast !== 'number') return 'sizeLast not in cache';
+            if (data.sizeLast <= 1000) return `sizeLast too small: ${data.sizeLast}`;
+            return true;
+        });
+
+        // ===== TEST 10: Cache được lưu (chờ debounce) =====
+        await testAsync('Cache được lưu vào localStorage sau debounce', async () => {
+            await new Promise(r => setTimeout(r, 200));
+            const cacheKey = 'test-init_cache_v1';
+            const raw = localStorage.getItem(cacheKey);
+            if (!raw) return `cache key "${cacheKey}" not found`;
+            const data = JSON.parse(raw);
+            if (!data.keys || data.keys.length === 0) return 'cache has no keys';
+            if (typeof data.sizeLast !== 'number') return 'cache missing sizeLast';
+            return true;
+        });
+
+        // ===== TEST 11: exportCache() =====
+        test('exportCache() trả về data hợp lệ', () => {
+            const exported = instance.exportCache();
+            if (!exported) return 'exported is null';
+            if (!exported.cssText) return 'missing cssText';
+            if (!exported.keys) return 'missing keys';
+            return true;
+        });
+
+        // ===== TEST 12: Selector syntax =====
+        const cls4 = clsx('cBlue@:hover');
+        await instance.ready;
+        await Promise.resolve();
+        test('Selector syntax cBlue@:hover hoạt động', () => {
+            const css = getCssString();
+            if (!css.includes(':hover')) return 'missing :hover in CSS';
+            if (!css.includes('color:Blue')) return 'missing color:Blue';
+            return true;
+        });
+
+        // ===== TEST 13: Media query =====
+        const cls5 = clsx('md:dF');
+        await instance.ready;
+        await Promise.resolve();
+        test('Media query md:dF hoạt động', () => {
+            const css = getCssString();
+            if (!css.includes('@media screen and (min-width: 768px)')) return 'missing media query';
+            return true;
+        });
+
+        // ===== TEST 14: excludePrefixes =====
+        const instance2 = fwxcss.css({ excludePrefixes: ['bs-'] });
+        const { clsx: clsx2 } = instance2.buildCss();
+        const cls6 = clsx2('bs-btn m10px');
+        test('excludePrefixes giữ nguyên bs-btn', () => {
+            const parts = cls6.split(' ');
+            if (!parts.includes('bs-btn')) return `bs-btn bị mất: "${cls6}"`;
+            if (!parts.some(p => /^D[A-Z0-9]+$/.test(p))) return `m10px không được hash: "${cls6}"`;
+            return true;
+        });
+
+        // ===== Kết quả =====
+        const total = passed + failed;
+        summary.innerHTML = failed === 0
+            ? `<span style="color:#3fb950; font-weight:bold">✅ ${passed}/${total} test PASSED</span>`
+            : `<span style="color:#f85149; font-weight:bold">❌ ${failed}/${total} test FAILED, ${passed} passed</span>`;
+        summary.style.background = failed === 0 ? '#0d2818' : '#2d1117';
+
+        // ===== Demo CSS =====
+        document.getElementById('demo').style.display = 'block';
+        document.getElementById('demo-css').textContent = css;
+        
+        const demoEl = document.getElementById('demo-elements');
+        demoEl.innerHTML = `
+            <div class="${cls2}" style="gap:10px; height:60px; border-radius:8px; padding: 0 16px;">
+                <span>Demo button với class: <code>${cls2}</code></span>
+            </div>
+        `;
+
+        localStorage.removeItem('test-init_cache_v1');
+    </script>
+</body>
+</html>

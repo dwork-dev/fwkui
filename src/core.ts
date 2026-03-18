@@ -75,7 +75,7 @@ const resolveCacheConfig = (config?: XCSSConfig['cache']): XCSSCacheConfig => {
 }
 
 const createCacheKey = (cache: XCSSCacheConfig): string => `${cache.styleId}_cache_${cache.version}`
-const createSizeLastKey = (cache: XCSSCacheConfig): string => `${cache.styleId}_sizeL_${cache.version}`
+
 
 const isCacheEnvelopeLZW = (value: unknown): value is XCSSCacheEnvelopeLZW => {
     if (!value || typeof value !== 'object') return false
@@ -630,7 +630,6 @@ export const xcss = (
         const CSS_KEYS = new Map<string, string>();
         const CSS_VALUES = new Set<string>(); // Set song song để check trùng O(1)
         let sizeLast = 1000;
-        const sizeLastKey = createSizeLastKey(cacheConfig);
 
         // Setup layers if in browser
         if (isBrowser && docRoot) {
@@ -686,22 +685,6 @@ export const xcss = (
             }
         }
 
-        // Đồng bộ sizeLast từ localStorage (lấy giá trị lớn nhất)
-        const syncSizeLast = () => {
-            if (!isBrowser || !window.localStorage) return
-            try {
-                const stored = parseInt(window.localStorage.getItem(sizeLastKey) || '0', 10)
-                if (stored > sizeLast) sizeLast = stored
-            } catch (_e) {}
-        }
-
-        // Ghi sizeLast vào localStorage ngay lập tức
-        const saveSizeLast = () => {
-            if (!isBrowser || !window.localStorage) return
-            try {
-                window.localStorage.setItem(sizeLastKey, String(sizeLast))
-            } catch (_e) {}
-        }
 
         const removeCacheIfUnchanged = (expectedRaw?: string) => {
             if (!isBrowser || !window.localStorage) return
@@ -793,7 +776,6 @@ export const xcss = (
                     keys: Array.from(CSS_KEYS.entries()),
                     sizeLast: sizeLast
                 }
-                saveSizeLast()
                 saveCache(data)
             }, cacheConfig.debounceMs)
         }
@@ -822,12 +804,10 @@ export const xcss = (
                         if (data.keys) {
                             data.keys.forEach(([k, v]) => { CSS_KEYS.set(k, v); CSS_VALUES.add(v) })
                         }
-                        // Khôi phục sizeLast — lấy max giữa cache data và localStorage
+                        // Khôi phục sizeLast
                         if (typeof data.sizeLast === 'number') {
                             sizeLast = data.sizeLast
                         }
-                        syncSizeLast()
-                        saveSizeLast()
                         // Khôi phục cssText (unwrap cho sử dụng nội bộ)
                         if (data.cssText) {
                             for (const k in data.cssText) {
@@ -869,12 +849,10 @@ export const xcss = (
             if (data.keys) {
                 data.keys.forEach(([k, v]) => { CSS_KEYS.set(k, v); CSS_VALUES.add(v) })
             }
-            // Khôi phục sizeLast — lấy max giữa cache data và localStorage
+            // Khôi phục sizeLast
             if (typeof data.sizeLast === 'number') {
                 sizeLast = data.sizeLast
             }
-            syncSizeLast()
-            saveSizeLast()
 
             if (data.cssText) {
                 for (const k in data.cssText) {
@@ -950,9 +928,25 @@ export const xcss = (
         // Lắng nghe storage event để đồng bộ sizeLast từ tab khác
         if (isBrowser && window.addEventListener) {
             window.addEventListener('storage', (e) => {
-                if (e.key === sizeLastKey && e.newValue) {
-                    const newVal = parseInt(e.newValue, 10)
-                    if (newVal > sizeLast) sizeLast = newVal
+                // Lắng nghe thay đổi cache từ tab khác để đồng bộ sizeLast + CSS_KEYS
+                if (e.key === cacheKey && e.newValue) {
+                    try {
+                        const data = parseCacheDataSync(e.newValue)
+                        if (data && data.configHash === currentConfigHash) {
+                            if (typeof data.sizeLast === 'number' && data.sizeLast > sizeLast) {
+                                sizeLast = data.sizeLast
+                            }
+                            // Cập nhật CSS_KEYS mới từ tab khác
+                            if (data.keys) {
+                                data.keys.forEach(([k, v]) => {
+                                    if (!CSS_KEYS.has(k)) {
+                                        CSS_KEYS.set(k, v)
+                                        CSS_VALUES.add(v)
+                                    }
+                                })
+                            }
+                        }
+                    } catch (_e) {}
                 }
             })
         }
@@ -1080,8 +1074,6 @@ export const xcss = (
                     // Only hash class names that can actually generate valid CSS.
                     // Invalid/unsupported tokens (e.g. "bs-a") must stay raw.
                     if (shouldHashClass(l)) {
-                        // Đồng bộ sizeLast từ localStorage trước khi tạo key mới
-                        syncSizeLast()
                         let key: string
                         do {
                             key = 'D' + (sizeLast++).toString(32).toUpperCase()
@@ -1089,7 +1081,6 @@ export const xcss = (
                         CSS_KEYS.set(l, key)
                         CSS_VALUES.add(key)
                         item = key
-                        saveSizeLast() // Ghi sizeLast ngay vào localStorage
                         triggerSave() // LƯU CACHE
                     }
                 }
