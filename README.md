@@ -354,7 +354,7 @@ Lưu ý khi dùng cùng `prefix`:
 1. Engine kiểm tra `excludes`/`excludePrefixes` trước, sau đó mới kiểm tra `prefix`.
 2. Nếu token match exclude thì giữ nguyên class gốc và không parse tiếp.
 3. Nếu có `prefix: 'fk-'`, token không bắt đầu bằng `fk-` sẽ giữ nguyên class gốc.
-4. `exclude` vẫn được hỗ trợ để tương thích ngược, nhưng key khuyến nghị là `excludes`.
+
 
 `dictionaryImport`:
 1. `true` (mặc định): tự động tải dictionary built-in từ module `dist/dictionary.*` (giúp file core nhẹ hơn).
@@ -373,8 +373,7 @@ Lưu ý:
 
 Khi `compression: true`:
 1. Ưu tiên `CompressionStream` (deflate-raw + base64) nếu runtime hỗ trợ.
-2. Tự động fallback về LZW để tương thích ngược.
-3. Đọc cache vẫn hỗ trợ key cũ `xcss_cache_v1` để migrate dần.
+2. Tự động fallback về LZW nếu runtime không hỗ trợ stream.
 
 Quy tắc cache key:
 `cacheKey = styleId + "_cache_" + version`
@@ -488,7 +487,7 @@ Thay 2 biến ngay đầu script nếu cần:
 
 ```html
 <script>
-  (async()=>{const sid='fwkui',ver='v1',k=sid+'_cache_'+ver,l='xcss_cache_v1';const L=s=>{if(!s)return'';const d={};let z=256;for(let i=0;i<256;i++)d[i]=String.fromCharCode(i);const c=[...s].map(ch=>ch.charCodeAt(0));let p=c[0],ph=d[p]||'',r=ph;for(let i=1;i<c.length;i++){const x=c[i];let e=d[x];if(!e)e=x===z?ph+ph[0]:'';r+=e;d[z++]=ph+e[0];ph=e;}return r};const S=()=>typeof DecompressionStream!=='undefined'&&typeof Blob!=='undefined'&&typeof Response!=='undefined';const B=b=>{if(typeof atob==='function'){const s=atob(b),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u;}if(typeof Buffer!=='undefined')return new Uint8Array(Buffer.from(b,'base64'));throw new Error('base64');};const D=async p=>{if(!S())return null;try{return await new Response(new Blob([B(p)]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();}catch{return null;}};const P=async raw=>{if(!raw)return null;try{let j=JSON.parse(raw);if(j&&j.__xcss_cache_v===3&&j.compressed===true&&j.algorithm==='deflate-raw'&&j.encoding==='base64'&&typeof j.payload==='string'){const ex=await D(j.payload);if(!ex)return null;j=JSON.parse(ex);}else if(j&&j.__xcss_cache_v===2&&j.compressed===true&&typeof j.payload==='string'){const ex=L(j.payload);if(!ex)return null;j=JSON.parse(ex);}return j&&j.cssText?j:null;}catch{return null;}};try{if(typeof window==='undefined'||!window.localStorage)return;let p=null;for(const kk of (k===l?[k]:[k,l])){p=await P(localStorage.getItem(kk));if(p)break;}if(!p)return;let st=document.getElementById(sid);if(!st){st=document.createElement('style');st.id=sid;document.head.appendChild(st);}let css=p.cssText.root?p.cssText.root+'\\n':'';for(const n in p.cssText)if(n!=='root')css+=(p.cssText[n]||'')+'\\n';st.textContent=css;}catch{}})();
+  (async()=>{const sid='fwkui',ver='v1',k=sid+'_cache_'+ver;const L=s=>{if(!s)return'';const d={};let z=256;for(let i=0;i<256;i++)d[i]=String.fromCharCode(i);const c=[...s].map(ch=>ch.charCodeAt(0));let p=c[0],ph=d[p]||'',r=ph;for(let i=1;i<c.length;i++){const x=c[i];let e=d[x];if(!e)e=x===z?ph+ph[0]:'';r+=e;d[z++]=ph+e[0];ph=e;}return r};const S=()=>typeof DecompressionStream!=='undefined'&&typeof Blob!=='undefined'&&typeof Response!=='undefined';const B=b=>{if(typeof atob==='function'){const s=atob(b),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u;}if(typeof Buffer!=='undefined')return new Uint8Array(Buffer.from(b,'base64'));throw new Error('base64');};const D=async p=>{if(!S())return null;try{return await new Response(new Blob([B(p)]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();}catch{return null;}};const P=async raw=>{if(!raw)return null;try{let j=JSON.parse(raw);if(j&&j.__xcss_cache_v===3&&j.compressed===true&&j.algorithm==='deflate-raw'&&j.encoding==='base64'&&typeof j.payload==='string'){const ex=await D(j.payload);if(!ex)return null;j=JSON.parse(ex);}else if(j&&j.__xcss_cache_v===2&&j.compressed===true&&typeof j.payload==='string'){const ex=L(j.payload);if(!ex)return null;j=JSON.parse(ex);}return j&&j.cssText?j:null;}catch{return null;}};try{if(typeof window==='undefined'||!window.localStorage)return;let p=await P(localStorage.getItem(k));if(!p)return;let st=document.getElementById(sid);if(!st){st=document.createElement('style');st.id=sid;document.head.appendChild(st);}let css=p.cssText.root?p.cssText.root+'\\n':'';for(const n in p.cssText)if(n!=='root')css+=(p.cssText[n]||'')+'\\n';st.textContent=css;}catch{}})();
 </script>
 ```
 
@@ -515,10 +514,9 @@ const html = `
 
 Lưu ý:
 1. Đồng bộ `styleId` + `version` giữa bootloader và cấu hình `xcss.css(...)`.
-2. Script tạo từ `getBootloaderScript` ưu tiên `DecompressionStream` (cache deflate-raw) và fallback LZW/legacy.
+2. Script tạo từ `getBootloaderScript` ưu tiên `DecompressionStream` (cache deflate-raw) và fallback LZW.
 3. Sau bootloader vẫn cần gọi `xcss.cssObserve(...)` như bình thường.
-4. Tương thích ngược: tham số thứ 2 vẫn chấp nhận `cacheKey` cũ nếu bạn đang dùng API trước đó.
-5. Dùng `{ compact: true }` khi muốn script trả về ở dạng nén gọn để nhúng HTML.
+4. Dùng `{ compact: true }` khi muốn script trả về ở dạng nén gọn để nhúng HTML.
 6. Nếu dữ liệu cache dưới key hiện tại bị lỗi/không decode được, engine sẽ tự xóa key đó để lần chạy sau lưu lại dữ liệu mới.
 
 ### Khi nào nên dùng `getBootloaderScript`
@@ -614,4 +612,4 @@ Yêu cầu:
 
 Licensed under MIT. See [LICENSE](./LICENSE).
 
-Updated: 2026-03-02
+Updated: 2026-03-18
