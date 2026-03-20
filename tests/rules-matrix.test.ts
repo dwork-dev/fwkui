@@ -207,4 +207,47 @@ describe('xcss rule matrix', () => {
         expect(isHashedClass(clsx('unknown10'))).toBe(true)
         expect(getCssString()).toContain('unknown:10')
     })
+
+    it('should use built-in dictionary synchronously when dictionaryImport is true', () => {
+        const { clsx, getCssString } = xcss({ dictionaryImport: true }).buildCss()
+        const result = clsx('m10px')
+
+        expect(result).toMatch(/^D[A-Z0-9]+$/)
+        expect(getCssString()).toContain('margin:10px')
+    })
+
+    it('should import external dictionary from a data URL string', async () => {
+        const dictionaryModule = [
+            "export const SHORT_PROPERTIES = { m: 'margin' };",
+            'export const COMMON_VALUES = {};',
+            'export const SPECIFIC_VALUES = {};',
+        ].join('\n')
+        const dictionaryUrl =
+            'data:text/javascript;charset=utf-8,' +
+            encodeURIComponent(dictionaryModule)
+
+        const instance = xcss({ dictionaryImport: dictionaryUrl })
+        const { clsx, getCssString } = instance.buildCss()
+
+        expect(getCssString()).not.toContain('margin:10px')
+        expect(isHashedClass(clsx('m10px'))).toBe(true)
+
+        await instance.ready
+        await Promise.resolve()
+
+        expect(getCssString()).toContain('margin:10px')
+    })
+
+    it('should import generated dic.js from a file URL string', async () => {
+        const dictionaryUrl = new URL('../dic.js', import.meta.url).href
+        const instance = xcss({ dictionaryImport: dictionaryUrl })
+        const { clsx, getCssString } = instance.buildCss()
+
+        expect(isHashedClass(clsx('m10px'))).toBe(true)
+
+        await instance.ready
+        await Promise.resolve()
+
+        expect(getCssString()).toContain('margin:10px')
+    })
 })

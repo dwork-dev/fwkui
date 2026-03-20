@@ -1,5 +1,10 @@
 import { mitt } from './events'
 import { parseClassName } from './parser'
+import {
+    SHORT_PROPERTIES as BUILTIN_SHORT_PROPERTIES,
+    COMMON_VALUES as BUILTIN_COMMON_VALUES,
+    SPECIFIC_VALUES as BUILTIN_SPECIFIC_VALUES,
+} from './dictionary'
 
 
 export type XCSSConfig = {
@@ -16,6 +21,7 @@ export type XCSSConfig = {
         version?: string
         compression?: boolean
         debounceMs?: number
+        sizeLast?: number
     }
 }
 
@@ -38,6 +44,7 @@ type XCSSCacheConfig = {
     version: string
     compression: boolean
     debounceMs: number
+    sizeLast: number
 }
 
 type XCSSCacheEnvelopeLZW = {
@@ -54,6 +61,21 @@ type XCSSCacheEnvelopeStream = {
     payload: string
 }
 
+type XCSSKeySyncPayload = {
+    source: string
+    sizeLast: number
+    entries: [string, string][]
+}
+
+type NodeBuiltinProcess = typeof process & {
+    getBuiltinModule?: (id: string) => unknown
+}
+
+const BUILTIN_DICTIONARY: XCSSDictionaryData = {
+    SHORT_PROPERTIES: BUILTIN_SHORT_PROPERTIES,
+    COMMON_VALUES: BUILTIN_COMMON_VALUES,
+    SPECIFIC_VALUES: BUILTIN_SPECIFIC_VALUES,
+}
 
 
 const resolveCacheConfig = (config?: XCSSConfig['cache']): XCSSCacheConfig => {
@@ -70,11 +92,18 @@ const resolveCacheConfig = (config?: XCSSConfig['cache']): XCSSCacheConfig => {
         typeof config?.debounceMs === 'number' && config.debounceMs >= 0
             ? config.debounceMs
             : 1000
+    const sizeLast =
+        typeof config?.sizeLast === 'number' && Number.isFinite(config.sizeLast) && config.sizeLast >= 0
+            ? Math.floor(config.sizeLast)
+            : 1000
 
-    return { styleId, version, compression, debounceMs }
+    return { styleId, version, compression, debounceMs, sizeLast }
 }
 
 const createCacheKey = (cache: XCSSCacheConfig): string => `${cache.styleId}_cache_${cache.version}`
+// Key sync nhẹ cho cross-tab: delta sync cho key/value mới phát sinh.
+const createKeySyncKey = (cache: XCSSCacheConfig): string => `${cache.styleId}_ks_${cache.version}`
+const createKeySyncChannelName = (cache: XCSSCacheConfig): string => `${cache.styleId}_bc_${cache.version}`
 
 
 const isCacheEnvelopeLZW = (value: unknown): value is XCSSCacheEnvelopeLZW => {
@@ -268,9 +297,405 @@ const resolveDictionaryData = (mod: unknown): XCSSDictionaryData | null => {
     }
 }
 
+const normalizeKeySyncPayload = (value: unknown): XCSSKeySyncPayload | null => {
+    if (!value || typeof value !== 'object') return null
+
+    const obj = value as Partial<XCSSKeySyncPayload> & {
+        s?: unknown
+        k?: unknown
+    }
+
+    const entriesSource = Array.isArray(obj.entries)
+        ? obj.entries
+        : Array.isArray(obj.k)
+            ? obj.k
+            : null
+
+    if (!entriesSource) return null
+
+    const entries = entriesSource.filter((entry): entry is [string, string] => {
+        return (
+            Array.isArray(entry) &&
+            entry.length === 2 &&
+            typeof entry[0] === 'string' &&
+            typeof entry[1] === 'string'
+        )
+    })
+
+    const sizeLast = typeof obj.sizeLast === 'number'
+        ? obj.sizeLast
+        : typeof obj.s === 'number'
+            ? obj.s
+            : null
+
+    if (sizeLast === null) return null
+
+    return {
+        source: typeof obj.source === 'string' ? obj.source : '',
+        sizeLast,
+        entries,
+    }
+}
+
+const skipWhitespace = (source: string, start: number): number => {
+    let index = start
+    while (index < source.length && /\s/.test(source[index])) {
+        index++
+    }
+    return index
+}
+
+const findMatchingBrace = (source: string, start: number): number => {
+    let depth = 0
+    let quote: '"' | "'" | '`' | null = null
+    let escaped = false
+    let lineComment = false
+    let blockComment = false
+
+    for (let index = start; index < source.length; index++) {
+        const char = source[index]
+        const next = source[index + 1]
+
+        if (lineComment) {
+            if (char === '\n') {
+                lineComment = false
+            }
+            continue
+        }
+
+        if (blockComment) {
+            if (char === '*' && next === '/') {
+                blockComment = false
+                index++
+            }
+            continue
+        }
+
+        if (quote) {
+            if (escaped) {
+                escaped = false
+                continue
+            }
+            if (char === '\\') {
+                escaped = true
+                continue
+            }
+            if (char === quote) {
+                quote = null
+            }
+            continue
+        }
+
+        if (char === '/' && next === '/') {
+            lineComment = true
+            index++
+            continue
+        }
+
+        if (char === '/' && next === '*') {
+            blockComment = true
+            index++
+            continue
+        }
+
+        if (char === '"' || char === "'" || char === '`') {
+            quote = char
+            continue
+        }
+
+        if (char === '{') {
+            depth++
+            continue
+        }
+
+        if (char === '}') {
+            depth--
+            if (depth === 0) {
+                return index
+            }
+        }
+    }
+
+    return -1
+}
+
+const extractExportedObjectLiteral = (source: string, marker: string): string | null => {
+    const index = source.indexOf(marker)
+    if (index === -1) return null
+
+    const objectStart = skipWhitespace(source, index + marker.length)
+    if (source[objectStart] !== '{') return null
+
+    const objectEnd = findMatchingBrace(source, objectStart)
+    if (objectEnd === -1) return null
+
+    return source.slice(objectStart, objectEnd + 1)
+}
+
+const skipWhitespaceAndComments = (source: string, start: number): number => {
+    let index = start
+
+    while (index < source.length) {
+        const char = source[index]
+        const next = source[index + 1]
+
+        if (/\s/.test(char)) {
+            index++
+            continue
+        }
+
+        if (char === '/' && next === '/') {
+            index += 2
+            while (index < source.length && source[index] !== '\n') {
+                index++
+            }
+            continue
+        }
+
+        if (char === '/' && next === '*') {
+            index += 2
+            while (index < source.length) {
+                if (source[index] === '*' && source[index + 1] === '/') {
+                    index += 2
+                    break
+                }
+                index++
+            }
+            continue
+        }
+
+        break
+    }
+
+    return index
+}
+
+const parseQuotedString = (
+    source: string,
+    start: number,
+): { value: string, end: number } | null => {
+    const quote = source[start]
+    if (quote !== '"' && quote !== "'") return null
+
+    let value = ''
+    let index = start + 1
+
+    while (index < source.length) {
+        const char = source[index]
+
+        if (char === '\\') {
+            index++
+            if (index >= source.length) return null
+
+            const escaped = source[index]
+            const escapeMap: Record<string, string> = {
+                n: '\n',
+                r: '\r',
+                t: '\t',
+                b: '\b',
+                f: '\f',
+                v: '\v',
+                '\\': '\\',
+                '"': '"',
+                "'": "'",
+            }
+
+            value += escapeMap[escaped] ?? escaped
+            index++
+            continue
+        }
+
+        if (char === quote) {
+            return { value, end: index + 1 }
+        }
+
+        value += char
+        index++
+    }
+
+    return null
+}
+
+const parseIdentifierToken = (
+    source: string,
+    start: number,
+): { value: string, end: number } | null => {
+    const first = source[start]
+    if (!first || !/[A-Za-z_$]/.test(first)) {
+        return null
+    }
+
+    let end = start + 1
+    while (end < source.length && /[A-Za-z0-9_$]/.test(source[end])) {
+        end++
+    }
+
+    return {
+        value: source.slice(start, end),
+        end,
+    }
+}
+
+const parsePlainObjectLiteral = (expression: string): Record<string, unknown> | null => {
+    const parseValue = (
+        source: string,
+        start: number,
+    ): { value: unknown, end: number } | null => {
+        const index = skipWhitespaceAndComments(source, start)
+        const char = source[index]
+
+        if (char === '{') {
+            return parseObject(source, index)
+        }
+
+        return parseQuotedString(source, index)
+    }
+
+    const parseObject = (
+        source: string,
+        start: number,
+    ): { value: Record<string, unknown>, end: number } | null => {
+        let index = skipWhitespaceAndComments(source, start)
+        if (source[index] !== '{') return null
+
+        index++
+        const objectValue: Record<string, unknown> = {}
+
+        while (index < source.length) {
+            index = skipWhitespaceAndComments(source, index)
+
+            if (source[index] === '}') {
+                return {
+                    value: objectValue,
+                    end: index + 1,
+                }
+            }
+
+            const keyToken =
+                parseQuotedString(source, index) ||
+                parseIdentifierToken(source, index)
+            if (!keyToken) return null
+
+            index = skipWhitespaceAndComments(source, keyToken.end)
+            if (source[index] !== ':') {
+                return null
+            }
+
+            index++
+            const valueToken = parseValue(source, index)
+            if (!valueToken) return null
+
+            objectValue[keyToken.value] = valueToken.value
+            index = skipWhitespaceAndComments(source, valueToken.end)
+
+            if (source[index] === ',') {
+                index++
+                continue
+            }
+
+            if (source[index] === '}') {
+                return {
+                    value: objectValue,
+                    end: index + 1,
+                }
+            }
+
+            return null
+        }
+
+        return null
+    }
+
+    const parsed = parseObject(expression, 0)
+    if (!parsed) {
+        return null
+    }
+
+    return skipWhitespaceAndComments(expression, parsed.end) === expression.length
+        ? parsed.value
+        : null
+}
+
+const parseExternalDictionarySource = (sourceCode: string): XCSSDictionaryData | null => {
+    const shortLiteral = extractExportedObjectLiteral(
+        sourceCode,
+        'export const SHORT_PROPERTIES =',
+    )
+    const commonLiteral = extractExportedObjectLiteral(
+        sourceCode,
+        'export const COMMON_VALUES =',
+    )
+    const specificLiteral = extractExportedObjectLiteral(
+        sourceCode,
+        'export const SPECIFIC_VALUES =',
+    )
+
+    if (shortLiteral && commonLiteral && specificLiteral) {
+        return resolveDictionaryData({
+            SHORT_PROPERTIES: parsePlainObjectLiteral(shortLiteral),
+            COMMON_VALUES: parsePlainObjectLiteral(commonLiteral),
+            SPECIFIC_VALUES: parsePlainObjectLiteral(specificLiteral),
+        })
+    }
+
+    const defaultLiteral = extractExportedObjectLiteral(sourceCode, 'export default')
+    if (!defaultLiteral) return null
+
+    return resolveDictionaryData(parsePlainObjectLiteral(defaultLiteral))
+}
+
+const readDictionarySourceFromNode = async (source: string): Promise<string | null> => {
+    const nodeProcess =
+        typeof process !== 'undefined'
+            ? (process as NodeBuiltinProcess)
+            : null
+
+    if (!nodeProcess || typeof nodeProcess.getBuiltinModule !== 'function') {
+        return null
+    }
+
+    const isFileUrl = source.startsWith('file:')
+    const isPathLike =
+        source.startsWith('/') ||
+        source.startsWith('./') ||
+        source.startsWith('../') ||
+        /^[A-Za-z]:[\\/]/.test(source)
+
+    if (!isFileUrl && !isPathLike) {
+        return null
+    }
+
+    const fs = nodeProcess.getBuiltinModule('node:fs/promises') as {
+        readFile?: (path: string | URL, encoding: BufferEncoding) => Promise<string>
+    } | null
+
+    if (!fs?.readFile) {
+        return null
+    }
+
+    return fs.readFile(isFileUrl ? new URL(source) : source, 'utf8')
+}
+
+const readExternalDictionarySource = async (source: string): Promise<string> => {
+    const nodeSource = await readDictionarySourceFromNode(source)
+    if (typeof nodeSource === 'string') {
+        return nodeSource
+    }
+
+    if (typeof fetch === 'function') {
+        const response = await fetch(source)
+        if (!response.ok) {
+            throw new Error(`XCSS: Failed to fetch dictionary module: ${response.status}`)
+        }
+        return response.text()
+    }
+
+    throw new Error('XCSS: fetch is not supported in this runtime')
+}
+
 const loadExternalDictionary = async (source: string): Promise<XCSSDictionaryData> => {
-    const mod = await import(/* @vite-ignore */ source)
-    const data = resolveDictionaryData(mod)
+    const sourceCode = await readExternalDictionarySource(source)
+    const data = parseExternalDictionarySource(sourceCode)
     if (!data) {
         throw new Error(DICTIONARY_MODULE_ERROR)
     }
@@ -278,45 +703,7 @@ const loadExternalDictionary = async (source: string): Promise<XCSSDictionaryDat
 }
 
 const DICTIONARY_MODULE_ERROR =
-    'XCSS: dictionary module must export SHORT_PROPERTIES, COMMON_VALUES and SPECIFIC_VALUES'
-
-const loadBuiltinDictionarySync = (): XCSSDictionaryData | null => {
-    // Keep Node compatibility for synchronous flows (SSR/tests in CJS).
-    const req = typeof require === 'function' ? require : null
-    if (!req) return null
-
-    for (const source of ['./dictionary.js', './dictionary']) {
-        try {
-            const mod = req(source)
-            const data = resolveDictionaryData(mod)
-            if (data) return data
-        } catch (_error) {
-            // try next candidate
-        }
-    }
-    return null
-}
-
-const loadBuiltinDictionary = async (): Promise<XCSSDictionaryData> => {
-    const syncData = loadBuiltinDictionarySync()
-    if (syncData) return syncData
-
-    const candidates = ['./dictionary.mjs', './dictionary.js', './dictionary']
-    let lastError: unknown = null
-
-    for (const source of candidates) {
-        try {
-            const mod = await import(/* @vite-ignore */ source)
-            const data = resolveDictionaryData(mod)
-            if (data) return data
-        } catch (error) {
-            lastError = error
-        }
-    }
-
-    if (lastError) throw lastError
-    throw new Error(DICTIONARY_MODULE_ERROR)
-}
+    'XCSS: dictionary module must export plain-object SHORT_PROPERTIES, COMMON_VALUES and SPECIFIC_VALUES'
 
 const setupCssLayers = (docRoot: Document | ShadowRoot | null, id?: string) => {
     if (!docRoot || typeof document === 'undefined') return
@@ -327,40 +714,22 @@ const setupCssLayers = (docRoot: Document | ShadowRoot | null, id?: string) => {
         return 'l' + i
     })
 
-
-
     // Tạo <style> element
     if (!docRoot.querySelector('style[id="' + id + '"]')) {
         const styleElement = document.createElement('style')
         styleElement.id = id
+        // Chèn @layer đồng bộ vào textContent TRƯỚC khi gắn vào DOM — tránh CLS
+        const layerRule = `@layer ${layers.join(', ')};`
+        styleElement.textContent = layerRule
         if (!(docRoot instanceof ShadowRoot)) {
             document.head.append(styleElement)
         } else {
-            // docRoot.appendChild(styleElement);
             try {
                 docRoot.prepend(styleElement)
             } catch (e) {
                 docRoot.appendChild(styleElement)
             }
         }
-
-        // Chèn quy tắc @layer
-        const layerRule = `@layer ${layers.join(', ')};`
-        // Use requestAnimationFrame or setTimeout instead of setInterval for cleaner approach if possible,
-        // keeping setInterval to match original logic but with clear logic.
-        let iterval = setInterval(() => {
-            if (styleElement.sheet) {
-                clearInterval(iterval)
-                try {
-                    styleElement.sheet.insertRule(
-                        layerRule,
-                        styleElement.sheet.cssRules.length,
-                    )
-                } catch (e) {
-                    // ignore error if insertRule fails
-                }
-            }
-        }, 10) // 10ms check
     }
 }
 
@@ -465,6 +834,7 @@ export const xcss = (
             version: 'v1',
             compression: true,
             debounceMs: 1000,
+            sizeLast: 1000,
         },
     },
 ) => {
@@ -489,6 +859,8 @@ export const xcss = (
 
     const cacheConfig = resolveCacheConfig(cacheOptions)
     const cacheKey = createCacheKey(cacheConfig)
+    const keySyncKey = createKeySyncKey(cacheConfig)
+    const keySyncChannelName = createKeySyncChannelName(cacheConfig)
 
     const mergedExcludes = excludeNames
 
@@ -594,23 +966,7 @@ export const xcss = (
                 dictionaryReady = true
             })
     } else {
-        const syncBuiltinDictionary = loadBuiltinDictionarySync()
-        if (syncBuiltinDictionary) {
-            applyDictionary(syncBuiltinDictionary)
-        } else {
-            dictionaryReady = false
-            applyDictionary(null)
-            dictionaryReadyPromise = loadBuiltinDictionary()
-                .then((dictionary) => {
-                    applyDictionary(dictionary)
-                })
-                .catch((error) => {
-                    console.warn('XCSS: Failed to load built-in dictionary module', error)
-                })
-                .finally(() => {
-                    dictionaryReady = true
-                })
-        }
+        applyDictionary(BUILTIN_DICTIONARY)
     }
 
     let lastKnownCacheData: XCSSCacheData | null = null
@@ -620,6 +976,8 @@ export const xcss = (
     const buildCss = (doc: Document | ShadowRoot | Element | undefined = typeof document !== 'undefined' ? document : undefined) => {
         // If running in non-browser environment without a doc, we can still simulate for extraction
         const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined'
+        const browserWindow = isBrowser ? window : null
+        const browserStorage = browserWindow?.localStorage || null
         let docRoot: Document | ShadowRoot | null = null
         const hasBaseOverride = Array.isArray(cssDefault) ? cssDefault.length > 0 : !!cssDefault
 
@@ -629,11 +987,86 @@ export const xcss = (
 
         const CSS_KEYS = new Map<string, string>();
         const CSS_VALUES = new Set<string>(); // Set song song để check trùng O(1)
-        let sizeLast = 1000;
+        let sizeLast = cacheConfig.sizeLast;
+        // Flag: lần render đầu tiên xử lý CSS đồng bộ để giảm CLS
+        let isFirstRenderBatch = true;
+        const syncSourceId = `xcss_${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`
+        const pendingKeySyncEntries: [string, string][] = []
+        let pendingKeySyncScheduled = false
+        let keySyncBroadcastChannel: BroadcastChannel | null = null
+
+        const mergeSizeLast = (nextSizeLast?: number) => {
+            if (typeof nextSizeLast === 'number' && Number.isFinite(nextSizeLast) && nextSizeLast > sizeLast) {
+                sizeLast = nextSizeLast
+            }
+        }
+
+        const mergeKeySyncPayload = (payload: XCSSKeySyncPayload | null) => {
+            if (!payload) return
+            if (payload.source && payload.source === syncSourceId) return
+
+            mergeSizeLast(payload.sizeLast)
+
+            payload.entries.forEach(([key, value]) => {
+                const currentValue = CSS_KEYS.get(key)
+                if (currentValue === value) return
+                if (currentValue || CSS_VALUES.has(value)) return
+                CSS_KEYS.set(key, value)
+                CSS_VALUES.add(value)
+            })
+        }
+
+        const flushPendingKeySyncEntries = () => {
+            pendingKeySyncScheduled = false
+            if (!isBrowser || pendingKeySyncEntries.length === 0) return
+
+            const payload: XCSSKeySyncPayload = {
+                source: syncSourceId,
+                sizeLast,
+                entries: pendingKeySyncEntries.splice(0, pendingKeySyncEntries.length),
+            }
+
+            if (keySyncBroadcastChannel) {
+                try {
+                    keySyncBroadcastChannel.postMessage(payload)
+                    return
+                } catch (_error) {
+                    keySyncBroadcastChannel = null
+                }
+            }
+
+            if (!browserStorage) return
+
+            try {
+                browserStorage.setItem(keySyncKey, JSON.stringify(payload))
+            } catch (_error) {
+                // ignore key-sync write failure
+            }
+        }
+
+        const scheduleKeySync = (entry: [string, string]) => {
+            if (!isBrowser) return
+
+            pendingKeySyncEntries.push(entry)
+            if (pendingKeySyncScheduled) return
+            pendingKeySyncScheduled = true
+            queueMicrotask(flushPendingKeySyncEntries)
+        }
 
         // Setup layers if in browser
         if (isBrowser && docRoot) {
             setupCssLayers(docRoot, cacheConfig.styleId)
+        }
+
+        if (isBrowser && typeof BroadcastChannel !== 'undefined') {
+            try {
+                keySyncBroadcastChannel = new BroadcastChannel(keySyncChannelName)
+                keySyncBroadcastChannel.addEventListener('message', (event: MessageEvent) => {
+                    mergeKeySyncPayload(normalizeKeySyncPayload(event.data))
+                })
+            } catch (_error) {
+                keySyncBroadcastChannel = null
+            }
         }
 
         let emitter = mitt()
@@ -679,7 +1112,7 @@ export const xcss = (
 
         const writeCache = (value: string) => {
             try {
-                window.localStorage.setItem(cacheKey, value)
+                browserStorage?.setItem(cacheKey, value)
             } catch (e) {
                 console.warn('XCSS: Failed to save cache', e)
             }
@@ -687,18 +1120,19 @@ export const xcss = (
 
 
         const removeCacheIfUnchanged = (expectedRaw?: string) => {
-            if (!isBrowser || !window.localStorage) return
+            if (!isBrowser || !browserStorage) return
 
             if (typeof expectedRaw === 'string') {
-                const currentRaw = window.localStorage.getItem(cacheKey)
+                const currentRaw = browserStorage.getItem(cacheKey)
                 if (currentRaw !== expectedRaw) return
             }
 
-            window.localStorage.removeItem(cacheKey)
+            browserStorage.removeItem(cacheKey)
+            browserStorage.removeItem(keySyncKey)
         }
 
         const saveCache = (data: XCSSCacheData) => {
-            if (!isBrowser || !window.localStorage) return
+            if (!isBrowser || !browserStorage) return
             lastKnownCacheData = data
             const ticket = ++latestSaveTicket
             try {
@@ -781,9 +1215,9 @@ export const xcss = (
         }
 
         // Tải cache (đồng bộ) — chỉ sử dụng 1 key duy nhất
-        if (isBrowser && window.localStorage) {
+        if (isBrowser && browserStorage) {
             try {
-                const raw = window.localStorage.getItem(cacheKey)
+                const raw = browserStorage.getItem(cacheKey)
                 if (raw) {
                     const data = parseCacheDataSync(raw)
                     if (!data) {
@@ -791,11 +1225,11 @@ export const xcss = (
                         if (isStreamCacheEnvelopeRaw(raw)) {
                             asyncCacheCandidate = { raw }
                         } else {
-                            window.localStorage.removeItem(cacheKey)
+                            browserStorage.removeItem(cacheKey)
                         }
                     } else if (data.configHash !== currentConfigHash) {
                         // Config đã thay đổi, xóa cache cũ
-                        window.localStorage.removeItem(cacheKey)
+                        browserStorage.removeItem(cacheKey)
                     } else {
                         loadedCacheData = data
                         cacheLoaded = true
@@ -804,10 +1238,7 @@ export const xcss = (
                         if (data.keys) {
                             data.keys.forEach(([k, v]) => { CSS_KEYS.set(k, v); CSS_VALUES.add(v) })
                         }
-                        // Khôi phục sizeLast
-                        if (typeof data.sizeLast === 'number') {
-                            sizeLast = data.sizeLast
-                        }
+                        mergeSizeLast(data.sizeLast)
                         // Khôi phục cssText (unwrap cho sử dụng nội bộ)
                         if (data.cssText) {
                             for (const k in data.cssText) {
@@ -839,20 +1270,25 @@ export const xcss = (
             cssStyleSheetsPendingScheduled[k] = false
         })
 
+        // Xóa bootloader style SAU khi adoptedStyleSheets đã paint xong
+        // Dùng double requestAnimationFrame để đảm bảo trình duyệt đã render CSS mới
         const removeBootloaderStyle = () => {
             if (!docRoot) return
             const blStyle = docRoot.querySelector(`style[id="${cacheConfig.styleId}"]`)
-            if (blStyle) blStyle.remove()
+            if (blStyle) {
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        blStyle.remove()
+                    })
+                })
+            }
         }
 
         const hydrateCacheAfterInit = (data: XCSSCacheData) => {
             if (data.keys) {
                 data.keys.forEach(([k, v]) => { CSS_KEYS.set(k, v); CSS_VALUES.add(v) })
             }
-            // Khôi phục sizeLast
-            if (typeof data.sizeLast === 'number') {
-                sizeLast = data.sizeLast
-            }
+            mergeSizeLast(data.sizeLast)
 
             if (data.cssText) {
                 for (const k in data.cssText) {
@@ -894,21 +1330,19 @@ export const xcss = (
             }
         }
 
-        if (isBrowser && docRoot) {
-            ['root', ...keysCssStyleSheetsDom].forEach((k) => {
-                if (cssStyleSheetsDom[k] && docRoot?.adoptedStyleSheets) {
-                    if (!docRoot.adoptedStyleSheets.includes(cssStyleSheetsDom[k])) {
-                        docRoot.adoptedStyleSheets = [
-                            ...docRoot.adoptedStyleSheets,
-                            cssStyleSheetsDom[k],
-                        ]
-                    }
-                }
-            })
+        // Gắn tất cả sheets MỘT LẦN DUY NHẤT (batch) để tránh multi-reflow gây CLS
+        if (isBrowser && docRoot?.adoptedStyleSheets) {
+            const existingSheets = docRoot.adoptedStyleSheets
+            const newSheets = ['root', ...keysCssStyleSheetsDom]
+                .map(k => cssStyleSheetsDom[k])
+                .filter(sheet => sheet && !existingSheets.includes(sheet))
+            if (newSheets.length > 0) {
+                docRoot.adoptedStyleSheets = [...existingSheets, ...newSheets]
+            }
         }
 
         // Xử lý bất đồng bộ cho cache stream-compressed
-        if (isBrowser && window.localStorage && asyncCacheCandidate && !cacheLoaded) {
+        if (isBrowser && browserStorage && asyncCacheCandidate && !cacheLoaded) {
             void (async () => {
                 const data = await parseCacheDataAsync(asyncCacheCandidate!.raw)
                 if (!data) {
@@ -925,27 +1359,12 @@ export const xcss = (
             })()
         }
 
-        // Lắng nghe storage event để đồng bộ sizeLast từ tab khác
-        if (isBrowser && window.addEventListener) {
-            window.addEventListener('storage', (e) => {
-                // Lắng nghe thay đổi cache từ tab khác để đồng bộ sizeLast + CSS_KEYS
-                if (e.key === cacheKey && e.newValue) {
+        // Đồng bộ key generation từ tab khác: ưu tiên BroadcastChannel, fallback storage.
+        if (isBrowser && browserWindow?.addEventListener) {
+            browserWindow.addEventListener('storage', (e) => {
+                if (e.key === keySyncKey && e.newValue) {
                     try {
-                        const data = parseCacheDataSync(e.newValue)
-                        if (data && data.configHash === currentConfigHash) {
-                            if (typeof data.sizeLast === 'number' && data.sizeLast > sizeLast) {
-                                sizeLast = data.sizeLast
-                            }
-                            // Cập nhật CSS_KEYS mới từ tab khác
-                            if (data.keys) {
-                                data.keys.forEach(([k, v]) => {
-                                    if (!CSS_KEYS.has(k)) {
-                                        CSS_KEYS.set(k, v)
-                                        CSS_VALUES.add(v)
-                                    }
-                                })
-                            }
-                        }
+                        mergeKeySyncPayload(normalizeKeySyncPayload(JSON.parse(e.newValue)))
                     } catch (_e) {}
                 }
             })
@@ -988,6 +1407,16 @@ export const xcss = (
                     const pending = cssPending[media]
                     if (pending.length > 0) {
                         cssTextStore[media] += (cssTextStore[media] ? '\n' : '') + pending.join('\n')
+                        cssPending[media] = []
+                    }
+                } else if (isFirstRenderBatch) {
+                    // First paint: flush CSS đồng bộ để tránh CLS
+                    const pending = cssPending[media]
+                    if (pending.length > 0) {
+                        cssTextStore[media] += (cssTextStore[media] ? '\n' : '') + pending.join('\n')
+                        if (cssStyleSheetsDom[media]) {
+                            cssStyleSheetsDom[media].replaceSync(cssTextStore[media])
+                        }
                         cssPending[media] = []
                     }
                 } else {
@@ -1080,6 +1509,7 @@ export const xcss = (
                         } while (CSS_VALUES.has(key))
                         CSS_KEYS.set(l, key)
                         CSS_VALUES.add(key)
+                        scheduleKeySync([l, key])
                         item = key
                         triggerSave() // LƯU CACHE
                     }
@@ -1092,7 +1522,7 @@ export const xcss = (
             // In SSR/Non-browser, we might want to sync immediately?
             // Emit event to update styles
             // In SSR/Non-browser, sync immediately for extraction support
-            if (!isBrowser) {
+            if (!isBrowser || isFirstRenderBatch) {
                 emitter.emit('observeDom' as any, lsCss)
             } else {
                 queueMicrotask(() => emitter.emit('observeDom' as any, lsCss))
@@ -1103,9 +1533,16 @@ export const xcss = (
 
         const observe = () => {
             if (!isBrowser || !docRoot) return
+            // Lần đầu: xử lý đồng bộ để CSS apply trước first paint
             observeDom(docRoot as Document | Element | ShadowRoot, (items) => {
-                processObservedItems(items)
+                if (isFirstRenderBatch) {
+                    applyObservedItems(items)
+                } else {
+                    processObservedItems(items)
+                }
             })
+            // Sau lần quét đầu tiên, chuyển sang async để không block UI
+            isFirstRenderBatch = false
         }
 
         const getCssString = () => {

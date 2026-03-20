@@ -357,23 +357,30 @@ Lưu ý khi dùng cùng `prefix`:
 
 
 `dictionaryImport`:
-1. `true` (mặc định): tự động tải dictionary built-in từ module `dist/dictionary.*` (giúp file core nhẹ hơn).
+1. `true` (mặc định): dùng ngay built-in dictionary từ `src/dictionary.ts`/bundle hiện tại, không self-import `dictionary.js` nội bộ nữa.
 2. `false`: tắt dictionary.
 3. `string` URL/path: import dictionary ngoài.
 
 Lưu ý:
-1. Với `dictionaryImport: true` hoặc `string`, engine có thể tải dictionary bất đồng bộ tùy môi trường runtime.
-2. Nếu cần chắc chắn dictionary đã sẵn sàng trước khi render quan trọng, dùng `await engine.ready`.
+1. `dictionaryImport: true` là đồng bộ, có thể parse built-in dictionary ngay khi khởi tạo.
+2. Chỉ trường hợp `dictionaryImport` là `string` URL/path mới cần import bất đồng bộ.
+3. Nếu cần chắc chắn dictionary ngoài đã sẵn sàng trước khi render quan trọng, dùng `await engine.ready`.
 
 `cache`:
 1. `styleId` (mặc định `fwkui`): id thẻ `<style>` runtime.
 2. `version` (mặc định `v1`): tham gia vào cache key để chủ động invalidate.
 3. `compression` (mặc định `true`): nén cache trước khi lưu `localStorage`.
 4. `debounceMs` (mặc định `1000`): debounce chu kỳ nén + lưu cache.
+5. `sizeLast` (mặc định `1000`): seed mặc định cho bộ sinh key `D...`.
 
 Khi `compression: true`:
 1. Ưu tiên `CompressionStream` (deflate-raw + base64) nếu runtime hỗ trợ.
 2. Tự động fallback về LZW nếu runtime không hỗ trợ stream.
+
+Đồng bộ nhiều tab:
+1. Khi phát sinh key mới, engine gửi delta `{ class -> key }` sang tab khác qua `BroadcastChannel` nếu môi trường hỗ trợ.
+2. Nếu không có `BroadcastChannel`, engine fallback về sự kiện `storage`.
+3. `localStorage` cache vẫn giữ vai trò snapshot đầy đủ cho lần mở tab mới hoặc reload sau đó.
 
 Quy tắc cache key:
 `cacheKey = styleId + "_cache_" + version`
@@ -442,6 +449,11 @@ export default {
   SPECIFIC_VALUES
 };
 ```
+
+Lưu ý format:
+1. Nên export theo đúng mẫu trên với object tĩnh/plain object.
+2. Không nên tạo dictionary bằng biểu thức động, function, hoặc biến trung gian phức tạp.
+3. `export default` là tùy chọn; 3 named export `SHORT_PROPERTIES`, `COMMON_VALUES`, `SPECIFIC_VALUES` mới là phần quan trọng nhất.
 
 Quy trình thay link:
 1. Tạo file `xcss-dict.mjs` theo mẫu trên.

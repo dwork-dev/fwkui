@@ -336,6 +336,10 @@ type FakeBrowserEnv = {
     restore: () => void
 }
 
+type FakeBroadcastChannelEvent = {
+    data: unknown
+}
+
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const waitForStorageKey = async (
@@ -367,6 +371,54 @@ const waitForCacheContains = async (
     return readCache()
 }
 
+const createFakeBroadcastChannel = () => {
+    const registry = new Map<string, Set<FakeBroadcastChannel>>()
+
+    class FakeBroadcastChannel {
+        name: string
+        onmessage: ((event: FakeBroadcastChannelEvent) => void) | null = null
+        private listeners = new Set<(event: FakeBroadcastChannelEvent) => void>()
+
+        constructor(name: string) {
+            this.name = name
+            if (!registry.has(name)) registry.set(name, new Set())
+            registry.get(name)!.add(this)
+        }
+
+        postMessage(data: unknown) {
+            const peers = registry.get(this.name)
+            if (!peers) return
+
+            peers.forEach((peer) => {
+                if (peer === this) return
+                const event = { data }
+                if (typeof peer.onmessage === 'function') {
+                    peer.onmessage(event)
+                }
+                peer.listeners.forEach((listener) => listener(event))
+            })
+        }
+
+        addEventListener(type: string, listener: (event: FakeBroadcastChannelEvent) => void) {
+            if (type === 'message') {
+                this.listeners.add(listener)
+            }
+        }
+
+        removeEventListener(type: string, listener: (event: FakeBroadcastChannelEvent) => void) {
+            if (type === 'message') {
+                this.listeners.delete(listener)
+            }
+        }
+
+        close() {
+            registry.get(this.name)?.delete(this)
+        }
+    }
+
+    return FakeBroadcastChannel
+}
+
 const createFakeBrowserEnv = (): FakeBrowserEnv => {
     const g = globalThis as any
     const prev = {
@@ -374,6 +426,7 @@ const createFakeBrowserEnv = (): FakeBrowserEnv => {
         document: g.document,
         CSSStyleSheet: g.CSSStyleSheet,
         ShadowRoot: g.ShadowRoot,
+        BroadcastChannel: g.BroadcastChannel,
     }
 
     const store = new Map<string, string>()
@@ -452,7 +505,11 @@ const createFakeBrowserEnv = (): FakeBrowserEnv => {
         },
     }
 
-    g.window = { localStorage }
+    g.window = {
+        localStorage,
+        addEventListener() {},
+        removeEventListener() {},
+    }
     g.document = fakeDocument
     g.CSSStyleSheet = FakeCSSStyleSheet
     g.ShadowRoot = class FakeShadowRoot {}
@@ -465,6 +522,7 @@ const createFakeBrowserEnv = (): FakeBrowserEnv => {
             g.document = prev.document
             g.CSSStyleSheet = prev.CSSStyleSheet
             g.ShadowRoot = prev.ShadowRoot
+            g.BroadcastChannel = prev.BroadcastChannel
         },
     }
 }
@@ -592,5 +650,63 @@ describe('xcss cache', () => {
         expect(compact).toContain('"xcss-style_cache_v9"')
         expect(compact.length).toBeLessThan(normal.length)
         expect(compact.includes('\n')).toBe(false)
+    })
+
+    it('should honor configured cache.sizeLast seed for generated keys', async () => {
+        currentEnv = createFakeBrowserEnv()
+
+        const instance = xcss({
+            cache: {
+                styleId: 'seed-style',
+                version: 'v1',
+                sizeLast: 2048,
+                debounceMs: 0,
+            },
+        })
+        const { clsx } = instance.buildCss(currentEnv.document)
+
+        const key = clsx('m10px')
+        await instance.ready
+        await Promise.resolve()
+
+        expect(key).toBe('D' + (2048).toString(32).toUpperCase())
+    })
+
+    it('should sync generated key mappings via BroadcastChannel', async () => {
+        currentEnv = createFakeBrowserEnv()
+
+        const g = globalThis as any
+        g.BroadcastChannel = createFakeBroadcastChannel()
+
+        const options = {
+            cache: {
+                styleId: 'sync-style',
+                version: 'v1',
+                sizeLast: 2048,
+                compression: false,
+                debounceMs: 0,
+            },
+        }
+
+        const instanceA = xcss(options)
+        const instanceB = xcss(options)
+        const tabA = instanceA.buildCss(currentEnv.document)
+        const tabB = instanceB.buildCss(currentEnv.document)
+
+        const first = tabA.clsx('m10px')
+        const second = tabA.clsx('cRed')
+
+        await instanceA.ready
+        await instanceB.ready
+        await Promise.resolve()
+        await Promise.resolve()
+
+        const mirrored = tabB.clsx('m10px')
+        const third = tabB.clsx('p8px')
+
+        expect(first).toBe('D' + (2048).toString(32).toUpperCase())
+        expect(second).toBe('D' + (2049).toString(32).toUpperCase())
+        expect(mirrored).toBe(first)
+        expect(third).toBe('D' + (2050).toString(32).toUpperCase())
     })
 })
